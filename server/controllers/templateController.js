@@ -22,26 +22,29 @@ export const getTemplateByToken = async (req, res, next) => {
       const cleanToken = decodeURIComponent(token).toLowerCase().trim();
       const normToken = cleanToken.replace(/[\s_-]+/g, '');
 
-      // 1. Exact or regex match on shareToken or id
+      // 1. Exact match on shareToken or id FIRST
       template = await Template.findOne({
         $or: [
           { shareToken: cleanToken },
-          { id: cleanToken },
-          { shareToken: { $regex: normToken, $options: 'i' } },
-          { id: { $regex: normToken, $options: 'i' } }
+          { id: cleanToken }
         ]
       });
 
-      // 2. Fallback search by title
+      // 2. Exact normalized match
       if (!template) {
         template = await Template.findOne({
-          title: { $regex: cleanToken, $options: 'i' }
+          $or: [
+            { shareToken: { $regex: `^${normToken}$`, $options: 'i' } },
+            { id: { $regex: `^${normToken}$`, $options: 'i' } }
+          ]
         });
       }
 
-      // 3. Resilient Fallback to latest active template
+      // 3. Match title exact normalized
       if (!template) {
-        template = await Template.findOne({ status: 'active' }).sort({ createdAt: -1 });
+        template = await Template.findOne({
+          title: { $regex: `^${cleanToken}$`, $options: 'i' }
+        });
       }
     }
 

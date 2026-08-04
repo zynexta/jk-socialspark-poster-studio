@@ -21,8 +21,10 @@ export default function TemplateBuilderPage() {
       const found = templates.find((t) => t.id === id);
       if (found) return found;
     }
+    const uniqueId = `tmpl_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     return {
-      id: `tmpl_${Date.now()}`,
+      id: uniqueId,
+      shareToken: `poster-${Math.random().toString(36).substring(2, 8)}`,
       title: 'New Dynamic Poster Template',
       category: 'SSLC',
       width: 800,

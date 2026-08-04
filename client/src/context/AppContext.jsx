@@ -389,7 +389,7 @@ export const AppProvider = ({ children }) => {
 
     if (!normalizedSearch) return strictOnly ? null : (templates[0] || null);
 
-    // 1. Exact or case-insensitive match on shareToken or id
+    // 1. Exact or case-insensitive match on shareToken or id FIRST
     let found = templates.find(t => 
       t && (
         (t.shareToken && t.shareToken.toLowerCase().trim() === cleanSearch) || 
@@ -398,29 +398,20 @@ export const AppProvider = ({ children }) => {
     );
     if (found) return found;
 
-    // 2. Normalized match (ignores spaces, hyphens, underscores)
+    // 2. Exact Normalized match on shareToken or id (ignores hyphens/spaces)
     found = templates.find(t => {
       if (!t) return false;
       const normToken = (t.shareToken || '').toLowerCase().replace(/[\s_-]+/g, '');
       const normId = (t.id || '').toLowerCase().replace(/[\s_-]+/g, '');
-      const normTitle = (t.title || '').toLowerCase().replace(/[\s_-]+/g, '');
-      return normToken === normalizedSearch || normId === normalizedSearch || normTitle === normalizedSearch;
+      return normToken === normalizedSearch || normId === normalizedSearch;
     });
     if (found) return found;
 
-    // 3. Substring / Partial match on shareToken, title, or category
+    // 3. Match title exact normalized
     found = templates.find(t => {
       if (!t) return false;
-      const normToken = (t.shareToken || '').toLowerCase().replace(/[\s_-]+/g, '');
       const normTitle = (t.title || '').toLowerCase().replace(/[\s_-]+/g, '');
-      const normCategory = (t.category || '').toLowerCase().replace(/[\s_-]+/g, '');
-      return (
-        normToken.includes(normalizedSearch) || 
-        normalizedSearch.includes(normToken) ||
-        normTitle.includes(normalizedSearch) ||
-        normalizedSearch.includes(normTitle) ||
-        normCategory.includes(normalizedSearch)
-      );
+      return normTitle === normalizedSearch;
     });
 
     if (found) return found;
