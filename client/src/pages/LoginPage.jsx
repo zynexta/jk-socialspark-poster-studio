@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Lock, Mail, ArrowRight, Sparkles, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, AlertTriangle } from 'lucide-react';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   
-  const [email, setEmail] = useState('admin@zynexta.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -21,7 +21,7 @@ export default function LoginPage() {
       await login(email, password);
       navigate('/admin');
     } catch (err) {
-      setErrorMsg(err.message || 'Login failed. Please check your admin credentials.');
+      setErrorMsg(err.message || 'Login failed. Please check your MongoDB database credentials.');
     } finally {
       setLoading(false);
     }
@@ -41,14 +41,14 @@ export default function LoginPage() {
             </div>
           </Link>
           <h1 className="text-2xl font-extrabold font-heading text-white">Zynexta Smart Poster Studio</h1>
-          <p className="text-xs text-slate-400 mt-1">Super Admin Portal Authentication</p>
+          <p className="text-xs text-slate-400 mt-1">Super Admin Authentication Portal</p>
         </div>
 
         {/* Card Box */}
         <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
           <div className="flex items-center gap-2 mb-6 text-xs font-bold text-cyan-400 uppercase tracking-wider bg-cyan-950/40 p-2.5 rounded-xl border border-cyan-500/20">
             <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
-            <span>Super Admin Secured Portal</span>
+            <span>MongoDB Atlas Secured Login</span>
           </div>
 
           {errorMsg && (
@@ -68,7 +68,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@zynexta.com"
+                  placeholder="Enter your admin email"
                   className="w-full glass-input pl-10 pr-4 py-3 rounded-2xl text-xs font-medium text-white placeholder-slate-500 border border-slate-800 focus:border-blue-500 outline-none transition-colors"
                 />
               </div>
@@ -83,7 +83,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Enter your admin password"
                   className="w-full glass-input pl-10 pr-4 py-3 rounded-2xl text-xs font-medium text-white placeholder-slate-500 border border-slate-800 focus:border-blue-500 outline-none transition-colors"
                 />
               </div>
@@ -95,7 +95,7 @@ export default function LoginPage() {
               className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 mt-2"
             >
               {loading ? (
-                <span>Authenticating with Database...</span>
+                <span>Verifying with MongoDB Atlas...</span>
               ) : (
                 <>
                   <span>Sign In to Admin Dashboard</span>
@@ -104,14 +104,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          {/* Quick Credential Hint */}
-          <div className="mt-6 pt-5 border-t border-slate-800/80 text-center">
-            <span className="text-[11px] text-slate-500 block">Default Initial Admin Credentials:</span>
-            <span className="text-[11px] text-cyan-400/90 font-mono font-medium block mt-0.5">
-              admin@zynexta.com &bull; admin123
-            </span>
-          </div>
         </div>
 
         {/* Back Link */}

@@ -38,52 +38,30 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // Real API Login connecting to Express & MongoDB Atlas
+  // Strict MongoDB Atlas API Login (100% Database Driven - No hardcoded fallback credentials)
   const login = async (email, password) => {
-    const savedPassword = localStorage.getItem('jk_poster_admin_password') || 'admin123';
-    let apiUser = null;
-    let apiToken = null;
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        apiUser = data.user;
-        apiToken = data.token;
-      } else {
-        const errData = await res.json().catch(() => ({}));
-        if (errData.message) {
-          throw new Error(errData.message);
-        }
-      }
-    } catch (err) {
-      if (err.message && (err.message.includes('password') || err.message.includes('credentials'))) {
-        throw err;
-      }
-      // If server unreachable offline fallback check
-      if (password !== savedPassword && password !== 'admin123') {
-        throw new Error('Incorrect password! Please enter the valid Admin password.');
-      }
+    if (!email || !password) {
+      throw new Error('Please enter both email and password.');
     }
 
-    const finalUser = apiUser || {
-      id: 'usr_admin_01',
-      name: 'Zynexta Super Admin',
-      email: email || 'admin@zynexta.com',
-      role: 'admin',
-      shopName: 'Zynexta Software Solutions',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-    };
-    const finalToken = apiToken || `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.user_${Date.now()}`;
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
-    setUser(finalUser);
-    setToken(finalToken);
-    return finalUser;
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Incorrect email or password! Authentication failed.');
+    }
+
+    const authenticatedUser = data.user;
+    const authenticatedToken = data.token;
+
+    setUser(authenticatedUser);
+    setToken(authenticatedToken);
+    return authenticatedUser;
   };
 
   // Update Admin Profile in MongoDB Atlas
@@ -117,10 +95,8 @@ export const AuthProvider = ({ children }) => {
 
   // Update Admin Password in MongoDB Atlas
   const updatePassword = async (newPassword) => {
-    localStorage.setItem('jk_poster_admin_password', newPassword);
-
     try {
-      await fetch(`${API_BASE_URL}/auth/update-password`, {
+      const res = await fetch(`${API_BASE_URL}/auth/update-password`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -128,8 +104,14 @@ export const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify({ newPassword, userId: user?.id || user?._id }),
       });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || 'Failed to update password in MongoDB Atlas');
+      }
     } catch (err) {
       console.warn('MongoDB password sync info:', err.message);
+      throw err;
     }
 
     return true;
