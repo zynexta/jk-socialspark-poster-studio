@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AppContext = createContext(null);
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 export const generateSlug = (title) => {
   if (!title) return `template-${Date.now().toString(36)}`;
   const clean = title
@@ -34,6 +36,8 @@ const INITIAL_TEMPLATES = [
     bgColor: '#0F172A',
     createdAt: '2026-07-20',
     generatedCount: 0,
+    isPublic: true,
+    expirationDate: '2026-12-31',
     placeholders: [
       {
         id: 'pl_photo_1',
@@ -100,153 +104,157 @@ const INITIAL_TEMPLATES = [
         align: 'center',
         zIndex: 5,
       },
-      {
-        id: 'pl_qr_1',
-        type: 'qr_code',
-        label: 'Verification QR Code',
-        x: 650,
-        y: 830,
-        width: 100,
-        height: 100,
-        placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://zynexta.com/verify/topper-2026',
-        zIndex: 6,
-      }
     ]
   },
   {
     id: 'tmpl_cctv_offer_2026',
-    shareToken: 'cctv-mega-offer',
-    title: 'CCTV Security Festival Offer',
+    shareToken: 'cctv-camera-mega-offer',
+    title: 'CCTV Camera Mega Offer Poster',
     category: 'Security & CCTV',
     width: 800,
     height: 1000,
     aspectRatio: '4:5',
     bgImage: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=1200&q=80',
     bgColor: '#0284C7',
-    createdAt: '2026-07-22',
+    createdAt: '2026-07-21',
     generatedCount: 0,
+    isPublic: true,
+    expirationDate: '2026-12-31',
     placeholders: [
       {
-        id: 'pl_cctv_title',
+        id: 'pl_offer_img',
+        type: 'photo',
+        label: 'Product Photo Box',
+        x: 200,
+        y: 150,
+        width: 400,
+        height: 350,
+        borderRadius: 20,
+        borderWidth: 3,
+        borderColor: '#0284C7',
+        placeholderImg: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80',
+        zIndex: 2,
+      },
+      {
+        id: 'pl_headline',
         type: 'text',
-        label: 'Offer Headline',
-        text: 'ZYNEXTA SECURITY MEGA OFFER',
-        x: 100,
-        y: 120,
-        width: 600,
-        height: 60,
-        fontSize: 36,
+        label: 'Main Offer Title',
+        text: 'ZYNEXTA SECURITY HQ MEGA SALE',
+        x: 50,
+        y: 540,
+        width: 700,
+        height: 50,
+        fontSize: 28,
         fontFamily: 'Outfit',
         fontWeight: 'bold',
         color: '#FFFFFF',
         align: 'center',
-        zIndex: 2,
+        zIndex: 3,
       },
       {
-        id: 'pl_cctv_desc',
+        id: 'pl_discount_badge',
+        type: 'badge',
+        label: 'Discount Badge',
+        text: 'FLAT 40% OFF - LIMITED PERIOD',
+        x: 150,
+        y: 610,
+        width: 500,
+        height: 48,
+        fontSize: 22,
+        fontFamily: 'Outfit',
+        fontWeight: 'bold',
+        color: '#38BDF8',
+        backgroundColor: 'rgba(56, 189, 248, 0.2)',
+        borderRadius: 24,
+        borderWidth: 2,
+        borderColor: '#38BDF8',
+        align: 'center',
+        zIndex: 4,
+      },
+      {
+        id: 'pl_contact_details',
         type: 'text',
-        label: 'Offer Details',
-        text: 'Get 4 MP HD Cameras + 8 Channel DVR + Installation at 40% Off!',
-        x: 100,
-        y: 720,
-        width: 600,
-        height: 80,
-        fontSize: 20,
+        label: 'Shop Contact Phone',
+        text: 'Call Us: +91 98765 43210 | www.zynexta.com',
+        x: 50,
+        y: 680,
+        width: 700,
+        height: 40,
+        fontSize: 18,
         fontFamily: 'Inter',
         color: '#E0F2FE',
         align: 'center',
-        zIndex: 3,
+        zIndex: 5,
       }
     ]
   }
 ];
 
-const INITIAL_GENERATED_POSTERS = [
-  {
-    id: 'post_1',
-    templateTitle: 'SSLC State Topper 2026 Poster',
-    customerName: 'Adithya V. Nair',
-    generatedBy: 'Kochi Print Hub',
-    date: '2026-07-26 14:30',
-    downloads: 3,
-    previewUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-  },
-  {
-    id: 'post_2',
-    templateTitle: 'CCTV Security Festival Offer',
-    customerName: 'Zynexta Security HQ',
-    generatedBy: 'Calicut Digital Press',
-    date: '2026-07-26 12:15',
-    downloads: 5,
-    previewUrl: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=300&q=80',
-  }
-];
+export const AppProvider = ({ children }) => {
+  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
 
-export function AppProvider({ children }) {
   const [templates, setTemplates] = useState(() => {
     try {
-      const saved = localStorage.getItem('jk_templates');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed.map(t => {
-          if (t.generatedCount === 142 || t.generatedCount === 89) {
-            return { ...t, generatedCount: 0 };
-          }
-          return t;
-        });
-      }
-      return INITIAL_TEMPLATES;
+      const saved = localStorage.getItem('jk_poster_templates');
+      return saved ? JSON.parse(saved) : INITIAL_TEMPLATES;
     } catch {
       return INITIAL_TEMPLATES;
-    }
-  });
-
-  const [categories, setCategories] = useState(() => {
-    try {
-      const saved = localStorage.getItem('jk_categories');
-      return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
-    } catch {
-      return INITIAL_CATEGORIES;
     }
   });
 
   const [generatedPosters, setGeneratedPosters] = useState(() => {
     try {
-      const saved = localStorage.getItem('jk_generated_posters');
-      return saved ? JSON.parse(saved) : INITIAL_GENERATED_POSTERS;
+      const saved = localStorage.getItem('jk_poster_generated_history');
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return INITIAL_GENERATED_POSTERS;
+      return [];
     }
   });
 
   const [toasts, setToasts] = useState([]);
 
+  // Fetch Templates Live from MongoDB Atlas Cloud Database
+  useEffect(() => {
+    const fetchCloudTemplates = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/templates`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.templates && data.templates.length > 0) {
+            setTemplates(data.templates);
+            localStorage.setItem('jk_poster_templates', JSON.stringify(data.templates));
+          } else {
+            // Seed initial templates to MongoDB Atlas if DB is empty
+            for (const tmpl of INITIAL_TEMPLATES) {
+              await fetch(`${API_BASE_URL}/templates`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(tmpl),
+              }).catch(() => {});
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('MongoDB Atlas live template sync info:', err.message);
+      }
+    };
+
+    fetchCloudTemplates();
+  }, []);
+
   useEffect(() => {
     try {
-      localStorage.setItem('jk_templates', JSON.stringify(templates));
-    } catch (e) {
-      console.warn('localStorage save failed for templates', e);
+      localStorage.setItem('jk_poster_templates', JSON.stringify(templates));
+    } catch {
+      // ignore
     }
   }, [templates]);
 
   useEffect(() => {
     try {
-      localStorage.setItem('jk_categories', JSON.stringify(categories));
-    } catch (e) {
-      console.warn('localStorage save failed for categories', e);
-    }
-  }, [categories]);
-
-  useEffect(() => {
-    try {
-      // Clean preview URLs if base64 data strings are too large for localStorage quota
-      const safePosters = generatedPosters.slice(0, 15).map(p => ({
-        ...p,
-        previewUrl: p.previewUrl && p.previewUrl.startsWith('data:') && p.previewUrl.length > 5000 ? '' : p.previewUrl
-      }));
-      localStorage.setItem('jk_generated_posters', JSON.stringify(safePosters));
-    } catch (e) {
-      console.warn('localStorage quota handling for generated posters:', e);
+      localStorage.setItem('jk_poster_generated_history', JSON.stringify(generatedPosters));
+    } catch {
+      // ignore
     }
   }, [generatedPosters]);
 
@@ -262,24 +270,27 @@ export function AppProvider({ children }) {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  // Template CRUD
-  const saveTemplate = (templateData) => {
+  // Template CRUD with Live MongoDB Atlas Sync
+  const saveTemplate = async (templateData) => {
     const existingIndex = templates.findIndex(t => t.id === templateData.id);
     const slug = templateData.shareToken && !templateData.shareToken.startsWith('token-')
       ? templateData.shareToken
       : generateSlug(templateData.title);
 
+    let finalTmpl;
+
     if (existingIndex >= 0) {
       const updated = [...templates];
-      updated[existingIndex] = {
+      finalTmpl = {
         ...templateData,
         shareToken: slug,
         updatedAt: new Date().toISOString()
       };
+      updated[existingIndex] = finalTmpl;
       setTemplates(updated);
       addToast('Template updated successfully!');
     } else {
-      const newTmpl = {
+      finalTmpl = {
         ...templateData,
         id: templateData.id || `tmpl_${Date.now()}`,
         shareToken: slug,
@@ -288,32 +299,61 @@ export function AppProvider({ children }) {
         createdAt: new Date().toISOString(),
         generatedCount: 0,
       };
-      setTemplates([newTmpl, ...templates]);
+      setTemplates([finalTmpl, ...templates]);
       addToast('New poster template created successfully!');
+    }
+
+    // Save to MongoDB Atlas Cloud Database instantly
+    try {
+      await fetch(`${API_BASE_URL}/templates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finalTmpl),
+      });
+    } catch (err) {
+      console.warn('MongoDB Atlas template save info:', err.message);
     }
   };
 
-  const deleteTemplate = (id) => {
+  const deleteTemplate = async (id) => {
     setTemplates(templates.filter(t => t.id !== id));
     addToast('Template deleted successfully!', 'warning');
+
+    try {
+      await fetch(`${API_BASE_URL}/templates/${id}`, {
+        method: 'DELETE',
+      });
+    } catch (err) {
+      console.warn('MongoDB Atlas template delete info:', err.message);
+    }
   };
 
-  const duplicateTemplate = (id) => {
+  const duplicateTemplate = async (id) => {
     const found = templates.find(t => t.id === id);
     if (!found) return;
     const duplicated = {
       ...found,
       id: `tmpl_${Date.now()}`,
-      shareToken: `token-${Math.random().toString(36).substring(2, 9)}`,
+      shareToken: generateSlug(`${found.title}-copy`),
       title: `${found.title} (Copy)`,
       createdAt: new Date().toISOString(),
       generatedCount: 0,
     };
     setTemplates([duplicated, ...templates]);
     addToast(`Template "${found.title}" duplicated successfully!`);
+
+    try {
+      await fetch(`${API_BASE_URL}/templates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(duplicated),
+      });
+    } catch (err) {
+      console.warn('MongoDB Atlas duplicate info:', err.message);
+    }
   };
 
-  // Universal Share Link Resolver (normalizes spaces, hyphens, case, titles, and partial tokens)
+  // Universal Share Link Resolver (MongoDB Atlas + Local Memory)
   const getTemplateByToken = (token) => {
     if (!token) return null;
 
@@ -369,86 +409,48 @@ export function AppProvider({ children }) {
         normToken.includes(normalizedSearch) || 
         normalizedSearch.includes(normToken) ||
         normTitle.includes(normalizedSearch) ||
+        normalizedSearch.includes(normTitle) ||
         normCategory.includes(normalizedSearch)
       );
     });
-    if (found) return found;
 
-    // 4. Default fallback to 1st active template so it never breaks
-    return templates[0] || null;
+    return found || null;
   };
 
-  // Record generation
-  const recordPosterGeneration = (posterInfo) => {
-    const newPoster = {
-      id: `post_${Date.now()}`,
-      date: new Date().toLocaleString(),
-      downloads: 1,
-      ...posterInfo,
-      // Clean large base64 strings to prevent QuotaExceededError in localStorage
-      previewUrl: posterInfo.previewUrl && posterInfo.previewUrl.startsWith('data:') && posterInfo.previewUrl.length > 50000 
-        ? '' 
-        : posterInfo.previewUrl
+  const addGeneratedPosterHistory = (posterData) => {
+    const newEntry = {
+      id: `gen_${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      ...posterData,
     };
-    setGeneratedPosters(prev => [newPoster, ...prev.slice(0, 15)]);
-    
-    // update count on template
-    setTemplates(prev => prev.map(t => {
-      if (t.id === posterInfo.templateId) {
-        return { ...t, generatedCount: (t.generatedCount || 0) + 1 };
-      }
-      return t;
-    }));
-
-    addToast('Poster generated successfully! High-res ready.');
-    return newPoster;
-  };
-
-  const addCategory = (name, icon = 'Tag') => {
-    const id = `cat_${name.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Date.now()}`;
-    const newCat = {
-      id,
-      name,
-      icon,
-      count: 0,
-      color: 'from-blue-600 to-indigo-600'
-    };
-    setCategories([...categories, newCat]);
-    addToast(`Category "${name}" added`);
-  };
-
-  const deleteCategory = (id) => {
-    setCategories(categories.filter(c => c.id !== id));
-    addToast('Category deleted', 'warning');
+    setGeneratedPosters([newEntry, ...generatedPosters]);
   };
 
   return (
     <AppContext.Provider
       value={{
-        templates,
         categories,
+        templates,
         generatedPosters,
         toasts,
-        addToast,
-        removeToast,
         saveTemplate,
         deleteTemplate,
         duplicateTemplate,
         getTemplateByToken,
-        recordPosterGeneration,
-        addCategory,
-        deleteCategory,
+        addGeneratedPosterHistory,
+        addToast,
+        removeToast,
       }}
     >
       {children}
     </AppContext.Provider>
   );
-}
+};
 
-export function useApp() {
+export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) {
     throw new Error('useApp must be used within an AppProvider');
   }
   return context;
-}
+};

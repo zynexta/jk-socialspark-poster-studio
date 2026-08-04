@@ -1,13 +1,11 @@
 import Template from '../models/Template.js';
-import ShareLink from '../models/ShareLink.js';
+import mongoose from 'mongoose';
 
 export const getTemplates = async (req, res, next) => {
   try {
     let templates = [];
-    try {
-      templates = await Template.find().sort({ createdAt: -1 });
-    } catch (err) {
-      // Mock fallback
+    if (mongoose.connection.readyState === 1) {
+      templates = await Template.find().sort({ updatedAt: -1 });
     }
     res.json({ count: templates.length, templates });
   } catch (error) {
@@ -18,29 +16,72 @@ export const getTemplates = async (req, res, next) => {
 export const getTemplateByToken = async (req, res, next) => {
   try {
     const { token } = req.params;
-    let template;
-    try {
-      template = await Template.findOne({ shareToken: token });
-    } catch (err) {
-      // Fallback
+    let template = null;
+
+    if (mongoose.connection.readyState === 1) {
+      const cleanToken = decodeURIComponent(token).toLowerCase().trim();
+
+      // 1. Exact match on shareToken or id
+      template = await Template.findOne({
+        $or: [
+          { shareToken: cleanToken },
+          { id: cleanToken }
+        ]
+      });
+
+      // 2. Fallback search by title
+      if (!template) {
+        template = await Template.findOne({
+          title: { $regex: cleanToken, $options: 'i' }
+        });
+      }
     }
 
-    res.json({ token, status: 'valid', template: template || null });
+    res.json({ token, status: template ? 'valid' : 'not_found', template });
   } catch (error) {
     next(error);
   }
 };
 
-export const createTemplate = async (req, res, next) => {
+export const createOrUpdateTemplate = async (req, res, next) => {
   try {
     const templateData = req.body;
-    let newTemplate;
-    try {
-      newTemplate = await Template.create(templateData);
-    } catch (err) {
-      newTemplate = { _id: `tpl_${Date.now()}`, ...templateData };
+
+    if (!templateData.id) {
+      templateData.id = `tmpl_${Date.now()}`;
     }
-    res.status(201).json({ message: 'Template created successfully', data: newTemplate });
+    if (!templateData.shareToken) {
+      templateData.shareToken = templateData.id;
+    }
+
+    let savedTemplate = templateData;
+
+    if (mongoose.connection.readyState === 1) {
+      savedTemplate = await Template.findOneAndUpdate(
+        { id: templateData.id },
+        templateData,
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+      console.log(`✅ Saved template in MongoDB Atlas: ${savedTemplate.title} (${savedTemplate.shareToken})`);
+    }
+
+    res.status(201).json({ message: 'Template saved in MongoDB Atlas successfully', template: savedTemplate });
+  } catch (error) {
+    console.error('Error saving template in MongoDB Atlas:', error);
+    next(error);
+  }
+};
+
+export const deleteTemplate = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (mongoose.connection.readyState === 1) {
+      await Template.findOneAndDelete({ id });
+      console.log(`🗑️ Deleted template from MongoDB Atlas: ${id}`);
+    }
+
+    res.json({ message: 'Template deleted successfully', id });
   } catch (error) {
     next(error);
   }

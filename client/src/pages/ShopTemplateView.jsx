@@ -15,8 +15,40 @@ export default function ShopTemplateView() {
   const { getTemplateByToken, recordPosterGeneration, addToast } = useApp();
   const { user } = useAuth();
   
-  const template = getTemplateByToken(shareToken);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+  const localTemplate = getTemplateByToken(shareToken);
+  const [cloudTemplate, setCloudTemplate] = useState(null);
+  const [loadingCloud, setLoadingCloud] = useState(true);
+  
+  const template = cloudTemplate || localTemplate;
   const posterRef = useRef(null);
+
+  // Fetch live template from MongoDB Atlas Cloud DB
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLiveTemplate = async () => {
+      if (!shareToken) {
+        setLoadingCloud(false);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE_URL}/templates/token/${encodeURIComponent(shareToken)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.template && isMounted) {
+            setCloudTemplate(data.template);
+          }
+        }
+      } catch (err) {
+        console.warn('Live cloud template fetch info:', err.message);
+      } finally {
+        if (isMounted) setLoadingCloud(false);
+      }
+    };
+
+    fetchLiveTemplate();
+    return () => { isMounted = false; };
+  }, [shareToken]);
 
   // Dynamic Form Values State
   const [formData, setFormData] = useState({});

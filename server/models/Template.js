@@ -26,9 +26,12 @@ const placeholderSchema = new mongoose.Schema({
   shadow: Boolean,
   locked: Boolean,
   zIndex: Number,
+  isMandatory: Boolean,
+  helpTooltip: String,
 });
 
 const templateSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
   title: { type: String, required: true },
   category: { type: String, required: true },
   width: { type: Number, default: 800 },
@@ -39,6 +42,8 @@ const templateSchema = new mongoose.Schema({
   status: { type: String, enum: ['active', 'archived'], default: 'active' },
   generatedCount: { type: Number, default: 0 },
   shareToken: { type: String, required: true, unique: true },
+  isPublic: { type: Boolean, default: true },
+  expirationDate: { type: String },
   placeholders: [placeholderSchema],
 }, { timestamps: true });
 
