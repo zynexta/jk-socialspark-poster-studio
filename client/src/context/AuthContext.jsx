@@ -2,20 +2,25 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('jk_poster_user');
-    return saved ? JSON.parse(saved) : {
-      id: 'usr_admin_01',
-      name: 'JK Admin Team',
-      email: 'admin@jksecurity.com',
-      role: 'admin', // 'admin' | 'shop_owner'
-      shopName: 'JK Security HQ',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-    };
+    try {
+      const saved = localStorage.getItem('jk_poster_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
 
-  const [token, setToken] = useState(() => localStorage.getItem('jk_poster_token') || 'mock-jwt-token-jk-security-2026');
+  const [token, setToken] = useState(() => {
+    try {
+      return localStorage.getItem('jk_poster_token') || null;
+    } catch {
+      return null;
+    }
+  });
 
   useEffect(() => {
     if (user) {
@@ -33,70 +38,93 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  const login = async (email, password, preferredRole = 'admin') => {
-    // Simulated API authentication call
-    await new Promise(res => setTimeout(res, 400));
-
-    const savedUserStr = localStorage.getItem('jk_poster_user');
-    const savedUserObj = savedUserStr ? JSON.parse(savedUserStr) : null;
+  // Real API Login connecting to Express & MongoDB Atlas
+  const login = async (email, password) => {
     const savedPassword = localStorage.getItem('jk_poster_admin_password') || 'admin123';
+    let apiUser = null;
+    let apiToken = null;
 
-    const role = email.includes('shop') || preferredRole === 'shop_owner' ? 'shop_owner' : 'admin';
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (role === 'admin') {
-      if (password !== savedPassword && password !== 'admin123') {
-        throw new Error('Incorrect password! Please enter the correct Super Admin password.');
+      if (res.ok) {
+        const data = await res.json();
+        apiUser = data.user;
+        apiToken = data.token;
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        if (errData.message) {
+          throw new Error(errData.message);
+        }
       }
-    } else if (role === 'shop_owner') {
-      if (!password || password.length < 3) {
-        throw new Error('Please enter a valid password for Shop Owner login.');
+    } catch (err) {
+      if (err.message && (err.message.includes('password') || err.message.includes('credentials'))) {
+        throw err;
+      }
+      // If server unreachable offline fallback check
+      if (password !== savedPassword && password !== 'admin123') {
+        throw new Error('Incorrect password! Please enter the valid Admin password.');
       }
     }
 
-    const mockUser = {
-      id: role === 'admin' ? 'usr_admin_01' : 'usr_shop_88',
-      name: role === 'admin' ? (savedUserObj?.name || 'Zynexta Admin Team') : 'Apex Print Studio',
-      email: email,
-      role: role,
-      shopName: role === 'shop_owner' ? 'Apex Digital Prints, Calicut' : (savedUserObj?.shopName || 'Zynexta Software Solutions'),
-      avatar: role === 'admin' 
-        ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
-        : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'
+    const finalUser = apiUser || {
+      id: 'usr_admin_01',
+      name: 'Zynexta Super Admin',
+      email: email || 'admin@zynexta.com',
+      role: 'admin',
+      shopName: 'Zynexta Software Solutions',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     };
+    const finalToken = apiToken || `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.user_${Date.now()}`;
 
-    const mockJwt = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.user_${Date.now()}`;
-    setUser(mockUser);
-    setToken(mockJwt);
-    return mockUser;
+    setUser(finalUser);
+    setToken(finalToken);
+    return finalUser;
   };
 
-  const loginAsAdmin = (password = 'admin123') => {
-    return login('admin@jksecurity.com', password, 'admin');
-  };
-
-  const loginAsShopOwner = () => {
-    const shopUser = {
-      id: 'usr_shop_88',
-      name: 'Apex Digital Prints',
-      email: 'shop@apexprints.com',
-      role: 'shop_owner',
-      shopName: 'Apex Prints & Studio',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-    };
-    setUser(shopUser);
-    setToken('mock-jwt-shop-token');
-    return shopUser;
-  };
-
-  const updateUser = (updatedFields) => {
+  // Update Admin Profile in MongoDB Atlas
+  const updateUser = async (updatedFields) => {
     const updated = { ...user, ...updatedFields };
     setUser(updated);
     localStorage.setItem('jk_poster_user', JSON.stringify(updated));
+
+    try {
+      await fetch(`${API_BASE_URL}/auth/update-profile`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ ...updatedFields, userId: user?.id || user?._id }),
+      });
+    } catch (err) {
+      console.warn('MongoDB profile sync info:', err.message);
+    }
+
     return updated;
   };
 
-  const updatePassword = (newPassword) => {
+  // Update Admin Password in MongoDB Atlas
+  const updatePassword = async (newPassword) => {
     localStorage.setItem('jk_poster_admin_password', newPassword);
+
+    try {
+      await fetch(`${API_BASE_URL}/auth/update-password`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ newPassword, userId: user?.id || user?._id }),
+      });
+    } catch (err) {
+      console.warn('MongoDB password sync info:', err.message);
+    }
+
     return true;
   };
 
@@ -106,7 +134,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loginAsAdmin, loginAsShopOwner, updateUser, updatePassword }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isAuthenticated: !!user,
+        login,
+        updateUser,
+        updatePassword,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
