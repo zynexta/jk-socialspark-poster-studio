@@ -1,0 +1,17 @@
+{
+  "name": "jk-smart-poster-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JK Smart Poster Generator - Fullstack application with React frontend and Express backend",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build:client": "npm --prefix client run build",
+    "start:server": "npm --prefix server start",
+    "install:all": "npm install --prefix client && npm install --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

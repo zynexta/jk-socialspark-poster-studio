@@ -1,0 +1,45 @@
+import mongoose from 'mongoose';
+
+const placeholderSchema = new mongoose.Schema({
+  id: String,
+  type: { type: String, required: true },
+  label: String,
+  text: String,
+  placeholderImg: String,
+  x: Number,
+  y: Number,
+  width: Number,
+  height: Number,
+  fontSize: Number,
+  fontFamily: String,
+  fontWeight: String,
+  fontStyle: String,
+  color: String,
+  backgroundColor: String,
+  opacity: Number,
+  borderRadius: Number,
+  borderWidth: Number,
+  borderColor: String,
+  align: String,
+  letterSpacing: Number,
+  lineHeight: Number,
+  shadow: Boolean,
+  locked: Boolean,
+  zIndex: Number,
+});
+
+const templateSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  category: { type: String, required: true },
+  width: { type: Number, default: 800 },
+  height: { type: Number, default: 1000 },
+  aspectRatio: { type: String, default: '4:5' },
+  bgImage: { type: String },
+  bgColor: { type: String, default: '#0F172A' },
+  status: { type: String, enum: ['active', 'archived'], default: 'active' },
+  generatedCount: { type: Number, default: 0 },
+  shareToken: { type: String, required: true, unique: true },
+  placeholders: [placeholderSchema],
+}, { timestamps: true });
+
+export default mongoose.model('Template', templateSchema);
