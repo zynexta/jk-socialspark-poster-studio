@@ -26,6 +26,19 @@ export default function CanvasBoard({
   const canvasWidth = template?.width || 800;
   const canvasHeight = template?.height || 1000;
 
+  // Auto-fit zoom for mobile screens
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && setZoom) {
+        const autoZoom = Math.max(0.3, Math.min(0.42, (window.innerWidth - 32) / canvasWidth));
+        setZoom(Number(autoZoom.toFixed(2)));
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [canvasWidth, setZoom]);
+
   // Handle Dragging
   const handleMouseDownElement = (e, item) => {
     e.stopPropagation();

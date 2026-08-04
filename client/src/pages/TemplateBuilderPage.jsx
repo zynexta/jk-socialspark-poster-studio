@@ -37,7 +37,21 @@ export default function TemplateBuilderPage() {
   const [selectedPlaceholderId, setSelectedPlaceholderId] = useState(null);
   const [zoom, setZoom] = useState(0.75);
   const [showGrid, setShowGrid] = useState(true);
-  const [history, setHistory] = useState([template]);
+  const [mobileTab, setMobileTab] = useState('canvas'); // 'toolbar' | 'canvas' | 'inspector'
+
+  const handleSelectPlaceholder = (id) => {
+    setSelectedPlaceholderId(id);
+    if (id && window.innerWidth < 1024) {
+      setMobileTab('inspector');
+    }
+  };
+
+  const handleAddPlaceholderWithTab = (type) => {
+    handleAddPlaceholder(type);
+    if (window.innerWidth < 1024) {
+      setMobileTab('canvas');
+    }
+  };
   const [historyIndex, setHistoryIndex] = useState(0);
 
   // Theme Mode (Dark Mode default, option to toggle to Light Mode)
@@ -353,35 +367,80 @@ export default function TemplateBuilderPage() {
         </div>
       </header>
 
-      {/* Main 3-Column Studio Interface */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Mobile Studio View Switcher Dock */}
+      <div className={`flex lg:hidden border-b p-1.5 justify-around shrink-0 z-40 transition-colors ${
+        isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-xs'
+      }`}>
+        <button
+          onClick={() => setMobileTab('toolbar')}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            mobileTab === 'toolbar'
+              ? 'bg-blue-600 text-white shadow-md'
+              : isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>Placeholders</span>
+        </button>
+        <button
+          onClick={() => setMobileTab('canvas')}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            mobileTab === 'canvas'
+              ? 'bg-cyan-600 text-white shadow-md'
+              : isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <ImageIcon className="w-4 h-4" />
+          <span>Canvas Studio</span>
+        </button>
+        <button
+          onClick={() => setMobileTab('inspector')}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            mobileTab === 'inspector'
+              ? 'bg-indigo-600 text-white shadow-md'
+              : isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Sliders className="w-4 h-4" />
+          <span>Inspector</span>
+        </button>
+      </div>
+
+      {/* Main 3-Column Studio Interface (Desktop 3-Col / Mobile Responsive Viewports) */}
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Left Toolbar */}
-        <PlaceholderToolbar onAddPlaceholder={handleAddPlaceholder} isDarkMode={isDarkMode} />
+        <div className={`${mobileTab === 'toolbar' ? 'flex w-full absolute inset-0 z-30 bg-slate-950 overflow-y-auto' : 'hidden lg:flex'}`}>
+          <PlaceholderToolbar onAddPlaceholder={handleAddPlaceholderWithTab} isDarkMode={isDarkMode} />
+        </div>
 
         {/* Center Interactive Canvas */}
-        <CanvasBoard
-          template={template}
-          selectedPlaceholderId={selectedPlaceholderId}
-          onSelectPlaceholder={setSelectedPlaceholderId}
-          onUpdatePlaceholder={handleUpdatePlaceholder}
-          onDeletePlaceholder={handleDeletePlaceholder}
-          onDuplicatePlaceholder={handleDuplicatePlaceholder}
-          zoom={zoom}
-          setZoom={setZoom}
-          showGrid={showGrid}
-          setShowGrid={setShowGrid}
-          isDarkMode={isDarkMode}
-        />
+        <div className={`${mobileTab === 'canvas' ? 'flex w-full flex-1 z-20 overflow-auto justify-center' : 'hidden lg:flex flex-1'}`}>
+          <CanvasBoard
+            template={template}
+            selectedPlaceholderId={selectedPlaceholderId}
+            onSelectPlaceholder={handleSelectPlaceholder}
+            onUpdatePlaceholder={handleUpdatePlaceholder}
+            onDeletePlaceholder={handleDeletePlaceholder}
+            onDuplicatePlaceholder={handleDuplicatePlaceholder}
+            zoom={zoom}
+            setZoom={setZoom}
+            showGrid={showGrid}
+            setShowGrid={setShowGrid}
+            isDarkMode={isDarkMode}
+          />
+        </div>
 
         {/* Right Inspector */}
-        <PropertyInspector
-          selectedPlaceholder={selectedPlaceholder}
-          onUpdatePlaceholder={handleUpdatePlaceholder}
-          onDeletePlaceholder={handleDeletePlaceholder}
-          onDuplicatePlaceholder={handleDuplicatePlaceholder}
-          onReorderLayer={handleReorderLayer}
-          isDarkMode={isDarkMode}
-        />
+        <div className={`${mobileTab === 'inspector' ? 'flex w-full absolute inset-0 z-30 bg-slate-950 overflow-y-auto' : 'hidden lg:flex'}`}>
+          <PropertyInspector
+            selectedPlaceholder={selectedPlaceholder}
+            onUpdatePlaceholder={handleUpdatePlaceholder}
+            onDeletePlaceholder={handleDeletePlaceholder}
+            onDuplicatePlaceholder={handleDuplicatePlaceholder}
+            onReorderLayer={handleReorderLayer}
+            isDarkMode={isDarkMode}
+          />
+        </div>
       </div>
     </div>
   );

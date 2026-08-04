@@ -77,33 +77,9 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#060911] text-slate-100 selection:bg-cyan-500 selection:text-white font-sans overflow-x-hidden">
       {/* Dynamic Ambient Background Mesh Lights & Tech Grid */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 hero-bg-grid">
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.25, 1],
-            opacity: [0.3, 0.5, 0.3],
-            x: [0, 60, 0]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-tr from-blue-600/35 via-cyan-500/30 to-purple-600/35 blur-[140px] rounded-full" 
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
-            y: [0, 60, 0]
-          }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-[35%] -left-40 w-[650px] h-[650px] bg-cyan-500/25 blur-[160px] rounded-full" 
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.25, 1],
-            opacity: [0.2, 0.4, 0.2],
-            y: [0, -50, 0]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-[65%] -right-40 w-[650px] h-[650px] bg-indigo-600/25 blur-[160px] rounded-full" 
-        />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-tr from-blue-600/30 via-cyan-500/25 to-purple-600/30 blur-[120px] rounded-full opacity-70" />
+        <div className="absolute top-[35%] -left-40 w-[650px] h-[650px] bg-cyan-500/20 blur-[140px] rounded-full opacity-60" />
+        <div className="absolute top-[65%] -right-40 w-[650px] h-[650px] bg-indigo-600/20 blur-[140px] rounded-full opacity-60" />
       </div>
 
       {/* Navigation Bar */}
@@ -358,7 +334,7 @@ export default function LandingPage() {
 
                     {/* Student Photo Placeholder */}
                     <div className="relative z-10 my-2 mx-auto w-36 h-44 rounded-2xl border-2 border-dashed border-cyan-400/60 overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-300">
-                      <img src={currentMockup.photo} alt="Student" className="w-full h-full object-cover" />
+                      <img src={currentMockup.photo} alt="Student" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-blue-600 text-[9px] font-bold rounded text-white shadow-md">
                         Photo Zone
                       </div>
