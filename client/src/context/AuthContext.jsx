@@ -88,12 +88,10 @@ export const AuthProvider = ({ children }) => {
 
   // Update Admin Profile in MongoDB Atlas
   const updateUser = async (updatedFields) => {
-    const updated = { ...user, ...updatedFields };
-    setUser(updated);
-    localStorage.setItem('jk_poster_user', JSON.stringify(updated));
+    let finalUpdated = { ...user, ...updatedFields };
 
     try {
-      await fetch(`${API_BASE_URL}/auth/update-profile`, {
+      const res = await fetch(`${API_BASE_URL}/auth/update-profile`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -101,11 +99,20 @@ export const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify({ ...updatedFields, userId: user?.id || user?._id }),
       });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.user) {
+          finalUpdated = { ...finalUpdated, ...data.user };
+        }
+      }
     } catch (err) {
       console.warn('MongoDB profile sync info:', err.message);
     }
 
-    return updated;
+    setUser(finalUpdated);
+    localStorage.setItem('jk_poster_user', JSON.stringify(finalUpdated));
+    return finalUpdated;
   };
 
   // Update Admin Password in MongoDB Atlas
