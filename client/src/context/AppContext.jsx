@@ -417,13 +417,24 @@ export const AppProvider = ({ children }) => {
     return found || templates[0] || null;
   };
 
-  const addGeneratedPosterHistory = (posterData) => {
+  const recordPosterGeneration = async (posterData) => {
     const newEntry = {
       id: `gen_${Date.now()}`,
       createdAt: new Date().toISOString(),
+      date: new Date().toLocaleDateString(),
       ...posterData,
     };
-    setGeneratedPosters([newEntry, ...generatedPosters]);
+    setGeneratedPosters(prev => [newEntry, ...prev]);
+
+    try {
+      await fetch(`${API_BASE_URL}/posters`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEntry),
+      });
+    } catch (err) {
+      console.warn('MongoDB Atlas poster generation log info:', err.message);
+    }
   };
 
   return (
@@ -437,7 +448,8 @@ export const AppProvider = ({ children }) => {
         deleteTemplate,
         duplicateTemplate,
         getTemplateByToken,
-        addGeneratedPosterHistory,
+        addGeneratedPosterHistory: recordPosterGeneration,
+        recordPosterGeneration,
         addToast,
         removeToast,
       }}
