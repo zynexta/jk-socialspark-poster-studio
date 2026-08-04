@@ -273,9 +273,16 @@ export const AppProvider = ({ children }) => {
   // Template CRUD with Live MongoDB Atlas Sync
   const saveTemplate = async (templateData) => {
     const existingIndex = templates.findIndex(t => t.id === templateData.id);
-    const slug = templateData.shareToken && !templateData.shareToken.startsWith('token-')
+    let baseSlug = templateData.shareToken && !templateData.shareToken.startsWith('token-')
       ? templateData.shareToken
       : generateSlug(templateData.title);
+
+    // Guarantee 100% Unique Share Token across all templates (no collisions!)
+    let uniqueSlug = baseSlug;
+    const isDuplicateSlug = templates.some(t => t.id !== templateData.id && t.shareToken === uniqueSlug);
+    if (isDuplicateSlug) {
+      uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
+    }
 
     let finalTmpl;
 
@@ -283,7 +290,7 @@ export const AppProvider = ({ children }) => {
       const updated = [...templates];
       finalTmpl = {
         ...templateData,
-        shareToken: slug,
+        shareToken: uniqueSlug,
         updatedAt: new Date().toISOString()
       };
       updated[existingIndex] = finalTmpl;
@@ -293,7 +300,7 @@ export const AppProvider = ({ children }) => {
       finalTmpl = {
         ...templateData,
         id: templateData.id || `tmpl_${Date.now()}`,
-        shareToken: slug,
+        shareToken: uniqueSlug,
         isPublic: templateData.isPublic !== undefined ? templateData.isPublic : true,
         expirationDate: templateData.expirationDate || '2026-12-31',
         createdAt: new Date().toISOString(),

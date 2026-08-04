@@ -4,7 +4,8 @@ import { useApp } from '../context/AppContext';
 import AdminLayout from '../components/layout/AdminLayout';
 import { 
   Search, Plus, Layers, Share2, Copy, Trash2, Edit3, Eye, 
-  Filter, QrCode, Calendar, Lock, Globe, Check, X, Sparkles 
+  Filter, QrCode, Calendar, Lock, Globe, Check, X, Sparkles, 
+  MessageSquare
 } from 'lucide-react';
 
 export default function TemplateManagementPage() {
