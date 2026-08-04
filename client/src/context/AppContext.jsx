@@ -315,7 +315,18 @@ export function AppProvider({ children }) {
 
   // Universal Share Link Resolver (normalizes spaces, hyphens, case, titles, and partial tokens)
   const getTemplateByToken = (token) => {
-    if (!token || !templates || templates.length === 0) return null;
+    if (!token) return null;
+
+    if (token === 'preview') {
+      try {
+        const draft = localStorage.getItem('jk_poster_preview_template');
+        if (draft) return JSON.parse(draft);
+      } catch (e) {
+        console.warn('Draft preview parse error:', e);
+      }
+    }
+
+    if (!templates || templates.length === 0) return null;
     
     let rawToken = token;
     try {

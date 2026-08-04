@@ -39,22 +39,30 @@ export default function CanvasBoard({
     return () => window.removeEventListener('resize', handleResize);
   }, [canvasWidth, setZoom]);
 
-  // Handle Dragging
-  const handleMouseDownElement = (e, item) => {
+  const getClientPos = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  };
+
+  // Handle Dragging (Mouse & Touch)
+  const handlePointerDownElement = (e, item) => {
     e.stopPropagation();
     const itemId = item.id || item._id;
     onSelectPlaceholder(itemId);
     if (item.locked) return;
 
     setIsDragging(true);
+    const pos = getClientPos(e);
     const rect = e.currentTarget.getBoundingClientRect();
     setDragOffset({
-      x: (e.clientX - rect.left) / zoom,
-      y: (e.clientY - rect.top) / zoom,
+      x: (pos.x - rect.left) / zoom,
+      y: (pos.y - rect.top) / zoom,
     });
   };
 
-  const handleMouseDownResize = (e, item, handle) => {
+  const handlePointerDownResize = (e, item, handle) => {
     e.stopPropagation();
     const itemId = item.id || item._id;
     onSelectPlaceholder(itemId);
@@ -62,7 +70,8 @@ export default function CanvasBoard({
 
     setIsResizing(true);
     setResizeHandle(handle);
-    setInitialMouse({ x: e.clientX, y: e.clientY });
+    const pos = getClientPos(e);
+    setInitialMouse({ x: pos.x, y: pos.y });
     setInitialSize({
       w: item.width,
       h: item.height,
@@ -71,22 +80,23 @@ export default function CanvasBoard({
     });
   };
 
-  const handleMouseMove = (e) => {
+  const handlePointerMove = (e) => {
     if (!selectedPlaceholderId) return;
-    const selectedItem = template?.placeholders?.find(p => (p.id || p._id) === selectedPlaceholderId);
+    const selectedItem = template?.placeholders?.find(p => String(p.id || p._id) === String(selectedPlaceholderId));
     if (!selectedItem || selectedItem.locked) return;
+
+    const pos = getClientPos(e);
 
     if (isDragging && containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
-      let rawX = (e.clientX - containerRect.left) / zoom - dragOffset.x;
-      let rawY = (e.clientY - containerRect.top) / zoom - dragOffset.y;
+      let rawX = (pos.x - containerRect.left) / zoom - dragOffset.x;
+      let rawY = (pos.y - containerRect.top) / zoom - dragOffset.y;
 
       // Snap guidelines detection
       let newSnapX = null;
       let newSnapY = null;
       const snapThreshold = 6;
 
-      // Snap to canvas center
       const centerX = canvasWidth / 2 - selectedItem.width / 2;
       const centerY = canvasHeight / 2 - selectedItem.height / 2;
 
@@ -101,15 +111,15 @@ export default function CanvasBoard({
 
       setSnapLines({ x: newSnapX, y: newSnapY });
 
-      onUpdatePlaceholder(selectedItem.id, {
+      onUpdatePlaceholder(selectedItem.id || selectedItem._id, {
         x: Math.round(rawX),
         y: Math.round(rawY),
       });
     }
 
     if (isResizing) {
-      const deltaX = (e.clientX - initialMouse.x) / zoom;
-      const deltaY = (e.clientY - initialMouse.y) / zoom;
+      const deltaX = (pos.x - initialMouse.x) / zoom;
+      const deltaY = (pos.y - initialMouse.y) / zoom;
 
       let newWidth = initialSize.w;
       let newHeight = initialSize.h;
@@ -137,7 +147,7 @@ export default function CanvasBoard({
         }
       }
 
-      onUpdatePlaceholder(selectedItem.id, {
+      onUpdatePlaceholder(selectedItem.id || selectedItem._id, {
         width: Math.round(newWidth),
         height: Math.round(newHeight),
         x: Math.round(newX),
@@ -146,20 +156,24 @@ export default function CanvasBoard({
     }
   };
 
-  const handleMouseUp = () => {
+  const handlePointerUp = () => {
     setIsDragging(false);
     setIsResizing(false);
     setSnapLines({ x: null, y: null });
   };
 
   useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('mouseup', handlePointerUp);
+    window.addEventListener('touchmove', handlePointerMove, { passive: false });
+    window.addEventListener('touchend', handlePointerUp);
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mousemove', handlePointerMove);
+      window.removeEventListener('mouseup', handlePointerUp);
+      window.removeEventListener('touchmove', handlePointerMove);
+      window.removeEventListener('touchend', handlePointerUp);
     };
-  }, [isDragging, isResizing, selectedPlaceholderId, zoom, dragOffset, initialMouse, initialSize]);
+  }, [isDragging, isResizing, selectedPlaceholderId, zoom, dragOffset, initialMouse, initialSize, template]);
 
   // Sort placeholders by zIndex
   const sortedPlaceholders = [...(template?.placeholders || [])].sort(
@@ -276,7 +290,8 @@ export default function CanvasBoard({
             return (
               <div
                 key={itemId}
-                onMouseDown={(e) => handleMouseDownElement(e, item)}
+                onMouseDown={(e) => handlePointerDownElement(e, item)}
+                onTouchStart={(e) => handlePointerDownElement(e, item)}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelectPlaceholder(itemId);
@@ -316,6 +331,7 @@ export default function CanvasBoard({
                         fontSize: `${item.fontSize || 18}px`,
                         fontFamily: item.fontFamily || 'Inter',
                         fontWeight: item.fontWeight || 'normal',
+                        fontStyle: item.fontStyle || 'normal',
                         textAlign: item.align || 'left',
                         justifyContent: item.align === 'center' ? 'center' : item.align === 'right' ? 'flex-end' : 'flex-start',
                         letterSpacing: item.letterSpacing ? `${item.letterSpacing}px` : undefined,
@@ -333,11 +349,11 @@ export default function CanvasBoard({
                             <img
                               src={item.placeholderImg}
                               alt={item.label}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover pointer-events-none"
                               style={{ borderRadius: cornerRadiusCss, filter: imageFilterCss }}
                             />
                           ) : (
-                            <div className="text-center p-3 flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-sky-950/40 to-slate-900/80 border border-sky-400/30 border-dashed" style={{ borderRadius: cornerRadiusCss }}>
+                            <div className="text-center p-3 flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-sky-950/40 to-slate-900/80 border border-sky-400/30 border-dashed pointer-events-none" style={{ borderRadius: cornerRadiusCss }}>
                               <Maximize2 className="w-7 h-7 text-sky-400 mb-1 opacity-80 animate-pulse" />
                               <span className="text-xs font-bold text-sky-300 block truncate max-w-full px-2">{item.label}</span>
                               <span className="text-[9px] text-slate-400 font-medium">Shop Photo Upload</span>
@@ -345,15 +361,15 @@ export default function CanvasBoard({
                           )}
                         </div>
                       ) : item.type === 'logo' || item.type === 'qr_code' ? (
-                        <div className="w-full h-full flex items-center justify-center bg-slate-900/60" style={{ borderRadius: cornerRadiusCss }}>
+                        <div className="w-full h-full flex items-center justify-center bg-slate-900/60 pointer-events-none" style={{ borderRadius: cornerRadiusCss }}>
                           {item.placeholderImg ? (
-                            <img src={item.placeholderImg} alt={item.label} className="max-w-full max-h-full object-contain" style={{ filter: imageFilterCss }} />
+                            <img src={item.placeholderImg} alt={item.label} className="max-w-full max-h-full object-contain pointer-events-none" style={{ filter: imageFilterCss }} />
                           ) : (
                             <span className="text-xs font-bold text-amber-400 px-2">{item.label}</span>
                           )}
                         </div>
                       ) : (
-                        <span className="px-2 truncate w-full">
+                        <span className="px-2 truncate w-full pointer-events-none">
                           {item.text || `[${item.label}]`}
                         </span>
                       )}
@@ -366,19 +382,23 @@ export default function CanvasBoard({
                   <>
                     {/* Corner Resize Handles */}
                     <div
-                      onMouseDown={(e) => handleMouseDownResize(e, item, 'nw')}
+                      onMouseDown={(e) => handlePointerDownResize(e, item, 'nw')}
+                      onTouchStart={(e) => handlePointerDownResize(e, item, 'nw')}
                       className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 bg-blue-500 border border-white rounded-full cursor-nwse-resize z-50"
                     />
                     <div
-                      onMouseDown={(e) => handleMouseDownResize(e, item, 'ne')}
+                      onMouseDown={(e) => handlePointerDownResize(e, item, 'ne')}
+                      onTouchStart={(e) => handlePointerDownResize(e, item, 'ne')}
                       className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-blue-500 border border-white rounded-full cursor-nesw-resize z-50"
                     />
                     <div
-                      onMouseDown={(e) => handleMouseDownResize(e, item, 'sw')}
+                      onMouseDown={(e) => handlePointerDownResize(e, item, 'sw')}
+                      onTouchStart={(e) => handlePointerDownResize(e, item, 'sw')}
                       className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 bg-blue-500 border border-white rounded-full cursor-nesw-resize z-50"
                     />
                     <div
-                      onMouseDown={(e) => handleMouseDownResize(e, item, 'se')}
+                      onMouseDown={(e) => handlePointerDownResize(e, item, 'se')}
+                      onTouchStart={(e) => handlePointerDownResize(e, item, 'se')}
                       className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-blue-500 border border-white rounded-full cursor-nwse-resize z-50"
                     />
 
