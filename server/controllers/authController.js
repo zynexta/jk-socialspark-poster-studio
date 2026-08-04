@@ -13,15 +13,12 @@ export const login = async (req, res, next) => {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-    let user = await User.findOne({ email: cleanEmail });
 
-    // Fallback search by role if admin email alias
-    if (!user && (cleanEmail.includes('admin') || cleanEmail === 'admin@jksecurity.com' || cleanEmail === 'admin@zynexta.com')) {
-      user = await User.findOne({ role: 'admin' });
-    }
+    // STRICT EMAIL LOOKUP IN MONGODB ATLAS
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials! No admin account found.' });
+      return res.status(401).json({ message: `Invalid Email address! No admin account registered under '${cleanEmail}'.` });
     }
 
     // Verify password against bcrypt hash or raw password
@@ -78,7 +75,6 @@ export const updateProfile = async (req, res, next) => {
       user = await User.findById(userId);
     }
 
-    // Resilient fallback to super admin document in MongoDB Atlas
     if (!user) {
       user = await User.findOne({ role: 'admin' });
     }

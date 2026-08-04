@@ -25,6 +25,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (user) {
       localStorage.setItem('jk_poster_user', JSON.stringify(user));
+      if (user.email) {
+        localStorage.setItem('jk_poster_admin_email', user.email);
+      }
     } else {
       localStorage.removeItem('jk_poster_user');
     }
@@ -38,19 +41,21 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // Resilient Admin Login with MongoDB Atlas & Offline Password Protection
+  // Strict Email & Password Admin Authentication
   const login = async (email, password) => {
     if (!email || !password) {
       throw new Error('Please enter both email and password.');
     }
 
+    const cleanInputEmail = email.toLowerCase().trim();
+    const savedEmail = (localStorage.getItem('jk_poster_admin_email') || user?.email || 'admin@zynexta.com').toLowerCase().trim();
     const savedPassword = localStorage.getItem('jk_poster_admin_password') || 'admin123';
 
     try {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: cleanInputEmail, password }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -58,6 +63,7 @@ export const AuthProvider = ({ children }) => {
       if (res.ok && data.user) {
         setUser(data.user);
         setToken(data.token);
+        localStorage.setItem('jk_poster_admin_email', data.user.email);
         return data.user;
       } else if (data.message) {
         throw new Error(data.message);
@@ -66,7 +72,11 @@ export const AuthProvider = ({ children }) => {
       if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('fetch')) {
         throw err;
       }
-      // If network/CORS error occurs during fetch, verify password locally so user is never blocked
+
+      // Offline Strict Verification: BOTH Email AND Password MUST match registered admin
+      if (cleanInputEmail !== savedEmail) {
+        throw new Error(`Invalid Email address! '${cleanInputEmail}' is not registered as Admin.`);
+      }
       if (password !== savedPassword && password !== 'admin123') {
         throw new Error('Incorrect password! Please enter the valid Admin password.');
       }
@@ -74,10 +84,10 @@ export const AuthProvider = ({ children }) => {
 
     const fallbackUser = {
       id: 'usr_admin_01',
-      name: 'Zynexta Super Admin',
-      email: email,
+      name: user?.name || 'Zynexta Super Admin',
+      email: savedEmail,
       role: 'admin',
-      shopName: 'Zynexta Software Solutions',
+      shopName: user?.shopName || 'Zynexta Software Solutions',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     };
     setUser(fallbackUser);
@@ -109,6 +119,9 @@ export const AuthProvider = ({ children }) => {
       console.warn('MongoDB profile sync info:', err.message);
     }
 
+    if (finalUpdated.email) {
+      localStorage.setItem('jk_poster_admin_email', finalUpdated.email);
+    }
     setUser(finalUpdated);
     localStorage.setItem('jk_poster_user', JSON.stringify(finalUpdated));
     return finalUpdated;
