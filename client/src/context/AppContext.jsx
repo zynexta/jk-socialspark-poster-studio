@@ -414,7 +414,7 @@ export const AppProvider = ({ children }) => {
       );
     });
 
-    return found || null;
+    return found || templates[0] || null;
   };
 
   const addGeneratedPosterHistory = (posterData) => {

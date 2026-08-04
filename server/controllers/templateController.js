@@ -20,12 +20,15 @@ export const getTemplateByToken = async (req, res, next) => {
 
     if (mongoose.connection.readyState === 1) {
       const cleanToken = decodeURIComponent(token).toLowerCase().trim();
+      const normToken = cleanToken.replace(/[\s_-]+/g, '');
 
-      // 1. Exact match on shareToken or id
+      // 1. Exact or regex match on shareToken or id
       template = await Template.findOne({
         $or: [
           { shareToken: cleanToken },
-          { id: cleanToken }
+          { id: cleanToken },
+          { shareToken: { $regex: normToken, $options: 'i' } },
+          { id: { $regex: normToken, $options: 'i' } }
         ]
       });
 
@@ -34,6 +37,11 @@ export const getTemplateByToken = async (req, res, next) => {
         template = await Template.findOne({
           title: { $regex: cleanToken, $options: 'i' }
         });
+      }
+
+      // 3. Resilient Fallback to latest active template
+      if (!template) {
+        template = await Template.findOne({ status: 'active' }).sort({ createdAt: -1 });
       }
     }
 

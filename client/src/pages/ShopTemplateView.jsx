@@ -80,6 +80,18 @@ export default function ShopTemplateView() {
     : false;
   const isPrivate = template?.isPublic === false;
 
+  if (loadingCloud && !template) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl flex items-center justify-center text-cyan-400 mb-4 shadow-xl">
+          <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
+        </div>
+        <h3 className="text-lg font-bold font-heading text-white">Loading Poster Studio Template...</h3>
+        <p className="text-xs text-slate-400 mt-1">Fetching live layout from MongoDB Atlas Cloud</p>
+      </div>
+    );
+  }
+
   if (!template || isPrivate || isExpired) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">

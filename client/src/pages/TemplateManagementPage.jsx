@@ -323,6 +323,19 @@ export default function TemplateManagementPage() {
                     className="w-full glass-input px-3 py-2 rounded-xl text-xs text-slate-200"
                   />
                 </div>
+
+                {/* Direct WhatsApp Share Button */}
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                    `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${window.location.origin}/template/${shareModalTemplate.shareToken}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02] mt-2"
+                >
+                  <MessageSquare className="w-4 h-4 text-emerald-100" />
+                  <span>Share Directly on WhatsApp</span>
+                </a>
               </div>
 
               <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
