@@ -366,8 +366,10 @@ export const AppProvider = ({ children }) => {
 
     if (token === 'preview') {
       try {
-        const draft = localStorage.getItem('jk_poster_preview_template');
-        if (draft) return JSON.parse(draft);
+        const sessionDraft = sessionStorage.getItem('jk_poster_preview_template');
+        if (sessionDraft) return JSON.parse(sessionDraft);
+        const localDraft = localStorage.getItem('jk_poster_preview_template');
+        if (localDraft) return JSON.parse(localDraft);
       } catch (e) {
         console.warn('Draft preview parse error:', e);
       }
