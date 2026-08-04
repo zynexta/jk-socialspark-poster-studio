@@ -16,7 +16,8 @@ export default function ShopTemplateView() {
   const { user } = useAuth();
   
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-  const localTemplate = getTemplateByToken(shareToken, true);
+  const cleanShareToken = (shareToken || '').trim().replace(/\/+$/, '');
+  const localTemplate = getTemplateByToken(cleanShareToken, true);
   const [cloudTemplate, setCloudTemplate] = useState(null);
   const [loadingCloud, setLoadingCloud] = useState(true);
   
@@ -27,12 +28,12 @@ export default function ShopTemplateView() {
   useEffect(() => {
     let isMounted = true;
     const fetchLiveTemplate = async () => {
-      if (!shareToken || shareToken === 'preview') {
+      if (!cleanShareToken || cleanShareToken === 'preview') {
         setLoadingCloud(false);
         return;
       }
       try {
-        const res = await fetch(`${API_BASE_URL}/templates/token/${encodeURIComponent(shareToken)}`);
+        const res = await fetch(`${API_BASE_URL}/templates/token/${encodeURIComponent(cleanShareToken)}`);
         if (res.ok) {
           const data = await res.json();
           if (data.template && isMounted) {
@@ -48,7 +49,7 @@ export default function ShopTemplateView() {
 
     fetchLiveTemplate();
     return () => { isMounted = false; };
-  }, [shareToken]);
+  }, [cleanShareToken]);
 
   // Dynamic Form Values State
   const [formData, setFormData] = useState({});

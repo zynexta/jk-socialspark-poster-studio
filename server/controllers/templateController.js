@@ -19,7 +19,8 @@ export const getTemplateByToken = async (req, res, next) => {
     let template = null;
 
     if (mongoose.connection.readyState === 1) {
-      const cleanToken = decodeURIComponent(token).toLowerCase().trim();
+      // Strip trailing slashes, spaces, and decode URI
+      const cleanToken = decodeURIComponent(token).toLowerCase().trim().replace(/\/+$/, '');
       const normToken = cleanToken.replace(/[\s_-]+/g, '');
 
       // 1. Exact match on shareToken or id FIRST
@@ -46,6 +47,16 @@ export const getTemplateByToken = async (req, res, next) => {
           title: { $regex: `^${cleanToken}$`, $options: 'i' }
         });
       }
+
+      // 4. Resilient substring search on shareToken or id
+      if (!template && normToken.length >= 3) {
+        template = await Template.findOne({
+          $or: [
+            { shareToken: { $regex: normToken, $options: 'i' } },
+            { id: { $regex: normToken, $options: 'i' } }
+          ]
+        });
+      }
     }
 
     res.json({ token, status: template ? 'valid' : 'not_found', template });
@@ -65,11 +76,14 @@ export const createOrUpdateTemplate = async (req, res, next) => {
       templateData.shareToken = templateData.id;
     }
 
+    // Clean shareToken of any trailing slashes
+    templateData.shareToken = templateData.shareToken.toLowerCase().trim().replace(/\/+$/, '');
+
     let savedTemplate = templateData;
 
     if (mongoose.connection.readyState === 1) {
       savedTemplate = await Template.findOneAndUpdate(
-        { id: templateData.id },
+        { $or: [{ id: templateData.id }, { shareToken: templateData.shareToken }] },
         templateData,
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
@@ -88,7 +102,7 @@ export const deleteTemplate = async (req, res, next) => {
     const { id } = req.params;
 
     if (mongoose.connection.readyState === 1) {
-      await Template.findOneAndDelete({ id });
+      await Template.findOneAndDelete({ $or: [{ id }, { shareToken: id }] });
       console.log(`🗑️ Deleted template from MongoDB Atlas: ${id}`);
     }
 
