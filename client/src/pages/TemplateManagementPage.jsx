@@ -263,10 +263,17 @@ export default function TemplateManagementPage() {
                       value={shareModalTemplate.shareToken || ''}
                       onChange={(e) => {
                         const cleanSlug = e.target.value.toLowerCase().replace(/[^\w-]/g, '-');
-                        setShareModalTemplate(prev => ({ ...prev, shareToken: cleanSlug }));
+                        const updated = {
+                          ...shareModalTemplate,
+                          shareToken: cleanSlug,
+                          isPublic: isPublic,
+                          expirationDate: expirationDate,
+                        };
+                        setShareModalTemplate(updated);
+                        saveTemplate(updated);
                       }}
                       placeholder="e.g. sslc-topper-2026"
-                      className="w-full glass-input px-3 py-2 rounded-r-xl text-xs font-mono text-cyan-300 outline-none"
+                      className="w-full glass-input px-3 py-2 rounded-r-xl text-xs font-mono text-cyan-300 outline-none focus:border-cyan-400"
                     />
                   </div>
                 </div>
@@ -282,7 +289,15 @@ export default function TemplateManagementPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setIsPublic(!isPublic)}
+                    onClick={() => {
+                      const nextPublic = !isPublic;
+                      setIsPublic(nextPublic);
+                      saveTemplate({
+                        ...shareModalTemplate,
+                        isPublic: nextPublic,
+                        expirationDate: expirationDate,
+                      });
+                    }}
                     className={`w-11 h-6 rounded-full p-0.5 transition-colors ${
                       isPublic ? 'bg-emerald-600' : 'bg-slate-800'
                     }`}
@@ -296,7 +311,15 @@ export default function TemplateManagementPage() {
                   <input
                     type="date"
                     value={expirationDate}
-                    onChange={(e) => setExpirationDate(e.target.value)}
+                    onChange={(e) => {
+                      const nextExp = e.target.value;
+                      setExpirationDate(nextExp);
+                      saveTemplate({
+                        ...shareModalTemplate,
+                        isPublic: isPublic,
+                        expirationDate: nextExp,
+                      });
+                    }}
                     className="w-full glass-input px-3 py-2 rounded-xl text-xs text-slate-200"
                   />
                 </div>
@@ -320,7 +343,7 @@ export default function TemplateManagementPage() {
                     setShareModalTemplate(null);
                     addToast('Share link settings saved successfully!');
                   }}
-                  className="px-5 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-1.5"
+                  className="px-5 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-1.5 hover:scale-[1.02] transition-all"
                 >
                   <Check className="w-4 h-4" />
                   <span>Save Link Settings</span>

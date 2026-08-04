@@ -313,9 +313,33 @@ export function AppProvider({ children }) {
     addToast(`Template "${found.title}" duplicated successfully!`);
   };
 
-  // Share system
+  // Share system (supports exact slug, case-insensitive, title slug, and fallback matches)
   const getTemplateByToken = (token) => {
-    return templates.find(t => t.shareToken === token || t.id === token);
+    if (!token) return null;
+    const search = token.toLowerCase().trim();
+
+    // 1. Exact or case-insensitive match on shareToken or id
+    let found = templates.find(t => 
+      t && (
+        (t.shareToken && t.shareToken.toLowerCase() === search) || 
+        (t.id && t.id.toLowerCase() === search)
+      )
+    );
+    if (found) return found;
+
+    // 2. Title slug match (e.g. 'sslc-state-topper-2026-poster')
+    found = templates.find(t => t && generateSlug(t.title).toLowerCase() === search);
+    if (found) return found;
+
+    // 3. Fallback partial/prefix match (e.g. 'sslc' matches 'sslc-topper-2026' or 'sslc-10')
+    found = templates.find(t => 
+      t && (
+        (t.shareToken && (t.shareToken.toLowerCase().startsWith(search) || search.startsWith(t.shareToken.toLowerCase()))) ||
+        (t.id && t.id.toLowerCase().includes(search))
+      )
+    );
+
+    return found || null;
   };
 
   // Record generation
