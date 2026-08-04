@@ -2,6 +2,17 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AppContext = createContext(null);
 
+export const generateSlug = (title) => {
+  if (!title) return `template-${Date.now().toString(36)}`;
+  const clean = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return clean || `template-${Date.now().toString(36)}`;
+};
+
 const INITIAL_CATEGORIES = [
   { id: 'cat_sslc', name: 'SSLC / Academic', icon: 'GraduationCap', count: 12, color: 'from-blue-600 to-indigo-600' },
   { id: 'cat_security', name: 'Security & CCTV', icon: 'ShieldCheck', count: 8, color: 'from-cyan-600 to-blue-600' },
@@ -254,16 +265,26 @@ export function AppProvider({ children }) {
   // Template CRUD
   const saveTemplate = (templateData) => {
     const existingIndex = templates.findIndex(t => t.id === templateData.id);
+    const slug = templateData.shareToken && !templateData.shareToken.startsWith('token-')
+      ? templateData.shareToken
+      : generateSlug(templateData.title);
+
     if (existingIndex >= 0) {
       const updated = [...templates];
-      updated[existingIndex] = { ...templateData, updatedAt: new Date().toISOString() };
+      updated[existingIndex] = {
+        ...templateData,
+        shareToken: slug,
+        updatedAt: new Date().toISOString()
+      };
       setTemplates(updated);
       addToast('Template updated successfully!');
     } else {
       const newTmpl = {
         ...templateData,
         id: templateData.id || `tmpl_${Date.now()}`,
-        shareToken: templateData.shareToken || `token-${Math.random().toString(36).substring(2, 9)}`,
+        shareToken: slug,
+        isPublic: templateData.isPublic !== undefined ? templateData.isPublic : true,
+        expirationDate: templateData.expirationDate || '2026-12-31',
         createdAt: new Date().toISOString(),
         generatedCount: 0,
       };

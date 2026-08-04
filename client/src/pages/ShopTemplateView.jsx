@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 import { 
   Download, Share2, Sparkles, Upload, CheckCircle2, Image as ImageIcon, 
   Send, Copy, ArrowLeft, RefreshCw, Eye, ShieldCheck, Printer, Check, MessageSquare,
-  X, PartyPopper, Award, PlusCircle, HelpCircle
+  X, PartyPopper, Award, PlusCircle, HelpCircle, Lock
 } from 'lucide-react';
 
 export default function ShopTemplateView() {
@@ -43,17 +43,32 @@ export default function ShopTemplateView() {
     }
   }, [template]);
 
-  if (!template) {
+  const isExpired = template?.expirationDate 
+    ? new Date(template.expirationDate) < new Date(new Date().setHours(0, 0, 0, 0))
+    : false;
+  const isPrivate = template?.isPublic === false;
+
+  if (!template || isPrivate || isExpired) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-400 mb-4">
-          <Eye className="w-8 h-8" />
+        <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-400 mb-4 shadow-xl">
+          {isPrivate ? <Lock className="w-8 h-8 text-amber-400" /> : <Eye className="w-8 h-8 text-rose-400" />}
         </div>
-        <h2 className="text-2xl font-bold font-heading text-white mb-2">Template Link Expired or Not Found</h2>
-        <p className="text-slate-400 text-sm max-w-md mb-6">
-          The requested poster template link could not be loaded. Please ask your administrator for a fresh share link.
+        <h2 className="text-2xl font-bold font-heading text-white mb-2">
+          {isPrivate 
+            ? 'Private Template Access Only'
+            : isExpired 
+              ? 'Template Share Link Expired' 
+              : 'Template Link Not Found'}
+        </h2>
+        <p className="text-slate-400 text-sm max-w-md mb-6 leading-relaxed">
+          {isPrivate 
+            ? 'Public access to this poster template has been disabled or set to Private by the administrator.'
+            : isExpired 
+              ? `This poster share link expired on ${template.expirationDate}. Please request an updated share link from your administrator.`
+              : 'The requested poster template share link could not be loaded. Please ask your administrator for a fresh share link.'}
         </p>
-        <Link to="/" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl text-sm transition-all shadow-lg">
+        <Link to="/" className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-sm transition-all border border-slate-700 shadow-lg">
           Back to Home
         </Link>
       </div>

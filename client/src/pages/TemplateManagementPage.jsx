@@ -204,7 +204,7 @@ export default function TemplateManagementPage() {
         {/* SHARE SYSTEM MODAL */}
         {shareModalTemplate && (
           <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-6 relative">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 relative">
               <button
                 onClick={() => setShareModalTemplate(null)}
                 className="absolute top-4 right-4 p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
@@ -217,7 +217,7 @@ export default function TemplateManagementPage() {
                   <Share2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-heading font-bold text-lg text-white">Generate Template Share Link</h3>
+                  <h3 className="font-heading font-bold text-lg text-white">Shareable Link & Access Controls</h3>
                   <p className="text-xs text-slate-400">{shareModalTemplate.title}</p>
                 </div>
               </div>
@@ -227,7 +227,7 @@ export default function TemplateManagementPage() {
                 <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center">
                   <img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-                      `${window.location.origin}/template/${shareModalTemplate.shareToken}`
+                      `${window.location.origin}/template/${shareModalTemplate.shareToken || 'custom-link'}`
                     )}`}
                     alt="QR Code"
                     className="w-full h-full object-contain"
@@ -235,7 +235,7 @@ export default function TemplateManagementPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Unique Shareable Link
+                    Unique Shareable URL
                   </span>
                   <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-cyan-400 font-mono truncate mb-2">
                     {window.location.origin}/template/{shareModalTemplate.shareToken}
@@ -245,18 +245,43 @@ export default function TemplateManagementPage() {
                     className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-lg"
                   >
                     {copiedToken ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedToken ? 'Copied to Clipboard' : 'Copy Unique Link'}</span>
+                    <span>{copiedToken ? 'Copied to Clipboard' : 'Copy Share Link'}</span>
                   </button>
                 </div>
               </div>
 
               {/* Settings Controls */}
-              <div className="space-y-4 pt-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-300 flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-emerald-400" /> Public Access
-                  </span>
+              <div className="space-y-4 pt-1">
+                <div>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">Custom Link Slug / URL Token</label>
+                  <div className="relative flex items-center">
+                    <span className="bg-slate-950 px-3 py-2 text-xs text-slate-500 font-mono border border-r-0 border-slate-800 rounded-l-xl select-none">
+                      /template/
+                    </span>
+                    <input
+                      type="text"
+                      value={shareModalTemplate.shareToken || ''}
+                      onChange={(e) => {
+                        const cleanSlug = e.target.value.toLowerCase().replace(/[^\w-]/g, '-');
+                        setShareModalTemplate(prev => ({ ...prev, shareToken: cleanSlug }));
+                      }}
+                      placeholder="e.g. sslc-topper-2026"
+                      className="w-full glass-input px-3 py-2 rounded-r-xl text-xs font-mono text-cyan-300 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
+                  <div>
+                    <span className="text-xs font-semibold text-white flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-emerald-400" /> Public Access Enabled
+                    </span>
+                    <span className="text-[10px] text-slate-400 block mt-0.5">
+                      {isPublic ? 'Anyone with the link can generate posters' : 'Link is disabled (Private / Disabled mode)'}
+                    </span>
+                  </div>
                   <button
+                    type="button"
                     onClick={() => setIsPublic(!isPublic)}
                     className={`w-11 h-6 rounded-full p-0.5 transition-colors ${
                       isPublic ? 'bg-emerald-600' : 'bg-slate-800'
@@ -272,17 +297,33 @@ export default function TemplateManagementPage() {
                     type="date"
                     value={expirationDate}
                     onChange={(e) => setExpirationDate(e.target.value)}
-                    className="w-full glass-input px-3 py-2 rounded-xl text-xs"
+                    className="w-full glass-input px-3 py-2 rounded-xl text-xs text-slate-200"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex justify-end">
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
                 <button
                   onClick={() => setShareModalTemplate(null)}
-                  className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl"
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl"
                 >
-                  Close Share Dialog
+                  Close
+                </button>
+                <button
+                  onClick={() => {
+                    const updated = {
+                      ...shareModalTemplate,
+                      isPublic: isPublic,
+                      expirationDate: expirationDate,
+                    };
+                    saveTemplate(updated);
+                    setShareModalTemplate(null);
+                    addToast('Share link settings saved successfully!');
+                  }}
+                  className="px-5 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-1.5"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Save Link Settings</span>
                 </button>
               </div>
             </div>
