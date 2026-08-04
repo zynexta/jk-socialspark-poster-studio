@@ -361,7 +361,7 @@ export const AppProvider = ({ children }) => {
   };
 
   // Universal Share Link Resolver (MongoDB Atlas + Local Memory)
-  const getTemplateByToken = (token) => {
+  const getTemplateByToken = (token, strictOnly = false) => {
     if (!token) return null;
 
     if (token === 'preview') {
@@ -385,7 +385,7 @@ export const AppProvider = ({ children }) => {
     const cleanSearch = rawToken.toLowerCase().trim();
     const normalizedSearch = cleanSearch.replace(/[\s_-]+/g, '');
 
-    if (!normalizedSearch) return templates[0] || null;
+    if (!normalizedSearch) return strictOnly ? null : (templates[0] || null);
 
     // 1. Exact or case-insensitive match on shareToken or id
     let found = templates.find(t => 
@@ -421,7 +421,8 @@ export const AppProvider = ({ children }) => {
       );
     });
 
-    return found || templates[0] || null;
+    if (found) return found;
+    return strictOnly ? null : (templates[0] || null);
   };
 
   const recordPosterGeneration = async (posterData) => {
