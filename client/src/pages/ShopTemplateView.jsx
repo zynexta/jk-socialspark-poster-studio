@@ -27,7 +27,7 @@ export default function ShopTemplateView() {
   useEffect(() => {
     let isMounted = true;
     const fetchLiveTemplate = async () => {
-      if (!shareToken) {
+      if (!shareToken || shareToken === 'preview') {
         setLoadingCloud(false);
         return;
       }
