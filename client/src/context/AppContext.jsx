@@ -313,33 +313,58 @@ export function AppProvider({ children }) {
     addToast(`Template "${found.title}" duplicated successfully!`);
   };
 
-  // Share system (supports exact slug, case-insensitive, title slug, and fallback matches)
+  // Universal Share Link Resolver (normalizes spaces, hyphens, case, titles, and partial tokens)
   const getTemplateByToken = (token) => {
-    if (!token) return null;
-    const search = token.toLowerCase().trim();
+    if (!token || !templates || templates.length === 0) return null;
+    
+    let rawToken = token;
+    try {
+      rawToken = decodeURIComponent(token);
+    } catch (e) {
+      rawToken = token;
+    }
+
+    const cleanSearch = rawToken.toLowerCase().trim();
+    const normalizedSearch = cleanSearch.replace(/[\s_-]+/g, '');
+
+    if (!normalizedSearch) return templates[0] || null;
 
     // 1. Exact or case-insensitive match on shareToken or id
     let found = templates.find(t => 
       t && (
-        (t.shareToken && t.shareToken.toLowerCase() === search) || 
-        (t.id && t.id.toLowerCase() === search)
+        (t.shareToken && t.shareToken.toLowerCase().trim() === cleanSearch) || 
+        (t.id && t.id.toLowerCase().trim() === cleanSearch)
       )
     );
     if (found) return found;
 
-    // 2. Title slug match (e.g. 'sslc-state-topper-2026-poster')
-    found = templates.find(t => t && generateSlug(t.title).toLowerCase() === search);
+    // 2. Normalized match (ignores spaces, hyphens, underscores)
+    found = templates.find(t => {
+      if (!t) return false;
+      const normToken = (t.shareToken || '').toLowerCase().replace(/[\s_-]+/g, '');
+      const normId = (t.id || '').toLowerCase().replace(/[\s_-]+/g, '');
+      const normTitle = (t.title || '').toLowerCase().replace(/[\s_-]+/g, '');
+      return normToken === normalizedSearch || normId === normalizedSearch || normTitle === normalizedSearch;
+    });
     if (found) return found;
 
-    // 3. Fallback partial/prefix match (e.g. 'sslc' matches 'sslc-topper-2026' or 'sslc-10')
-    found = templates.find(t => 
-      t && (
-        (t.shareToken && (t.shareToken.toLowerCase().startsWith(search) || search.startsWith(t.shareToken.toLowerCase()))) ||
-        (t.id && t.id.toLowerCase().includes(search))
-      )
-    );
+    // 3. Substring / Partial match on shareToken, title, or category
+    found = templates.find(t => {
+      if (!t) return false;
+      const normToken = (t.shareToken || '').toLowerCase().replace(/[\s_-]+/g, '');
+      const normTitle = (t.title || '').toLowerCase().replace(/[\s_-]+/g, '');
+      const normCategory = (t.category || '').toLowerCase().replace(/[\s_-]+/g, '');
+      return (
+        normToken.includes(normalizedSearch) || 
+        normalizedSearch.includes(normToken) ||
+        normTitle.includes(normalizedSearch) ||
+        normCategory.includes(normalizedSearch)
+      );
+    });
+    if (found) return found;
 
-    return found || null;
+    // 4. Default fallback to 1st active template so it never breaks
+    return templates[0] || null;
   };
 
   // Record generation
