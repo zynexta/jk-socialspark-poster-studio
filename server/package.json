@@ -1,7 +1,7 @@
 {
-  "name": "jk-poster-backend",
+  "name": "zynexta-poster-backend",
   "version": "1.0.0",
-  "description": "Express REST API backend for JK Smart Poster Generator",
+  "description": "Express REST API backend for Zynexta Smart Poster Studio",
   "main": "server.js",
   "type": "module",
   "scripts": {
