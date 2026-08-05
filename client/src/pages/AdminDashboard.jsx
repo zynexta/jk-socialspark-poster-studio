@@ -230,56 +230,65 @@ export default function AdminDashboard() {
               </div>
 
               {/* QR Code & Link Box */}
-              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
-                <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-                      `${window.location.origin}/template/${shareModalTemplate.shareToken || 'custom-link'}`
-                    )}`}
-                    alt="QR Code"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex-1 min-w-0 space-y-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    Unique Shareable Link
-                  </span>
-                  <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-cyan-400 font-mono truncate">
-                    {window.location.origin}/template/{shareModalTemplate.shareToken}
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleCopyShareUrl(shareModalTemplate.shareToken)}
-                      className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-lg"
-                    >
-                      {copiedToken ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedToken ? 'Copied' : 'Copy Link'}</span>
-                    </button>
+              {(() => {
+                const activeToken = shareModalTemplate.shareToken || shareModalTemplate.id;
+                const fullShareUrl = `${window.location.origin}/template/${activeToken}`;
+                return (
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
+                    <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(fullShareUrl)}`}
+                        alt="QR Code"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Unique Shareable Link
+                      </span>
+                      <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-cyan-400 font-mono truncate">
+                        {fullShareUrl}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleCopyShareUrl(activeToken)}
+                          className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-lg cursor-pointer"
+                        >
+                          {copiedToken ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span>{copiedToken ? 'Copied' : 'Copy Link'}</span>
+                        </button>
 
-                    <Link
-                      to={`/template/${shareModalTemplate.shareToken}`}
-                      target="_blank"
-                      className="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-1 border border-slate-700"
-                      title="Open Live Shop Form"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
+                        <Link
+                          to={`/template/${activeToken}`}
+                          target="_blank"
+                          className="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-1 border border-slate-700"
+                          title="Open Live Shop Form"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Direct WhatsApp Share Button */}
-              <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                  `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${window.location.origin}/template/${shareModalTemplate.shareToken}`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02]"
-              >
-                <MessageSquare className="w-4 h-4 text-emerald-100" />
-                <span>Share Directly on WhatsApp</span>
-              </a>
+              {(() => {
+                const activeToken = shareModalTemplate.shareToken || shareModalTemplate.id;
+                return (
+                  <a
+                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                      `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${window.location.origin}/template/${activeToken}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02]"
+                  >
+                    <MessageSquare className="w-4 h-4 text-emerald-100" />
+                    <span>Share Directly on WhatsApp</span>
+                  </a>
+                );
+              })()}
             </div>
           </div>
         )}

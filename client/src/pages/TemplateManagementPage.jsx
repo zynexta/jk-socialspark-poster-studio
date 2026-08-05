@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 export default function TemplateManagementPage() {
-  const { templates, categories, deleteTemplate, duplicateTemplate, addToast } = useApp();
+  const { templates, categories, deleteTemplate, duplicateTemplate, saveTemplate, addToast } = useApp();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -223,33 +223,46 @@ export default function TemplateManagementPage() {
                 </div>
               </div>
 
-              {/* QR Code & Link Preview Box */}
-              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
-                <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-                      `${window.location.origin}/template/${shareModalTemplate.shareToken || 'custom-link'}`
-                    )}`}
-                    alt="QR Code"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Unique Shareable URL
-                  </span>
-                  <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-cyan-400 font-mono truncate mb-2">
-                    {window.location.origin}/template/{shareModalTemplate.shareToken}
+              {/* QR Code & Link Box */}
+              {(() => {
+                const activeToken = shareModalTemplate.shareToken || shareModalTemplate.id;
+                const fullShareUrl = `${window.location.origin}/template/${activeToken}`;
+                return (
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
+                    <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(fullShareUrl)}`}
+                        alt="QR Code"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                        Unique Shareable URL
+                      </span>
+                      <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-cyan-400 font-mono truncate mb-2">
+                        {fullShareUrl}
+                      </div>
+                      <button
+                        onClick={async () => {
+                          const saved = await saveTemplate({
+                            ...shareModalTemplate,
+                            shareToken: activeToken,
+                            isPublic: isPublic,
+                            expirationDate: expirationDate,
+                          });
+                          const finalTok = saved?.shareToken || activeToken;
+                          handleCopyShareUrl(finalTok);
+                        }}
+                        className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-lg cursor-pointer"
+                      >
+                        {copiedToken ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{copiedToken ? 'Copied to Clipboard' : 'Copy Share Link'}</span>
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleCopyShareUrl(shareModalTemplate.shareToken)}
-                    className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-lg"
-                  >
-                    {copiedToken ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedToken ? 'Copied to Clipboard' : 'Copy Share Link'}</span>
-                  </button>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Settings Controls */}
               <div className="space-y-4 pt-1">
