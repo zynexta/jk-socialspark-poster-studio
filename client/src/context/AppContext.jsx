@@ -292,11 +292,17 @@ export const AppProvider = ({ children }) => {
   }, [generatedPosters]);
 
   const addToast = (message, type = 'success') => {
-    const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      removeToast(id);
-    }, 4000);
+    setToasts(prev => {
+      // Deduplicate toasts so identical messages do not stack up
+      if (prev.some(t => t.message === message)) {
+        return prev;
+      }
+      const id = Date.now() + Math.random();
+      setTimeout(() => {
+        removeToast(id);
+      }, 3500);
+      return [...prev, { id, message, type }];
+    });
   };
 
   const removeToast = (id) => {
@@ -304,7 +310,7 @@ export const AppProvider = ({ children }) => {
   };
 
   // Template CRUD with Live MongoDB Atlas Sync
-  const saveTemplate = async (templateData) => {
+  const saveTemplate = async (templateData, options = { showToast: true }) => {
     const existingIndex = templates.findIndex(t => t.id === templateData.id);
     let baseSlug = templateData.shareToken && !templateData.shareToken.startsWith('token-')
       ? templateData.shareToken
@@ -333,7 +339,9 @@ export const AppProvider = ({ children }) => {
       } catch (e) {
         console.warn('LocalStorage save templates warning:', e);
       }
-      addToast('Template updated successfully!');
+      if (options?.showToast !== false) {
+        addToast('Template updated successfully!');
+      }
     } else {
       finalTmpl = {
         ...templateData,
@@ -351,7 +359,9 @@ export const AppProvider = ({ children }) => {
       } catch (e) {
         console.warn('LocalStorage save templates warning:', e);
       }
-      addToast('New poster template created successfully!');
+      if (options?.showToast !== false) {
+        addToast('New poster template created successfully!');
+      }
     }
 
     // Save to MongoDB Atlas Cloud Database instantly

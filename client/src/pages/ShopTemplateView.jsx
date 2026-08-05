@@ -245,9 +245,32 @@ export default function ShopTemplateView() {
     setTimeout(() => setCopied(false), 3000);
   };
 
+  const previewBoxRef = useRef(null);
+  const [availableWidth, setAvailableWidth] = useState(360);
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (previewBoxRef.current) {
+        const currentWidth = previewBoxRef.current.clientWidth - 32;
+        if (currentWidth > 0) {
+          setAvailableWidth(currentWidth);
+        }
+      } else {
+        setAvailableWidth(Math.min(window.innerWidth - 48, 540));
+      }
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
   const targetWidth = template.width || 800;
   const targetHeight = template.height || 1000;
-  const scaleRatio = 0.62;
+  
+  // Dynamically compute scale ratio to fit 100% inside container on mobile/desktop without any cut-off
+  const maxAllowedWidth = Math.min(availableWidth > 0 ? availableWidth : 360, 540);
+  const scaleRatio = Math.max(0.18, Math.min(0.68, maxAllowedWidth / targetWidth));
   const customerName = Object.values(formData).find(val => typeof val === 'string' && val.trim().length > 0) || 'Customer';
 
   return (
@@ -508,7 +531,7 @@ export default function ShopTemplateView() {
         </div>
 
         {/* RIGHT COLUMN: Real-Time Live Poster Preview */}
-        <div className="lg:col-span-7 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 min-h-[600px] shadow-2xl relative overflow-hidden">
+        <div ref={previewBoxRef} className="lg:col-span-7 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 sm:p-6 min-h-[450px] shadow-2xl relative overflow-hidden">
           <div className="w-full flex items-center justify-between mb-4">
             <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
               <Eye className="w-4 h-4 text-cyan-400" />

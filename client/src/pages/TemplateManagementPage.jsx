@@ -250,7 +250,7 @@ export default function TemplateManagementPage() {
                             shareToken: activeToken,
                             isPublic: isPublic,
                             expirationDate: expirationDate,
-                          });
+                          }, { showToast: false });
                           const finalTok = saved?.shareToken || activeToken;
                           handleCopyShareUrl(finalTok);
                         }}
@@ -306,7 +306,7 @@ export default function TemplateManagementPage() {
                         ...shareModalTemplate,
                         isPublic: nextPublic,
                         expirationDate: expirationDate,
-                      });
+                      }, { showToast: false });
                       addToast(nextPublic ? 'Public access enabled for share link' : 'Public access set to private mode', 'info');
                     }}
                     className={`w-11 h-6 rounded-full p-0.5 transition-colors ${
@@ -329,7 +329,7 @@ export default function TemplateManagementPage() {
                         ...shareModalTemplate,
                         isPublic: isPublic,
                         expirationDate: nextExp,
-                      });
+                      }, { showToast: false });
                       addToast(`Share link expiration set to ${nextExp}`, 'info');
                     }}
                     className="w-full glass-input px-3 py-2 rounded-xl text-xs text-slate-200"
@@ -344,7 +344,7 @@ export default function TemplateManagementPage() {
                       isPublic: isPublic,
                       expirationDate: expirationDate,
                     };
-                    const saved = await saveTemplate(updated);
+                    const saved = await saveTemplate(updated, { showToast: false });
                     const targetToken = saved?.shareToken || shareModalTemplate.shareToken;
                     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(
                       `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${window.location.origin}/template/${targetToken}`
@@ -373,7 +373,7 @@ export default function TemplateManagementPage() {
                       isPublic: isPublic,
                       expirationDate: expirationDate,
                     };
-                    await saveTemplate(updated);
+                    await saveTemplate(updated, { showToast: false });
                     setShareModalTemplate(null);
                     addToast('Share link settings saved & synchronized successfully!');
                   }}
