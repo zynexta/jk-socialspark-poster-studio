@@ -284,43 +284,22 @@ export default function TemplateBuilderPage() {
     navigate('/admin/templates');
   };
 
-  const handlePreviewShopForm = () => {
+  const handlePreviewShopForm = async () => {
+    // Save latest template state (with custom corner shapes & styles) to MongoDB Atlas & local storage
     try {
+      await saveTemplate(template, { showToast: false });
       const templateStr = JSON.stringify(template);
-      
-      // 1. Try Session Storage (Tab-isolated 5-10MB storage)
-      try {
-        sessionStorage.setItem('jk_poster_preview_template', templateStr);
-      } catch (e) {
-        console.warn('sessionStorage save info:', e);
-      }
-
-      // 2. Try Local Storage with Quota Safety & Cleanup
+      sessionStorage.setItem('jk_poster_preview_template', templateStr);
       try {
         localStorage.setItem('jk_poster_preview_template', templateStr);
-      } catch (quotaErr) {
-        console.warn('LocalStorage quota exceeded, clearing old cached logs to free up space...');
-        // Clear heavy generated history logs to free up quota
-        localStorage.removeItem('jk_poster_generated_history');
-        
-        try {
-          localStorage.setItem('jk_poster_preview_template', templateStr);
-        } catch (e2) {
-          // Fallback: Strip heavy base64 image placeholders to guarantee preview load
-          const lightweightTemplate = {
-            ...template,
-            placeholders: template.placeholders?.map((p) => ({
-              ...p,
-              placeholderImg: p.placeholderImg && p.placeholderImg.length > 50000 ? '' : p.placeholderImg,
-            })),
-          };
-          localStorage.setItem('jk_poster_preview_template', JSON.stringify(lightweightTemplate));
-        }
+      } catch (e) {
+        console.warn('LocalStorage save preview info:', e);
       }
     } catch (err) {
       console.error('Preview storage handling error:', err);
     }
-    window.open('/template/preview', '_blank');
+    const tokenToOpen = template.shareToken || template.id;
+    window.open(`/template/${tokenToOpen}`, '_blank');
   };
 
   return (

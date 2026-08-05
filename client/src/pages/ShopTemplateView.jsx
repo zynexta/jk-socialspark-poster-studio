@@ -4,10 +4,11 @@ import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { toPng, toJpeg } from 'html-to-image';
 import confetti from 'canvas-confetti';
+import ImageCropperModal from '../components/common/ImageCropperModal';
 import { 
   Download, Share2, Sparkles, Upload, CheckCircle2, Image as ImageIcon, 
   Send, Copy, ArrowLeft, RefreshCw, Eye, ShieldCheck, Printer, Check, MessageSquare,
-  X, PartyPopper, Award, PlusCircle, HelpCircle, Lock
+  X, PartyPopper, Award, PlusCircle, HelpCircle, Lock, Crop
 } from 'lucide-react';
 
 export default function ShopTemplateView() {
@@ -79,6 +80,7 @@ export default function ShopTemplateView() {
   const [generatedSuccess, setGeneratedSuccess] = useState(false);
   const [lastGeneratedUrl, setLastGeneratedUrl] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [cropperModal, setCropperModal] = useState({ open: false, placeholderId: null, imageSrc: null });
 
   useEffect(() => {
     if (template?.placeholders) {
@@ -150,6 +152,11 @@ export default function ShopTemplateView() {
     const reader = new FileReader();
     reader.onload = (e) => {
       setPhotoPreviews(prev => ({ ...prev, [id]: e.target.result }));
+      setCropperModal({
+        open: true,
+        placeholderId: id,
+        imageSrc: e.target.result
+      });
     };
     reader.readAsDataURL(file);
   };
@@ -434,18 +441,35 @@ export default function ShopTemplateView() {
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
                         {photoPreviews[pId] ? (
-                          <div className="flex items-center gap-3 text-left">
-                            <img
-                              src={photoPreviews[pId]}
-                              alt="Uploaded"
-                              className="w-14 h-14 rounded-lg object-cover border border-slate-700"
-                            />
-                            <div>
-                              <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
-                                <CheckCircle2 className="w-3.5 h-3.5" /> Photo Loaded
-                              </span>
-                              <span className="text-[10px] text-slate-400 block">Click or drop to replace photo</span>
+                          <div className="flex items-center justify-between gap-3 text-left w-full">
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={photoPreviews[pId]}
+                                alt="Uploaded"
+                                className="w-14 h-14 rounded-lg object-cover border border-slate-700 shadow-md"
+                              />
+                              <div>
+                                <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5" /> Photo Loaded
+                                </span>
+                                <span className="text-[10px] text-slate-400 block">Click or drop to replace photo</span>
+                              </div>
                             </div>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCropperModal({
+                                  open: true,
+                                  placeholderId: pId,
+                                  imageSrc: photoPreviews[pId]
+                                });
+                              }}
+                              className="px-3 py-1.5 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer shrink-0 z-20"
+                            >
+                              <Crop className="w-3.5 h-3.5" />
+                              <span>Crop & Adjust</span>
+                            </button>
                           </div>
                         ) : (
                           <div className="py-2">
@@ -620,11 +644,11 @@ export default function ShopTemplateView() {
                                 <img
                                   src={photoSrc}
                                   alt="Uploaded"
-                                  className="w-full h-full object-cover rounded-[inherit]"
-                                  style={{ filter: imageFilterCss }}
+                                  className="w-full h-full object-cover"
+                                  style={{ borderRadius: cornerRadiusCss, filter: imageFilterCss }}
                                 />
                               ) : (
-                                <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-semibold">
+                                <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-semibold" style={{ borderRadius: cornerRadiusCss }}>
                                   [Photo Here]
                                 </div>
                               )
@@ -651,6 +675,19 @@ export default function ShopTemplateView() {
           </div>
         </div>
       </div>
+
+      {/* Interactive Photo Cropper Modal */}
+      {cropperModal.open && (
+        <ImageCropperModal
+          imageSrc={cropperModal.imageSrc}
+          onClose={() => setCropperModal({ open: false, placeholderId: null, imageSrc: null })}
+          onCropComplete={(croppedUrl) => {
+            setPhotoPreviews(prev => ({ ...prev, [cropperModal.placeholderId]: croppedUrl }));
+            setCropperModal({ open: false, placeholderId: null, imageSrc: null });
+            addToast('Cropped photo applied to poster preview!');
+          }}
+        />
+      )}
     </div>
   );
 }
