@@ -30,8 +30,8 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="h-screen bg-[#080C14] text-slate-100 flex overflow-hidden font-sans">
-      {/* Toast Notification Container */}
-      <div className="fixed top-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none">
+      {/* Toast Notification Container (Ultra High Z-Index so it appears OVER modals!) */}
+      <div className="fixed top-5 right-5 z-[99999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none">
         {toasts.map((toast) => (
           <div
             key={toast.id}
