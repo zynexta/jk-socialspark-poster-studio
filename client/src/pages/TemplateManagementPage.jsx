@@ -27,9 +27,38 @@ export default function TemplateManagementPage() {
     return matchesSearch && matchesCat;
   });
 
+  const fallbackCopyTextToClipboard = (text) => {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleCopyShareUrl = (token) => {
     const fullUrl = `${window.location.origin}/template/${token}`;
-    navigator.clipboard.writeText(fullUrl);
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(fullUrl).catch(() => {
+          fallbackCopyTextToClipboard(fullUrl);
+        });
+      } else {
+        fallbackCopyTextToClipboard(fullUrl);
+      }
+    } catch {
+      fallbackCopyTextToClipboard(fullUrl);
+    }
     setCopiedToken(true);
     addToast('Unique template share link copied!');
     setTimeout(() => setCopiedToken(false), 3000);
@@ -244,15 +273,15 @@ export default function TemplateManagementPage() {
                         {fullShareUrl}
                       </div>
                       <button
-                        onClick={async () => {
-                          const saved = await saveTemplate({
+                        onClick={() => {
+                          const currentTok = shareModalTemplate.shareToken || activeToken;
+                          handleCopyShareUrl(currentTok);
+                          saveTemplate({
                             ...shareModalTemplate,
-                            shareToken: activeToken,
+                            shareToken: currentTok,
                             isPublic: isPublic,
                             expirationDate: expirationDate,
                           }, { showToast: false });
-                          const finalTok = saved?.shareToken || activeToken;
-                          handleCopyShareUrl(finalTok);
                         }}
                         className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-lg cursor-pointer"
                       >

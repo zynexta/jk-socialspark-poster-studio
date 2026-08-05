@@ -24,6 +24,27 @@ export default function ShopTemplateView() {
   const template = cloudTemplate || localTemplate;
   const posterRef = useRef(null);
 
+  const previewBoxRef = useRef(null);
+  const [availableWidth, setAvailableWidth] = useState(360);
+
+  // Dynamic responsive scaling for mobile/desktop container
+  useEffect(() => {
+    const updateScale = () => {
+      if (previewBoxRef.current) {
+        const currentWidth = previewBoxRef.current.clientWidth - 32;
+        if (currentWidth > 0) {
+          setAvailableWidth(currentWidth);
+        }
+      } else {
+        setAvailableWidth(Math.min(window.innerWidth - 48, 540));
+      }
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
   // Fetch live template from MongoDB Atlas Cloud DB
   useEffect(() => {
     let isMounted = true;
@@ -245,28 +266,8 @@ export default function ShopTemplateView() {
     setTimeout(() => setCopied(false), 3000);
   };
 
-  const previewBoxRef = useRef(null);
-  const [availableWidth, setAvailableWidth] = useState(360);
-
-  useEffect(() => {
-    const updateScale = () => {
-      if (previewBoxRef.current) {
-        const currentWidth = previewBoxRef.current.clientWidth - 32;
-        if (currentWidth > 0) {
-          setAvailableWidth(currentWidth);
-        }
-      } else {
-        setAvailableWidth(Math.min(window.innerWidth - 48, 540));
-      }
-    };
-
-    updateScale();
-    window.addEventListener('resize', updateScale);
-    return () => window.removeEventListener('resize', updateScale);
-  }, []);
-
-  const targetWidth = template.width || 800;
-  const targetHeight = template.height || 1000;
+  const targetWidth = template?.width || 800;
+  const targetHeight = template?.height || 1000;
   
   // Dynamically compute scale ratio to fit 100% inside container on mobile/desktop without any cut-off
   const maxAllowedWidth = Math.min(availableWidth > 0 ? availableWidth : 360, 540);

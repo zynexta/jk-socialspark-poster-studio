@@ -14,9 +14,38 @@ export default function AdminDashboard() {
   const [shareModalTemplate, setShareModalTemplate] = useState(null);
   const [copiedToken, setCopiedToken] = useState(false);
 
+  const fallbackCopyTextToClipboard = (text) => {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleCopyShareUrl = (token) => {
     const fullUrl = `${window.location.origin}/template/${token}`;
-    navigator.clipboard.writeText(fullUrl);
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(fullUrl).catch(() => {
+          fallbackCopyTextToClipboard(fullUrl);
+        });
+      } else {
+        fallbackCopyTextToClipboard(fullUrl);
+      }
+    } catch {
+      fallbackCopyTextToClipboard(fullUrl);
+    }
     setCopiedToken(true);
     addToast('Unique template share link copied!');
     setTimeout(() => setCopiedToken(false), 3000);
