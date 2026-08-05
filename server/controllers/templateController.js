@@ -1,8 +1,17 @@
 import Template from '../models/Template.js';
 import mongoose from 'mongoose';
+import { connectDB } from '../config/db.js';
+
+// Auto-reconnect to MongoDB Atlas if serverless instance cold starts
+const ensureConnection = async () => {
+  if (mongoose.connection.readyState !== 1) {
+    await connectDB();
+  }
+};
 
 export const getTemplates = async (req, res, next) => {
   try {
+    await ensureConnection();
     let templates = [];
     if (mongoose.connection.readyState === 1) {
       templates = await Template.find().sort({ updatedAt: -1 });
@@ -16,13 +25,13 @@ export const getTemplates = async (req, res, next) => {
 export const getTemplateByToken = async (req, res, next) => {
   try {
     const { token } = req.params;
+    await ensureConnection();
+
     let template = null;
+    const cleanToken = decodeURIComponent(token).toLowerCase().trim().replace(/\/+$/, '');
+    const normToken = cleanToken.replace(/[\s_-]+/g, '');
 
     if (mongoose.connection.readyState === 1) {
-      // Strip trailing slashes, spaces, and decode URI
-      const cleanToken = decodeURIComponent(token).toLowerCase().trim().replace(/\/+$/, '');
-      const normToken = cleanToken.replace(/[\s_-]+/g, '');
-
       // 1. Exact match on shareToken or id FIRST
       template = await Template.findOne({
         $or: [
@@ -58,7 +67,7 @@ export const getTemplateByToken = async (req, res, next) => {
         });
       }
 
-      // 5. Ultimate Fallback to latest active template so share links never break
+      // 5. Ultimate Fallback to latest active template so share links NEVER fail
       if (!template) {
         template = await Template.findOne({ status: 'active' }).sort({ updatedAt: -1 });
       }
@@ -73,6 +82,7 @@ export const getTemplateByToken = async (req, res, next) => {
 export const createOrUpdateTemplate = async (req, res, next) => {
   try {
     const templateData = req.body;
+    await ensureConnection();
 
     if (!templateData.id) {
       templateData.id = `tmpl_${Date.now()}`;
@@ -87,7 +97,6 @@ export const createOrUpdateTemplate = async (req, res, next) => {
     let savedTemplate = templateData;
 
     if (mongoose.connection.readyState === 1) {
-      // Find exclusively by template ID to prevent overwriting other templates
       savedTemplate = await Template.findOneAndUpdate(
         { id: templateData.id },
         { $set: templateData },
@@ -106,6 +115,7 @@ export const createOrUpdateTemplate = async (req, res, next) => {
 export const deleteTemplate = async (req, res, next) => {
   try {
     const { id } = req.params;
+    await ensureConnection();
 
     if (mongoose.connection.readyState === 1) {
       await Template.findOneAndDelete({ $or: [{ id }, { shareToken: id }] });
