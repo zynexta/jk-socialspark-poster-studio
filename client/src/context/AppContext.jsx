@@ -295,6 +295,11 @@ export const AppProvider = ({ children }) => {
       };
       updated[existingIndex] = finalTmpl;
       setTemplates(updated);
+      try {
+        localStorage.setItem('jk_poster_templates', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('LocalStorage save templates warning:', e);
+      }
       addToast('Template updated successfully!');
     } else {
       finalTmpl = {
@@ -306,7 +311,13 @@ export const AppProvider = ({ children }) => {
         createdAt: new Date().toISOString(),
         generatedCount: 0,
       };
-      setTemplates([finalTmpl, ...templates]);
+      const newList = [finalTmpl, ...templates];
+      setTemplates(newList);
+      try {
+        localStorage.setItem('jk_poster_templates', JSON.stringify(newList));
+      } catch (e) {
+        console.warn('LocalStorage save templates warning:', e);
+      }
       addToast('New poster template created successfully!');
     }
 
@@ -320,6 +331,7 @@ export const AppProvider = ({ children }) => {
     } catch (err) {
       console.warn('MongoDB Atlas template save info:', err.message);
     }
+    return finalTmpl;
   };
 
   const deleteTemplate = async (id) => {

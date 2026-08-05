@@ -264,14 +264,10 @@ export default function TemplateManagementPage() {
                       value={shareModalTemplate.shareToken || ''}
                       onChange={(e) => {
                         const cleanSlug = e.target.value.toLowerCase().replace(/[^\w-]/g, '-');
-                        const updated = {
-                          ...shareModalTemplate,
-                          shareToken: cleanSlug,
-                          isPublic: isPublic,
-                          expirationDate: expirationDate,
-                        };
-                        setShareModalTemplate(updated);
-                        saveTemplate(updated);
+                        setShareModalTemplate(prev => ({
+                          ...prev,
+                          shareToken: cleanSlug
+                        }));
                       }}
                       placeholder="e.g. sslc-topper-2026"
                       className="w-full glass-input px-3 py-2 rounded-r-xl text-xs font-mono text-cyan-300 outline-none focus:border-cyan-400"
@@ -326,17 +322,25 @@ export default function TemplateManagementPage() {
                 </div>
 
                 {/* Direct WhatsApp Share Button */}
-                <a
-                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                    `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${window.location.origin}/template/${shareModalTemplate.shareToken}`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02] mt-2"
+                <button
+                  onClick={async () => {
+                    const updated = {
+                      ...shareModalTemplate,
+                      isPublic: isPublic,
+                      expirationDate: expirationDate,
+                    };
+                    const saved = await saveTemplate(updated);
+                    const targetToken = saved?.shareToken || shareModalTemplate.shareToken;
+                    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+                      `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${window.location.origin}/template/${targetToken}`
+                    )}`;
+                    window.open(url, '_blank');
+                  }}
+                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02] mt-2 cursor-pointer"
                 >
                   <MessageSquare className="w-4 h-4 text-emerald-100" />
                   <span>Share Directly on WhatsApp</span>
-                </a>
+                </button>
               </div>
 
               <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
@@ -347,13 +351,13 @@ export default function TemplateManagementPage() {
                   Close
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     const updated = {
                       ...shareModalTemplate,
                       isPublic: isPublic,
                       expirationDate: expirationDate,
                     };
-                    saveTemplate(updated);
+                    await saveTemplate(updated);
                     setShareModalTemplate(null);
                     addToast('Share link settings saved successfully!');
                   }}

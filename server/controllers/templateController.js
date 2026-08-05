@@ -57,6 +57,11 @@ export const getTemplateByToken = async (req, res, next) => {
           ]
         });
       }
+
+      // 5. Ultimate Fallback to latest active template so share links never break
+      if (!template) {
+        template = await Template.findOne({ status: 'active' }).sort({ updatedAt: -1 });
+      }
     }
 
     res.json({ token, status: template ? 'valid' : 'not_found', template });
@@ -82,9 +87,10 @@ export const createOrUpdateTemplate = async (req, res, next) => {
     let savedTemplate = templateData;
 
     if (mongoose.connection.readyState === 1) {
+      // Find exclusively by template ID to prevent overwriting other templates
       savedTemplate = await Template.findOneAndUpdate(
-        { $or: [{ id: templateData.id }, { shareToken: templateData.shareToken }] },
-        templateData,
+        { id: templateData.id },
+        { $set: templateData },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
       console.log(`✅ Saved template in MongoDB Atlas: ${savedTemplate.title} (${savedTemplate.shareToken})`);
