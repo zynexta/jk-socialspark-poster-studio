@@ -213,16 +213,49 @@ export const AppProvider = ({ children }) => {
 
   const [toasts, setToasts] = useState([]);
 
-  // Fetch Templates Live from MongoDB Atlas Cloud Database
+  // Fetch Templates Live from MongoDB Atlas Cloud Database with Smart Local Merge
   useEffect(() => {
     const fetchCloudTemplates = async () => {
       try {
         const res = await fetch(`${API_BASE_URL}/templates`);
         if (res.ok) {
           const data = await res.json();
-          if (data.templates && data.templates.length > 0) {
-            setTemplates(data.templates);
-            localStorage.setItem('jk_poster_templates', JSON.stringify(data.templates));
+          const cloudList = data.templates || [];
+          
+          // Get local templates saved in browser storage
+          let localList = [];
+          try {
+            const saved = localStorage.getItem('jk_poster_templates');
+            localList = saved ? JSON.parse(saved) : [];
+          } catch (e) {
+            localList = [];
+          }
+
+          // Merge strategy: Combine cloud + local templates by unique ID
+          const templateMap = new Map();
+          cloudList.forEach(t => { if (t && t.id) templateMap.set(t.id, t); });
+
+          // Preserve any local templates that are not yet in cloud
+          localList.forEach(t => {
+            if (t && t.id && !templateMap.has(t.id)) {
+              templateMap.set(t.id, t);
+              // Auto-sync missing local template to MongoDB Atlas
+              fetch(`${API_BASE_URL}/templates`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(t),
+              }).catch(() => {});
+            }
+          });
+
+          const mergedTemplates = Array.from(templateMap.values());
+          if (mergedTemplates.length > 0) {
+            setTemplates(mergedTemplates);
+            try {
+              localStorage.setItem('jk_poster_templates', JSON.stringify(mergedTemplates));
+            } catch (e) {
+              console.warn('LocalStorage save info:', e);
+            }
           } else {
             // Seed initial templates to MongoDB Atlas if DB is empty
             for (const tmpl of INITIAL_TEMPLATES) {

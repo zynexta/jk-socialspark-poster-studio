@@ -261,8 +261,20 @@ export default function TemplateBuilderPage() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      pushState({ ...template, bgImage: e.target.result });
-      addToast('Background image updated!');
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        const scale = Math.min(1, MAX_WIDTH / img.width);
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        pushState({ ...template, bgImage: compressedDataUrl });
+        addToast('Background image optimized & uploaded!');
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   };
