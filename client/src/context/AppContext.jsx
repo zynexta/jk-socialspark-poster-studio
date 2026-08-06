@@ -231,20 +231,36 @@ export const AppProvider = ({ children }) => {
             localList = [];
           }
 
-          // Merge strategy: Combine cloud + local templates by unique ID
+          // Merge strategy: Combine cloud + local templates cleanly by unique ID
           const templateMap = new Map();
-          cloudList.forEach(t => { if (t && t.id) templateMap.set(t.id, t); });
+          localList.forEach(t => { if (t && t.id) templateMap.set(t.id, t); });
 
-          // Preserve any local templates that are not yet in cloud
-          localList.forEach(t => {
-            if (t && t.id && !templateMap.has(t.id)) {
-              templateMap.set(t.id, t);
-              // Auto-sync missing local template to MongoDB Atlas
-              fetch(`${API_BASE_URL}/templates`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(t),
-              }).catch(() => {});
+          cloudList.forEach(cloudTmpl => {
+            if (!cloudTmpl || !cloudTmpl.id) return;
+            const localTmpl = templateMap.get(cloudTmpl.id);
+            if (!localTmpl) {
+              templateMap.set(cloudTmpl.id, cloudTmpl);
+            } else {
+              const mergedPlaceholders = cloudTmpl.placeholders?.map(cloudPl => {
+                const localPl = localTmpl.placeholders?.find(lp => (lp.id || lp._id) === (cloudPl.id || cloudPl._id));
+                if (localPl) {
+                  return {
+                    ...cloudPl,
+                    borderTopLeftRadius: cloudPl.borderTopLeftRadius ?? localPl.borderTopLeftRadius,
+                    borderTopRightRadius: cloudPl.borderTopRightRadius ?? localPl.borderTopRightRadius,
+                    borderBottomRightRadius: cloudPl.borderBottomRightRadius ?? localPl.borderBottomRightRadius,
+                    borderBottomLeftRadius: cloudPl.borderBottomLeftRadius ?? localPl.borderBottomLeftRadius,
+                    clipPath: cloudPl.clipPath || localPl.clipPath,
+                    maskImage: cloudPl.maskImage || localPl.maskImage,
+                    shape: cloudPl.shape || localPl.shape,
+                  };
+                }
+                return cloudPl;
+              });
+              templateMap.set(cloudTmpl.id, {
+                ...cloudTmpl,
+                placeholders: mergedPlaceholders || cloudTmpl.placeholders,
+              });
             }
           });
 

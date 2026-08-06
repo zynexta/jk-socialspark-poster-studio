@@ -18,17 +18,35 @@ const placeholderSchema = new mongoose.Schema({
   backgroundColor: String,
   opacity: Number,
   borderRadius: Number,
+  borderTopLeftRadius: Number,
+  borderTopRightRadius: Number,
+  borderBottomRightRadius: Number,
+  borderBottomLeftRadius: Number,
+  linkCorners: Boolean,
+  shape: String,
+  clipPath: String,
+  maskImage: String,
+  overflow: String,
+  rotation: Number,
+  brightness: Number,
+  contrast: Number,
+  saturation: Number,
+  blur: Number,
   borderWidth: Number,
   borderColor: String,
+  borderStyle: String,
   align: String,
   letterSpacing: Number,
   lineHeight: Number,
   shadow: Boolean,
+  boxShadow: String,
+  mixBlendMode: String,
   locked: Boolean,
   zIndex: Number,
   isMandatory: Boolean,
   helpTooltip: String,
-});
+  style: mongoose.Schema.Types.Mixed,
+}, { _id: false, strict: false });
 
 const templateSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
@@ -45,6 +63,6 @@ const templateSchema = new mongoose.Schema({
   isPublic: { type: Boolean, default: true },
   expirationDate: { type: String },
   placeholders: [placeholderSchema],
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
 export default mongoose.model('Template', templateSchema);

@@ -205,6 +205,7 @@ export default function TemplateBuilderPage() {
       placeholders: template.placeholders?.map((p) => ((p.id || p._id) === plId ? { ...p, ...updates } : p)),
     };
     setTemplate(updated);
+    saveTemplate(updated, { showToast: false });
   };
 
   const handleDeletePlaceholder = (plId) => {
@@ -279,13 +280,16 @@ export default function TemplateBuilderPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleSave = () => {
-    saveTemplate(template);
+  const handleSave = async () => {
+    console.log("1. Builder Placeholder (Before Save):", template.placeholders);
+    console.log("2. Saving Template Payload:", template);
+    await saveTemplate(template);
     navigate('/admin/templates');
   };
 
   const handlePreviewShopForm = async () => {
-    // Save latest template state (with custom corner shapes & styles) to MongoDB Atlas & local storage
+    console.log("1. Builder Placeholder (Before Preview Save):", template.placeholders);
+    console.log("2. Saving Template Payload:", template);
     try {
       await saveTemplate(template, { showToast: false });
       const templateStr = JSON.stringify(template);

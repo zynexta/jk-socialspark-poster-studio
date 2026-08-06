@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { toPng, toJpeg } from 'html-to-image';
 import confetti from 'canvas-confetti';
 import ImageCropperModal from '../components/common/ImageCropperModal';
+import PlaceholderRenderer from '../components/renderers/PlaceholderRenderer';
 import { 
   Download, Share2, Sparkles, Upload, CheckCircle2, Image as ImageIcon, 
   Send, Copy, ArrowLeft, RefreshCw, Eye, ShieldCheck, Printer, Check, MessageSquare,
@@ -18,6 +19,7 @@ export default function ShopTemplateView() {
   
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
   const cleanShareToken = (shareToken || '').trim().replace(/\/+$/, '');
+  const isPreviewMode = cleanShareToken === 'preview' || window.location.pathname.includes('/builder') || window.location.search.includes('preview=true');
   const localTemplate = getTemplateByToken(cleanShareToken, true);
   const [cloudTemplate, setCloudTemplate] = useState(null);
   const [loadingCloud, setLoadingCloud] = useState(true);
@@ -59,7 +61,33 @@ export default function ShopTemplateView() {
         if (res.ok) {
           const data = await res.json();
           if (data.template && isMounted) {
-            setCloudTemplate(data.template);
+            const mergedPlaceholders = data.template.placeholders?.map(cloudPl => {
+              const localPl = localTemplate?.placeholders?.find(lp => (lp.id || lp._id) === (cloudPl.id || cloudPl._id));
+              if (localPl) {
+                const hasLocalCustomCorners = localPl.borderTopLeftRadius !== undefined ||
+                                              localPl.borderTopRightRadius !== undefined ||
+                                              localPl.borderBottomRightRadius !== undefined ||
+                                              localPl.borderBottomLeftRadius !== undefined;
+
+                return {
+                  ...cloudPl,
+                  borderTopLeftRadius: hasLocalCustomCorners ? localPl.borderTopLeftRadius : (cloudPl.borderTopLeftRadius ?? localPl.borderTopLeftRadius),
+                  borderTopRightRadius: hasLocalCustomCorners ? localPl.borderTopRightRadius : (cloudPl.borderTopRightRadius ?? localPl.borderTopRightRadius),
+                  borderBottomRightRadius: hasLocalCustomCorners ? localPl.borderBottomRightRadius : (cloudPl.borderBottomRightRadius ?? localPl.borderBottomRightRadius),
+                  borderBottomLeftRadius: hasLocalCustomCorners ? localPl.borderBottomLeftRadius : (cloudPl.borderBottomLeftRadius ?? localPl.borderBottomLeftRadius),
+                  clipPath: cloudPl.clipPath || localPl.clipPath,
+                  maskImage: cloudPl.maskImage || localPl.maskImage,
+                  shape: cloudPl.shape || localPl.shape,
+                };
+              }
+              return cloudPl;
+            });
+            const mergedTemplate = {
+              ...data.template,
+              placeholders: mergedPlaceholders || data.template.placeholders,
+            };
+            console.log("3. Loaded Template (Merged)", mergedTemplate);
+            setCloudTemplate(mergedTemplate);
           }
         }
       } catch (err) {
@@ -99,7 +127,7 @@ export default function ShopTemplateView() {
     }
   }, [template]);
 
-  const isExpired = template?.expirationDate 
+  const isExpired = template?.enableExpiration && template?.expirationDate && template?.expirationDate !== 'never'
     ? new Date(template.expirationDate) < new Date(new Date().setHours(0, 0, 0, 0))
     : false;
   const isPrivate = template?.isPublic === false;
@@ -400,8 +428,8 @@ export default function ShopTemplateView() {
       {/* Main Container: Left Form + Right Live Preview */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* LEFT COLUMN: Clean Dynamic Form */}
-        <div className="lg:col-span-5 bg-slate-900 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-2xl">
+        {/* LEFT COLUMN: Clean Dynamic Form (Input Form below Canvas on Mobile) */}
+        <div className="lg:col-span-5 order-2 lg:order-1 bg-slate-900 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-2xl">
           <div>
             <div className="mb-6 pb-4 border-b border-slate-800">
               <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider block mb-1">Step 1 of 2</span>
@@ -473,9 +501,13 @@ export default function ShopTemplateView() {
                           </div>
                         ) : (
                           <div className="py-2">
-                            <Upload className="w-7 h-7 text-cyan-400 mx-auto mb-1 group-hover:scale-110 transition-transform" />
-                            <span className="text-xs font-medium text-slate-300 block">Drag & Drop Student Photo</span>
-                            <span className="text-[10px] text-slate-500">or click to browse files from device</span>
+                            <Upload className="w-6 h-6 text-slate-400 group-hover:text-cyan-400 mx-auto mb-1 transition-colors" />
+                            <span className="text-xs font-semibold text-slate-300 block">
+                              Drag & Drop {p.label || 'Student Photo'}
+                            </span>
+                            <span className="text-[10px] text-slate-500 block">
+                              or click to browse files from device
+                            </span>
                           </div>
                         )}
                       </div>
@@ -483,29 +515,24 @@ export default function ShopTemplateView() {
                   );
                 }
 
-                if (p.type === 'logo' || p.type === 'qr_code') {
-                  return null; // Handled automatically by template
-                }
-
+                // Text Inputs
                 return (
-                  <div key={pId} className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-200 flex items-center justify-between">
-                      <span className="flex items-center gap-1">
-                        <span>{p.label || 'Text Value'}</span>
-                        {p.isMandatory && <span className="text-rose-400 font-bold" title="Required Field">*</span>}
-                      </span>
-                      {p.helpTooltip && (
+                  <div key={pId}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-semibold text-slate-300">
+                        {p.label || 'Text Field'}
+                      </label>
+                      {p.required && (
                         <span className="text-[10px] text-cyan-300 font-normal flex items-center gap-1 bg-cyan-950/70 px-2.5 py-0.5 rounded-full border border-cyan-500/40">
-                          <HelpCircle className="w-3 h-3 text-cyan-400 shrink-0" />
-                          <span>{p.helpTooltip}</span>
+                          Required
                         </span>
                       )}
-                    </label>
+                    </div>
                     <input
                       type="text"
-                      value={formData[pId] !== undefined ? formData[pId] : p.text || ''}
+                      value={formData[pId] || ''}
                       onChange={(e) => handleInputChange(pId, e.target.value)}
-                      placeholder={p.helpTooltip ? `e.g. ${p.helpTooltip}` : `Enter ${p.label}...`}
+                      placeholder={`Enter ${p.label || 'information'}...`}
                       className="w-full glass-input px-3.5 py-2.5 rounded-xl text-sm transition-all focus:border-cyan-400"
                     />
                   </div>
@@ -514,7 +541,7 @@ export default function ShopTemplateView() {
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons: Generate & Download */}
           <div className="mt-8 pt-6 border-t border-slate-800 space-y-3">
             <button
               onClick={() => triggerDownload('png')}
@@ -523,8 +550,8 @@ export default function ShopTemplateView() {
             >
               {isGenerating ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  Generating High-Res Poster...
+                  <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                  Generating High DPI Poster...
                 </>
               ) : (
                 <>
@@ -534,7 +561,7 @@ export default function ShopTemplateView() {
               )}
             </button>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className={`grid ${cleanShareToken === 'preview' || isPreviewMode ? 'grid-cols-1' : 'grid-cols-2'} gap-2`}>
               <button
                 onClick={() => triggerDownload('jpg')}
                 disabled={isGenerating}
@@ -544,19 +571,21 @@ export default function ShopTemplateView() {
                 Download JPG
               </button>
 
-              <button
-                onClick={handleWhatsAppShare}
-                className="py-2.5 px-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-emerald-500/30"
-              >
-                <MessageSquare className="w-3.5 h-3.5" />
-                Share on WhatsApp
-              </button>
+              {!isPreviewMode && cleanShareToken !== 'preview' && (
+                <button
+                  onClick={handleWhatsAppShare}
+                  className="py-2.5 px-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-emerald-500/30"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Share on WhatsApp
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Real-Time Live Poster Preview */}
-        <div ref={previewBoxRef} className="lg:col-span-7 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 sm:p-6 min-h-[450px] shadow-2xl relative overflow-hidden">
+        {/* RIGHT COLUMN: Real-Time Live Poster Preview (order-1 on mobile, order-2 on desktop) */}
+        <div ref={previewBoxRef} className="lg:col-span-7 order-1 lg:order-2 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 sm:p-6 min-h-[450px] shadow-2xl relative overflow-hidden">
           <div className="w-full flex items-center justify-between mb-4">
             <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
               <Eye className="w-4 h-4 text-cyan-400" />
@@ -597,77 +626,14 @@ export default function ShopTemplateView() {
                   const photoSrc = photoPreviews[pId] || p.placeholderImg;
 
                   return (
-                    <div
+                    <PlaceholderRenderer
                       key={pId}
-                      className="absolute flex items-center"
-                      style={{
-                        left: `${p.x}px`,
-                        top: `${p.y}px`,
-                        width: `${p.width}px`,
-                        height: `${p.height}px`,
-                        opacity: p.opacity !== undefined ? p.opacity : 1,
-                        zIndex: p.zIndex || 1,
-                      }}
-                    >
-                      {(() => {
-                        const cornerRadiusCss = p.borderTopLeftRadius !== undefined || p.borderTopRightRadius !== undefined || p.borderBottomRightRadius !== undefined || p.borderBottomLeftRadius !== undefined
-                          ? `${p.borderTopLeftRadius ?? (p.borderRadius || 0)}px ${p.borderTopRightRadius ?? (p.borderRadius || 0)}px ${p.borderBottomRightRadius ?? (p.borderRadius || 0)}px ${p.borderBottomLeftRadius ?? (p.borderRadius || 0)}px`
-                          : `${p.borderRadius || 0}px`;
-
-                        const imageFilterCss = p.brightness !== undefined || p.contrast !== undefined || p.saturation !== undefined || p.blur
-                          ? `brightness(${p.brightness ?? 1}) contrast(${p.contrast ?? 1}) saturate(${p.saturation ?? 1}) blur(${p.blur || 0}px)`
-                          : undefined;
-
-                        return (
-                          <div
-                            className="w-full h-full flex items-center overflow-hidden"
-                            style={{
-                              backgroundColor: p.backgroundColor || 'transparent',
-                              borderRadius: cornerRadiusCss,
-                              borderWidth: p.borderWidth ? `${p.borderWidth}px` : undefined,
-                              borderColor: p.borderColor || undefined,
-                              borderStyle: p.borderStyle || (p.borderWidth ? 'solid' : undefined),
-                              color: p.color || '#FFFFFF',
-                              fontSize: `${p.fontSize || 18}px`,
-                              fontFamily: p.fontFamily || 'Inter',
-                              fontWeight: p.fontWeight || 'normal',
-                              fontStyle: p.fontStyle || 'normal',
-                              textAlign: p.align || 'left',
-                              justifyContent: p.align === 'center' ? 'center' : p.align === 'right' ? 'flex-end' : 'flex-start',
-                              letterSpacing: p.letterSpacing ? `${p.letterSpacing}px` : undefined,
-                              boxShadow: p.shadow ? '0 10px 25px -5px rgba(0, 0, 0, 0.5)' : undefined,
-                              filter: imageFilterCss,
-                            }}
-                          >
-                            {p.type === 'photo' ? (
-                              photoSrc ? (
-                                <img
-                                  src={photoSrc}
-                                  alt="Uploaded"
-                                  className="w-full h-full object-cover"
-                                  style={{ borderRadius: cornerRadiusCss, filter: imageFilterCss }}
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-semibold" style={{ borderRadius: cornerRadiusCss }}>
-                                  [Photo Here]
-                                </div>
-                              )
-                            ) : p.type === 'logo' || p.type === 'qr_code' ? (
-                              <img
-                                src={p.placeholderImg}
-                                alt="Graphic"
-                                className="max-w-full max-h-full object-contain mx-auto"
-                                style={{ filter: imageFilterCss }}
-                              />
-                            ) : (
-                              <span className="px-2 truncate w-full">
-                                {textVal || `[${p.label}]`}
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })()}
-                    </div>
+                      placeholder={p}
+                      value={textVal}
+                      photoSrc={photoSrc}
+                      isBuilder={false}
+                      standalone={true}
+                    />
                   );
                 })}
               </div>

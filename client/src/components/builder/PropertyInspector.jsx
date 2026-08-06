@@ -2,7 +2,8 @@ import React from 'react';
 import { 
   Type, Palette, AlignLeft, AlignCenter, AlignRight, Bold, Italic, 
   Layers, Lock, Unlock, Trash2, Copy, Sliders, LayoutGrid, Eye, ArrowUp, ArrowDown,
-  Unlink
+  Unlink,
+  Link
 } from 'lucide-react';
 
 const FONT_FAMILIES = [
@@ -315,28 +316,49 @@ export default function PropertyInspector({
             <h4 className={`text-[11px] font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
               Borders & 4-Corner Radius
             </h4>
-            <button
-              type="button"
-              onClick={() => {
-                const linkNext = !p.linkCorners;
-                const uniform = p.borderRadius || 0;
-                onUpdatePlaceholder(targetId, {
-                  linkCorners: linkNext,
-                  borderTopLeftRadius: uniform,
-                  borderTopRightRadius: uniform,
-                  borderBottomRightRadius: uniform,
-                  borderBottomLeftRadius: uniform,
-                });
-              }}
-              className={`px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1 border transition-all ${
-                p.linkCorners
-                  ? 'bg-blue-600/20 text-blue-400 border-blue-500/40'
-                  : 'bg-slate-800/80 text-slate-400 border-slate-700'
-              }`}
-            >
-              {p.linkCorners ? <Link className="w-3 h-3 text-blue-400" /> : <Unlink className="w-3 h-3 text-slate-400" />}
-              <span>{p.linkCorners ? 'Corners Linked' : 'Independent'}</span>
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  const borderNext = p.borderEnabled === false;
+                  onUpdatePlaceholder(targetId, {
+                    borderEnabled: borderNext,
+                    borderWidth: borderNext ? (p.borderWidth || 4) : 0,
+                  });
+                }}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1 border transition-all ${
+                  p.borderEnabled !== false && (p.borderWidth ?? 0) > 0
+                    ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/40'
+                    : 'bg-slate-800/80 text-slate-400 border-slate-700'
+                }`}
+                title="Toggle Border Line On or Off"
+              >
+                <span>{p.borderEnabled !== false && (p.borderWidth ?? 0) > 0 ? 'Border ON' : 'Border OFF'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const linkNext = !p.linkCorners;
+                  const uniform = p.borderRadius || 0;
+                  onUpdatePlaceholder(targetId, {
+                    linkCorners: linkNext,
+                    borderTopLeftRadius: uniform,
+                    borderTopRightRadius: uniform,
+                    borderBottomRightRadius: uniform,
+                    borderBottomLeftRadius: uniform,
+                  });
+                }}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1 border transition-all ${
+                  p.linkCorners
+                    ? 'bg-blue-600/20 text-blue-400 border-blue-500/40'
+                    : 'bg-slate-800/80 text-slate-400 border-slate-700'
+                }`}
+              >
+                {p.linkCorners ? <Link className="w-3 h-3 text-blue-400" /> : <Unlink className="w-3 h-3 text-slate-400" />}
+                <span>{p.linkCorners ? 'Linked' : 'Independent'}</span>
+              </button>
+            </div>
           </div>
 
           {/* Shape Presets Chips */}
@@ -379,9 +401,10 @@ export default function PropertyInspector({
               <label className="text-[10px] text-slate-500 font-medium block mb-1">Uniform Radius (px)</label>
               <input
                 type="number"
-                value={p.borderRadius || 0}
+                value={p.borderRadius ?? 0}
+                onFocus={(e) => e.target.select()}
                 onChange={(e) => {
-                  const val = parseInt(e.target.value) || 0;
+                  const val = e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0;
                   onUpdatePlaceholder(targetId, {
                     borderRadius: val,
                     borderTopLeftRadius: val,
@@ -401,8 +424,9 @@ export default function PropertyInspector({
                 <label className="text-[10px] text-slate-500 font-medium block mb-0.5">Top-Left (px)</label>
                 <input
                   type="number"
-                  value={p.borderTopLeftRadius !== undefined ? p.borderTopLeftRadius : (p.borderRadius || 0)}
-                  onChange={(e) => onUpdatePlaceholder(targetId, { borderTopLeftRadius: parseInt(e.target.value) || 0 })}
+                  value={p.borderTopLeftRadius !== undefined ? p.borderTopLeftRadius : (p.borderRadius ?? 0)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => onUpdatePlaceholder(targetId, { borderTopLeftRadius: e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0 })}
                   className={`w-full rounded-xl px-2.5 py-1 text-xs outline-none border ${
                     isDarkMode ? 'bg-slate-950 text-white border-slate-800' : 'bg-slate-50 text-slate-900 border-slate-200'
                   }`}
@@ -412,8 +436,9 @@ export default function PropertyInspector({
                 <label className="text-[10px] text-slate-500 font-medium block mb-0.5">Top-Right (px)</label>
                 <input
                   type="number"
-                  value={p.borderTopRightRadius !== undefined ? p.borderTopRightRadius : (p.borderRadius || 0)}
-                  onChange={(e) => onUpdatePlaceholder(targetId, { borderTopRightRadius: parseInt(e.target.value) || 0 })}
+                  value={p.borderTopRightRadius !== undefined ? p.borderTopRightRadius : (p.borderRadius ?? 0)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => onUpdatePlaceholder(targetId, { borderTopRightRadius: e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0 })}
                   className={`w-full rounded-xl px-2.5 py-1 text-xs outline-none border ${
                     isDarkMode ? 'bg-slate-950 text-white border-slate-800' : 'bg-slate-50 text-slate-900 border-slate-200'
                   }`}
@@ -423,8 +448,9 @@ export default function PropertyInspector({
                 <label className="text-[10px] text-slate-500 font-medium block mb-0.5">Bottom-Left (px)</label>
                 <input
                   type="number"
-                  value={p.borderBottomLeftRadius !== undefined ? p.borderBottomLeftRadius : (p.borderRadius || 0)}
-                  onChange={(e) => onUpdatePlaceholder(targetId, { borderBottomLeftRadius: parseInt(e.target.value) || 0 })}
+                  value={p.borderBottomLeftRadius !== undefined ? p.borderBottomLeftRadius : (p.borderRadius ?? 0)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => onUpdatePlaceholder(targetId, { borderBottomLeftRadius: e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0 })}
                   className={`w-full rounded-xl px-2.5 py-1 text-xs outline-none border ${
                     isDarkMode ? 'bg-slate-950 text-white border-slate-800' : 'bg-slate-50 text-slate-900 border-slate-200'
                   }`}
@@ -434,8 +460,9 @@ export default function PropertyInspector({
                 <label className="text-[10px] text-slate-500 font-medium block mb-0.5">Bottom-Right (px)</label>
                 <input
                   type="number"
-                  value={p.borderBottomRightRadius !== undefined ? p.borderBottomRightRadius : (p.borderRadius || 0)}
-                  onChange={(e) => onUpdatePlaceholder(targetId, { borderBottomRightRadius: parseInt(e.target.value) || 0 })}
+                  value={p.borderBottomRightRadius !== undefined ? p.borderBottomRightRadius : (p.borderRadius ?? 0)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => onUpdatePlaceholder(targetId, { borderBottomRightRadius: e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0 })}
                   className={`w-full rounded-xl px-2.5 py-1 text-xs outline-none border ${
                     isDarkMode ? 'bg-slate-950 text-white border-slate-800' : 'bg-slate-50 text-slate-900 border-slate-200'
                   }`}
@@ -465,8 +492,9 @@ export default function PropertyInspector({
               <label className="text-[10px] text-slate-500 font-medium block mb-1">Border Width (px)</label>
               <input
                 type="number"
-                value={p.borderWidth || 0}
-                onChange={(e) => onUpdatePlaceholder(targetId, { borderWidth: parseInt(e.target.value) || 0 })}
+                value={p.borderWidth ?? 0}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => onUpdatePlaceholder(targetId, { borderWidth: e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0 })}
                 className={`w-full rounded-xl px-3 py-1.5 text-xs outline-none border ${
                   isDarkMode ? 'bg-slate-950 text-white border-slate-800' : 'bg-slate-50 text-slate-900 border-slate-200'
                 }`}

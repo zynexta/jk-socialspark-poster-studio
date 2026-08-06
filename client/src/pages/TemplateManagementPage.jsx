@@ -19,6 +19,7 @@ export default function TemplateManagementPage() {
 
   // Expiration settings for share modal
   const [expirationDate, setExpirationDate] = useState('2026-12-31');
+  const [enableExpiration, setEnableExpiration] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
 
   const filteredTemplates = templates.filter((t) => {
@@ -200,9 +201,13 @@ export default function TemplateManagementPage() {
                     <Edit3 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                     <span>Edit</span>
                   </Link>
-
                   <button
-                    onClick={() => setShareModalTemplate(tmpl)}
+                    onClick={() => {
+                      setShareModalTemplate(tmpl);
+                      setIsPublic(tmpl.isPublic !== undefined ? tmpl.isPublic : true);
+                      setEnableExpiration(tmpl.enableExpiration || false);
+                      setExpirationDate(tmpl.expirationDate || '2026-12-31');
+                    }}
                     className="py-2 px-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-semibold rounded-xl text-xs flex items-center justify-center gap-1 border border-blue-500/30 transition-colors"
                   >
                     <Share2 className="w-3.5 h-3.5 shrink-0" />
@@ -233,8 +238,8 @@ export default function TemplateManagementPage() {
 
         {/* SHARE SYSTEM MODAL */}
         {shareModalTemplate && (
-          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 relative">
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full relative shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200">
               <button
                 onClick={() => setShareModalTemplate(null)}
                 className="absolute top-4 right-4 p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
@@ -280,7 +285,8 @@ export default function TemplateManagementPage() {
                             ...shareModalTemplate,
                             shareToken: currentTok,
                             isPublic: isPublic,
-                            expirationDate: expirationDate,
+                            enableExpiration: enableExpiration,
+                            expirationDate: enableExpiration ? expirationDate : 'never',
                           }, { showToast: false });
                         }}
                         className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-lg cursor-pointer"
@@ -298,21 +304,19 @@ export default function TemplateManagementPage() {
                 <div>
                   <label className="text-xs font-semibold text-slate-300 block mb-1">Custom Link Slug / URL Token</label>
                   <div className="relative flex items-center">
-                    <span className="bg-slate-950 px-3 py-2 text-xs text-slate-500 font-mono border border-r-0 border-slate-800 rounded-l-xl select-none">
-                      /template/
-                    </span>
+                    <span className="absolute left-3 text-xs font-mono text-slate-500 pointer-events-none">/template/</span>
                     <input
                       type="text"
                       value={shareModalTemplate.shareToken || ''}
                       onChange={(e) => {
-                        const cleanSlug = e.target.value.toLowerCase().replace(/[^\w-]/g, '-');
-                        setShareModalTemplate(prev => ({
-                          ...prev,
-                          shareToken: cleanSlug
-                        }));
+                        const nextSlug = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+                        setShareModalTemplate({
+                          ...shareModalTemplate,
+                          shareToken: nextSlug,
+                        });
                       }}
-                      placeholder="e.g. sslc-topper-2026"
-                      className="w-full glass-input px-3 py-2 rounded-r-xl text-xs font-mono text-cyan-300 outline-none focus:border-cyan-400"
+                      placeholder="custom-link-name"
+                      className="w-full glass-input pl-22 pr-3 py-2 rounded-xl text-xs font-mono text-cyan-300 border border-slate-800 focus:border-cyan-500"
                     />
                   </div>
                 </div>
@@ -334,7 +338,8 @@ export default function TemplateManagementPage() {
                       saveTemplate({
                         ...shareModalTemplate,
                         isPublic: nextPublic,
-                        expirationDate: expirationDate,
+                        enableExpiration: enableExpiration,
+                        expirationDate: enableExpiration ? expirationDate : 'never',
                       }, { showToast: false });
                       addToast(nextPublic ? 'Public access enabled for share link' : 'Public access set to private mode', 'info');
                     }}
@@ -346,23 +351,56 @@ export default function TemplateManagementPage() {
                   </button>
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Link Expiration Date</label>
-                  <input
-                    type="date"
-                    value={expirationDate}
-                    onChange={(e) => {
-                      const nextExp = e.target.value;
-                      setExpirationDate(nextExp);
-                      saveTemplate({
-                        ...shareModalTemplate,
-                        isPublic: isPublic,
-                        expirationDate: nextExp,
-                      }, { showToast: false });
-                      addToast(`Share link expiration set to ${nextExp}`, 'info');
-                    }}
-                    className="w-full glass-input px-3 py-2 rounded-xl text-xs text-slate-200"
-                  />
+                {/* Enable Expiration Date Toggle */}
+                <div className="bg-slate-950/60 p-3 rounded-2xl border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-semibold text-white flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-cyan-400" /> Link Expiration Date
+                      </span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                        {enableExpiration ? `Link expires on ${expirationDate}` : 'No expiration date (Link never expires)'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextEnable = !enableExpiration;
+                        setEnableExpiration(nextEnable);
+                        saveTemplate({
+                          ...shareModalTemplate,
+                          enableExpiration: nextEnable,
+                          isPublic: isPublic,
+                          expirationDate: nextEnable ? (expirationDate || '2026-12-31') : 'never',
+                        }, { showToast: false });
+                        addToast(nextEnable ? 'Link expiration enabled' : 'Link expiration disabled (Never expires)', 'info');
+                      }}
+                      className={`w-11 h-6 rounded-full p-0.5 transition-colors ${
+                        enableExpiration ? 'bg-cyan-600' : 'bg-slate-800'
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded-full bg-white transition-transform ${enableExpiration ? 'translate-x-5' : ''}`} />
+                    </button>
+                  </div>
+
+                  {enableExpiration && (
+                    <input
+                      type="date"
+                      value={expirationDate === 'never' ? '2026-12-31' : expirationDate}
+                      onChange={(e) => {
+                        const nextExp = e.target.value;
+                        setExpirationDate(nextExp);
+                        saveTemplate({
+                          ...shareModalTemplate,
+                          enableExpiration: true,
+                          isPublic: isPublic,
+                          expirationDate: nextExp,
+                        }, { showToast: false });
+                        addToast(`Expiration date set to ${nextExp}`, 'info');
+                      }}
+                      className="w-full glass-input px-3 py-2 rounded-xl text-xs text-slate-200 mt-2"
+                    />
+                  )}
                 </div>
 
                 {/* Direct WhatsApp Share Button */}
@@ -371,7 +409,8 @@ export default function TemplateManagementPage() {
                     const updated = {
                       ...shareModalTemplate,
                       isPublic: isPublic,
-                      expirationDate: expirationDate,
+                      enableExpiration: enableExpiration,
+                      expirationDate: enableExpiration ? expirationDate : 'never',
                     };
                     const saved = await saveTemplate(updated, { showToast: false });
                     const targetToken = saved?.shareToken || shareModalTemplate.shareToken;
@@ -400,7 +439,8 @@ export default function TemplateManagementPage() {
                     const updated = {
                       ...shareModalTemplate,
                       isPublic: isPublic,
-                      expirationDate: expirationDate,
+                      enableExpiration: enableExpiration,
+                      expirationDate: enableExpiration ? expirationDate : 'never',
                     };
                     await saveTemplate(updated, { showToast: false });
                     setShareModalTemplate(null);

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ZoomIn, ZoomOut, RotateCcw, Lock, Unlock, Trash2, Copy, Layers, Eye, Grid, Move, Maximize2 } from 'lucide-react';
+import PlaceholderRenderer from '../renderers/PlaceholderRenderer';
 
 export default function CanvasBoard({
   template,
@@ -268,6 +269,17 @@ export default function CanvasBoard({
             height: `${canvasHeight}px`,
           }}
         >
+          {/* Visible Canvas Alignment Grid Overlay */}
+          {showGrid && (
+            <div
+              className="absolute inset-0 pointer-events-none z-30 transition-opacity duration-200"
+              style={{
+                backgroundImage: `linear-gradient(to right, rgba(56, 189, 248, 0.3) 1px, transparent 1px), linear-gradient(to bottom, rgba(56, 189, 248, 0.3) 1px, transparent 1px)`,
+                backgroundSize: '40px 40px',
+              }}
+            />
+          )}
+
           {/* Alignment Snap Lines */}
           {snapLines.x !== null && (
             <div
@@ -308,74 +320,12 @@ export default function CanvasBoard({
                   zIndex: isSelected ? 50 : item.zIndex || 1,
                 }}
               >
-                {/* Element Content Preview */}
-                {(() => {
-                  const cornerRadiusCss = item.borderTopLeftRadius !== undefined || item.borderTopRightRadius !== undefined || item.borderBottomRightRadius !== undefined || item.borderBottomLeftRadius !== undefined
-                    ? `${item.borderTopLeftRadius ?? (item.borderRadius || 0)}px ${item.borderTopRightRadius ?? (item.borderRadius || 0)}px ${item.borderBottomRightRadius ?? (item.borderRadius || 0)}px ${item.borderBottomLeftRadius ?? (item.borderRadius || 0)}px`
-                    : `${item.borderRadius || 0}px`;
-
-                  const imageFilterCss = item.brightness !== undefined || item.contrast !== undefined || item.saturation !== undefined || item.blur
-                    ? `brightness(${item.brightness ?? 1}) contrast(${item.contrast ?? 1}) saturate(${item.saturation ?? 1}) blur(${item.blur || 0}px)`
-                    : undefined;
-
-                  return (
-                    <div
-                      className="w-full h-full flex items-center overflow-hidden transition-all"
-                      style={{
-                        backgroundColor: item.backgroundColor || 'transparent',
-                        borderRadius: cornerRadiusCss,
-                        borderWidth: item.borderWidth ? `${item.borderWidth}px` : undefined,
-                        borderColor: item.borderColor || undefined,
-                        borderStyle: item.borderStyle || (item.borderWidth ? 'solid' : undefined),
-                        color: item.color || '#FFFFFF',
-                        fontSize: `${item.fontSize || 18}px`,
-                        fontFamily: item.fontFamily || 'Inter',
-                        fontWeight: item.fontWeight || 'normal',
-                        fontStyle: item.fontStyle || 'normal',
-                        textAlign: item.align || 'left',
-                        justifyContent: item.align === 'center' ? 'center' : item.align === 'right' ? 'flex-end' : 'flex-start',
-                        letterSpacing: item.letterSpacing ? `${item.letterSpacing}px` : undefined,
-                        lineHeight: item.lineHeight || 1.2,
-                        boxShadow: item.shadow ? '0 10px 25px -5px rgba(0, 0, 0, 0.5)' : undefined,
-                        filter: imageFilterCss,
-                      }}
-                    >
-                      {item.type === 'photo' ? (
-                        <div 
-                          className="w-full h-full relative overflow-hidden bg-slate-800/80 flex flex-col items-center justify-center transition-all"
-                          style={{ borderRadius: cornerRadiusCss }}
-                        >
-                          {item.placeholderImg ? (
-                            <img
-                              src={item.placeholderImg}
-                              alt={item.label}
-                              className="w-full h-full object-cover pointer-events-none"
-                              style={{ borderRadius: cornerRadiusCss, filter: imageFilterCss }}
-                            />
-                          ) : (
-                            <div className="text-center p-3 flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-sky-950/40 to-slate-900/80 border border-sky-400/30 border-dashed pointer-events-none" style={{ borderRadius: cornerRadiusCss }}>
-                              <Maximize2 className="w-7 h-7 text-sky-400 mb-1 opacity-80 animate-pulse" />
-                              <span className="text-xs font-bold text-sky-300 block truncate max-w-full px-2">{item.label}</span>
-                              <span className="text-[9px] text-slate-400 font-medium">Shop Photo Upload</span>
-                            </div>
-                          )}
-                        </div>
-                      ) : item.type === 'logo' || item.type === 'qr_code' ? (
-                        <div className="w-full h-full flex items-center justify-center bg-slate-900/60 pointer-events-none" style={{ borderRadius: cornerRadiusCss }}>
-                          {item.placeholderImg ? (
-                            <img src={item.placeholderImg} alt={item.label} className="max-w-full max-h-full object-contain pointer-events-none" style={{ filter: imageFilterCss }} />
-                          ) : (
-                            <span className="text-xs font-bold text-amber-400 px-2">{item.label}</span>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="px-2 truncate w-full pointer-events-none">
-                          {item.text || `[${item.label}]`}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })()}
+                {/* Unified Placeholder Renderer */}
+                <PlaceholderRenderer
+                  placeholder={item}
+                  isBuilder={true}
+                  standalone={false}
+                />
 
                 {/* Selection Handles & Controls */}
                 {isSelected && !item.locked && (
