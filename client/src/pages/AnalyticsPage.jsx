@@ -7,8 +7,8 @@ export default function AnalyticsPage() {
     <AdminLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold font-heading text-white">Analytics & Performance Reports</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className="text-2xl font-black font-heading text-[#0A0A0A]">Analytics & Performance Reports</h1>
+          <p className="text-xs text-[#555555] font-medium mt-1">
             Real-time metrics on template engagement, shop owner generation frequency, and download distributions.
           </p>
         </div>
@@ -16,8 +16,8 @@ export default function AnalyticsPage() {
         {/* Visual Progress Bar Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Monthly Generation Stats */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-            <h3 className="font-heading font-bold text-base text-white mb-6">Monthly Generation Trends (2026)</h3>
+          <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-6 shadow-xs">
+            <h3 className="font-heading font-bold text-base text-[#0A0A0A] mb-6">Monthly Generation Trends (2026)</h3>
             <div className="space-y-4">
               {[
                 { month: 'March 2026', count: 120, pct: 45 },
@@ -27,13 +27,13 @@ export default function AnalyticsPage() {
                 { month: 'July 2026 (Current)', count: 320, pct: 70 },
               ].map((item, idx) => (
                 <div key={idx} className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-slate-300">{item.month}</span>
-                    <span className="text-cyan-400">{item.count} Posters</span>
+                  <div className="flex justify-between text-xs font-bold">
+                    <span className="text-[#0A0A0A]">{item.month}</span>
+                    <span className="text-[#C1121F]">{item.count} Posters</span>
                   </div>
-                  <div className="h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-3 bg-[#F8F8F6] rounded-full overflow-hidden border border-[#E5E5E5]">
                     <div
-                      className="h-full bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full transition-all duration-1000"
+                      className="h-full bg-[#C1121F] rounded-full transition-all duration-1000"
                       style={{ width: `${item.pct}%` }}
                     />
                   </div>
@@ -43,22 +43,22 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Category Performance */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
-            <h3 className="font-heading font-bold text-base text-white mb-6">Top Template Categories</h3>
+          <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-6 shadow-xs">
+            <h3 className="font-heading font-bold text-base text-[#0A0A0A] mb-6">Top Template Categories</h3>
             <div className="space-y-4">
               {[
-                { category: 'SSLC Exam Results', percentage: 42, color: 'bg-blue-500' },
-                { category: 'Plus Two Star Achievers', percentage: 28, color: 'bg-indigo-500' },
-                { category: 'Grand Opening Ceremony', percentage: 15, color: 'bg-purple-500' },
-                { category: 'Festival & Offer Posters', percentage: 10, color: 'bg-amber-500' },
-                { category: 'Custom Promos', percentage: 5, color: 'bg-emerald-500' },
+                { category: 'SSLC Exam Results', percentage: 42, color: 'bg-[#C1121F]' },
+                { category: 'Plus Two Star Achievers', percentage: 28, color: 'bg-[#111111]' },
+                { category: 'Grand Opening Ceremony', percentage: 15, color: 'bg-[#555555]' },
+                { category: 'Festival & Offer Posters', percentage: 10, color: 'bg-[#8B0E16]' },
+                { category: 'Custom Promos', percentage: 5, color: 'bg-[#E5E5E5]' },
               ].map((c, idx) => (
                 <div key={idx} className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-slate-300">{c.category}</span>
-                    <span className="text-slate-400">{c.percentage}% share</span>
+                  <div className="flex justify-between text-xs font-bold">
+                    <span className="text-[#0A0A0A]">{c.category}</span>
+                    <span className="text-[#555555]">{c.percentage}% share</span>
                   </div>
-                  <div className="h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-3 bg-[#F8F8F6] rounded-full overflow-hidden border border-[#E5E5E5]">
                     <div
                       className={`h-full ${c.color} rounded-full`}
                       style={{ width: `${c.percentage}%` }}

@@ -71,15 +71,15 @@ export default function TemplateManagementPage() {
         {/* Top Action Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold font-heading text-white">Template Management</h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <h1 className="text-2xl font-black font-heading text-[#0A0A0A]">Template Management</h1>
+            <p className="text-xs text-[#555555] font-medium mt-1">
               Create, edit, duplicate, and share poster templates with shop owners.
             </p>
           </div>
 
           <Link
             to="/admin/templates/builder/new"
-            className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+            className="px-5 py-3 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-extrabold rounded-xl text-xs shadow-xs flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
           >
             <Plus className="w-4 h-4" />
             Create New Template
@@ -87,23 +87,23 @@ export default function TemplateManagementPage() {
         </div>
 
         {/* Search & Category Filter Header */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 space-y-4">
+        <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-4 sm:p-6 space-y-4 shadow-xs">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             {/* Search Input */}
             <div className="relative w-full md:w-80">
-              <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-[#777777] absolute left-3.5 top-3" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search templates by title or category..."
-                className="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-xs"
+                className="w-full bg-[#F8F8F6] border border-[#E5E5E5] focus:border-[#C1121F] text-[#111111] placeholder-[#777777] pl-10 pr-4 py-2 rounded-xl text-xs outline-none transition-colors"
               />
             </div>
 
             {/* Total Badge */}
-            <span className="text-xs text-slate-400">
-              Showing <strong className="text-white font-bold">{filteredTemplates.length}</strong> of {templates.length} templates
+            <span className="text-xs text-[#555555] font-medium">
+              Showing <strong className="text-[#0A0A0A] font-bold">{filteredTemplates.length}</strong> of {templates.length} templates
             </span>
           </div>
 
@@ -111,10 +111,10 @@ export default function TemplateManagementPage() {
           <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-2 scrollbar-none">
             <button
               onClick={() => setSelectedCategory('All')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 selectedCategory === 'All'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-400'
+                  ? 'bg-[#C1121F] text-white shadow-xs'
+                  : 'bg-[#F8F8F6] hover:bg-[#E5E5E5] text-[#555555] border border-[#E5E5E5]'
               }`}
             >
               All Categories ({templates.length})
@@ -123,10 +123,10 @@ export default function TemplateManagementPage() {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.name)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   selectedCategory === cat.name
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-slate-800/80 hover:bg-slate-800 text-slate-400'
+                    ? 'bg-[#C1121F] text-white shadow-xs'
+                    : 'bg-[#F8F8F6] hover:bg-[#E5E5E5] text-[#555555] border border-[#E5E5E5]'
                 }`}
               >
                 {cat.name}
@@ -137,10 +137,10 @@ export default function TemplateManagementPage() {
 
         {/* TEMPLATES GRID */}
         {filteredTemplates.length === 0 ? (
-          <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-12 text-center">
-            <Layers className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-300">No Templates Found</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+          <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-12 text-center shadow-xs">
+            <Layers className="w-12 h-12 text-[#777777] mx-auto mb-3" />
+            <h3 className="text-base font-bold text-[#0A0A0A]">No Templates Found</h3>
+            <p className="text-xs text-[#555555] mt-1 max-w-sm mx-auto font-medium">
               No poster templates matched your search filter. Create a new template or reset filters.
             </p>
           </div>
@@ -149,21 +149,21 @@ export default function TemplateManagementPage() {
             {filteredTemplates.map((tmpl) => (
               <div
                 key={tmpl.id}
-                className="glass-card rounded-3xl overflow-hidden border border-slate-800 flex flex-col justify-between group"
+                className="bg-[#FFFFFF] rounded-3xl overflow-hidden border border-[#E5E5E5] hover:border-[#111111] flex flex-col justify-between transition-all hover:-translate-y-0.5 shadow-xs group"
               >
                 <div>
                   {/* Poster Thumbnail */}
-                  <div className="relative h-56 bg-slate-950 overflow-hidden border-b border-slate-800">
+                  <div className="relative h-56 bg-[#0A0A0A] overflow-hidden border-b border-[#E5E5E5]">
                     <img
                       src={tmpl.bgImage}
                       alt={tmpl.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-cyan-400 uppercase">
+                    <div className="absolute top-3 left-3 bg-[#FFFFFF]/90 backdrop-blur-md px-3 py-1 rounded-full border border-[#E5E5E5] text-[10px] font-black text-[#C1121F] uppercase">
                       {tmpl.category}
                     </div>
                     <div className="absolute top-3 right-3 flex items-center gap-2">
-                      <span className="bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-slate-300">
+                      <span className="bg-[#FFFFFF]/90 backdrop-blur-md px-2.5 py-1 rounded-full border border-[#E5E5E5] text-[10px] font-bold text-[#0A0A0A]">
                         {tmpl.aspectRatio}
                       </span>
                       <button
@@ -171,7 +171,7 @@ export default function TemplateManagementPage() {
                           e.stopPropagation();
                           setDeleteConfirmTemplate(tmpl);
                         }}
-                        className="p-1.5 rounded-full bg-rose-950/80 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 transition-all shadow-md hover:scale-110"
+                        className="p-1.5 rounded-full bg-[#FFF1F2] hover:bg-[#C1121F] text-[#C1121F] hover:text-white border border-red-200 transition-all shadow-xs"
                         title="Delete Template"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -181,13 +181,13 @@ export default function TemplateManagementPage() {
 
                   {/* Template Info */}
                   <div className="p-5">
-                    <h3 className="font-heading font-bold text-base text-white group-hover:text-blue-400 transition-colors line-clamp-1">
+                    <h3 className="font-heading font-bold text-base text-[#0A0A0A] group-hover:text-[#C1121F] transition-colors line-clamp-1">
                       {tmpl.title}
                     </h3>
-                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-3">
-                      <span>Placeholders: <strong className="text-slate-200">{tmpl.placeholders?.length || 0}</strong></span>
+                    <p className="text-xs text-[#555555] font-medium mt-1 flex items-center gap-3">
+                      <span>Placeholders: <strong className="text-[#0A0A0A]">{tmpl.placeholders?.length || 0}</strong></span>
                       <span>•</span>
-                      <span>Generations: <strong className="text-emerald-400">{tmpl.generatedCount || 0}</strong></span>
+                      <span>Generations: <strong className="text-[#C1121F]">{tmpl.generatedCount || 0}</strong></span>
                     </p>
                   </div>
                 </div>
@@ -196,9 +196,9 @@ export default function TemplateManagementPage() {
                 <div className="p-4 pt-0 grid grid-cols-4 gap-1.5">
                   <Link
                     to={`/admin/templates/builder/${tmpl.id}`}
-                    className="py-2 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs flex items-center justify-center gap-1 border border-slate-700 transition-colors"
+                    className="py-2 px-2 bg-[#FFFFFF] hover:bg-[#111111] text-[#111111] hover:text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 border border-[#111111] transition-colors"
                   >
-                    <Edit3 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                    <Edit3 className="w-3.5 h-3.5 shrink-0" />
                     <span>Edit</span>
                   </Link>
                   <button
@@ -208,7 +208,7 @@ export default function TemplateManagementPage() {
                       setEnableExpiration(tmpl.enableExpiration || false);
                       setExpirationDate(tmpl.expirationDate || '2026-12-31');
                     }}
-                    className="py-2 px-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-semibold rounded-xl text-xs flex items-center justify-center gap-1 border border-blue-500/30 transition-colors"
+                    className="py-2 px-2 bg-[#FFF1F2] hover:bg-red-100 text-[#C1121F] font-bold rounded-xl text-xs flex items-center justify-center gap-1 border border-red-200 transition-colors"
                   >
                     <Share2 className="w-3.5 h-3.5 shrink-0" />
                     <span>Share</span>
@@ -216,15 +216,15 @@ export default function TemplateManagementPage() {
 
                   <button
                     onClick={() => duplicateTemplate(tmpl.id)}
-                    className="py-2 px-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs flex items-center justify-center gap-1 border border-slate-700 transition-colors"
+                    className="py-2 px-2 bg-[#F8F8F6] hover:bg-[#E5E5E5] text-[#0A0A0A] font-bold rounded-xl text-xs flex items-center justify-center gap-1 border border-[#E5E5E5] transition-colors"
                   >
-                    <Copy className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                    <Copy className="w-3.5 h-3.5 text-[#555555] shrink-0" />
                     <span>Copy</span>
                   </button>
 
                   <button
                     onClick={() => setDeleteConfirmTemplate(tmpl)}
-                    className="py-2 px-2 bg-rose-500/15 hover:bg-rose-600 text-rose-300 hover:text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1 border border-rose-500/30 transition-colors"
+                    className="py-2 px-2 bg-[#FFF1F2] hover:bg-[#C1121F] text-[#C1121F] hover:text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 border border-red-200 transition-colors"
                     title="Delete Template"
                   >
                     <Trash2 className="w-3.5 h-3.5 shrink-0" />
@@ -238,22 +238,22 @@ export default function TemplateManagementPage() {
 
         {/* SHARE SYSTEM MODAL */}
         {shareModalTemplate && (
-          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full relative shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="fixed inset-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-6 max-w-lg w-full relative shadow-2xl space-y-5 text-[#111111]">
               <button
                 onClick={() => setShareModalTemplate(null)}
-                className="absolute top-4 right-4 p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+                className="absolute top-4 right-4 p-1.5 rounded-xl bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A] hover:bg-[#E5E5E5]"
               >
                 <X className="w-5 h-5" />
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <div className="w-10 h-10 rounded-xl bg-[#FFF1F2] border border-red-200 flex items-center justify-center text-[#C1121F]">
                   <Share2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-heading font-bold text-lg text-white">Shareable Link & Access Controls</h3>
-                  <p className="text-xs text-slate-400">{shareModalTemplate.title}</p>
+                  <h3 className="font-heading font-bold text-lg text-[#0A0A0A]">Shareable Link & Access Controls</h3>
+                  <p className="text-xs text-[#555555] font-medium">{shareModalTemplate.title}</p>
                 </div>
               </div>
 
@@ -262,8 +262,8 @@ export default function TemplateManagementPage() {
                 const activeToken = shareModalTemplate.shareToken || shareModalTemplate.id;
                 const fullShareUrl = `${window.location.origin}/template/${activeToken}`;
                 return (
-                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center gap-4">
-                    <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center">
+                  <div className="bg-[#F8F8F6] p-4 rounded-2xl border border-[#E5E5E5] flex items-center gap-4">
+                    <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center border border-[#E5E5E5]">
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(fullShareUrl)}`}
                         alt="QR Code"
@@ -271,10 +271,10 @@ export default function TemplateManagementPage() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                      <span className="text-[10px] font-bold text-[#555555] uppercase tracking-wider block mb-1">
                         Unique Shareable URL
                       </span>
-                      <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-cyan-400 font-mono truncate mb-2">
+                      <div className="p-2 rounded-lg bg-[#FFFFFF] border border-[#E5E5E5] text-xs text-[#C1121F] font-mono truncate mb-2">
                         {fullShareUrl}
                       </div>
                       <button
@@ -289,7 +289,7 @@ export default function TemplateManagementPage() {
                             expirationDate: enableExpiration ? expirationDate : 'never',
                           }, { showToast: false });
                         }}
-                        className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-lg cursor-pointer"
+                        className="w-full py-2 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                       >
                         {copiedToken ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                         <span>{copiedToken ? 'Copied to Clipboard' : 'Copy Share Link'}</span>
@@ -302,9 +302,9 @@ export default function TemplateManagementPage() {
               {/* Settings Controls */}
               <div className="space-y-4 pt-1">
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">Custom Link Slug / URL Token</label>
+                  <label className="text-xs font-bold text-[#0A0A0A] block mb-1">Custom Link Slug / URL Token</label>
                   <div className="relative flex items-center">
-                    <span className="absolute left-3 text-xs font-mono text-slate-500 pointer-events-none">/template/</span>
+                    <span className="absolute left-3 text-xs font-mono text-[#777777] pointer-events-none">/template/</span>
                     <input
                       type="text"
                       value={shareModalTemplate.shareToken || ''}
@@ -316,17 +316,17 @@ export default function TemplateManagementPage() {
                         });
                       }}
                       placeholder="custom-link-name"
-                      className="w-full glass-input pl-22 pr-3 py-2 rounded-xl text-xs font-mono text-cyan-300 border border-slate-800 focus:border-cyan-500"
+                      className="w-full bg-[#FFFFFF] border border-[#E5E5E5] focus:border-[#C1121F] pl-22 pr-3 py-2 rounded-xl text-xs font-mono text-[#C1121F] outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
+                <div className="flex items-center justify-between bg-[#F8F8F6] p-3 rounded-2xl border border-[#E5E5E5]">
                   <div>
-                    <span className="text-xs font-semibold text-white flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-emerald-400" /> Public Access Enabled
+                    <span className="text-xs font-bold text-[#0A0A0A] flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-emerald-600" /> Public Access Enabled
                     </span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">
+                    <span className="text-[10px] text-[#555555] block mt-0.5 font-medium">
                       {isPublic ? 'Anyone with the link can generate posters' : 'Link is disabled (Private / Disabled mode)'}
                     </span>
                   </div>
@@ -344,7 +344,7 @@ export default function TemplateManagementPage() {
                       addToast(nextPublic ? 'Public access enabled for share link' : 'Public access set to private mode', 'info');
                     }}
                     className={`w-11 h-6 rounded-full p-0.5 transition-colors ${
-                      isPublic ? 'bg-emerald-600' : 'bg-slate-800'
+                      isPublic ? 'bg-emerald-600' : 'bg-[#E5E5E5]'
                     }`}
                   >
                     <div className={`w-5 h-5 rounded-full bg-white transition-transform ${isPublic ? 'translate-x-5' : ''}`} />
@@ -352,13 +352,13 @@ export default function TemplateManagementPage() {
                 </div>
 
                 {/* Enable Expiration Date Toggle */}
-                <div className="bg-slate-950/60 p-3 rounded-2xl border border-slate-800 space-y-2">
+                <div className="bg-[#F8F8F6] p-3 rounded-2xl border border-[#E5E5E5] space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-semibold text-white flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-cyan-400" /> Link Expiration Date
+                      <span className="text-xs font-bold text-[#0A0A0A] flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-[#C1121F]" /> Link Expiration Date
                       </span>
-                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                      <span className="text-[10px] text-[#555555] block mt-0.5 font-medium">
                         {enableExpiration ? `Link expires on ${expirationDate}` : 'No expiration date (Link never expires)'}
                       </span>
                     </div>
@@ -376,7 +376,7 @@ export default function TemplateManagementPage() {
                         addToast(nextEnable ? 'Link expiration enabled' : 'Link expiration disabled (Never expires)', 'info');
                       }}
                       className={`w-11 h-6 rounded-full p-0.5 transition-colors ${
-                        enableExpiration ? 'bg-cyan-600' : 'bg-slate-800'
+                        enableExpiration ? 'bg-[#C1121F]' : 'bg-[#E5E5E5]'
                       }`}
                     >
                       <div className={`w-5 h-5 rounded-full bg-white transition-transform ${enableExpiration ? 'translate-x-5' : ''}`} />
@@ -398,7 +398,7 @@ export default function TemplateManagementPage() {
                         }, { showToast: false });
                         addToast(`Expiration date set to ${nextExp}`, 'info');
                       }}
-                      className="w-full glass-input px-3 py-2 rounded-xl text-xs text-slate-200 mt-2"
+                      className="w-full bg-[#FFFFFF] border border-[#E5E5E5] px-3 py-2 rounded-xl text-xs text-[#0A0A0A] mt-2 outline-none"
                     />
                   )}
                 </div>
@@ -420,17 +420,17 @@ export default function TemplateManagementPage() {
                     addToast('Opening WhatsApp to share link...', 'info');
                     window.open(url, '_blank');
                   }}
-                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02] mt-2 cursor-pointer"
+                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all mt-2 cursor-pointer"
                 >
-                  <MessageSquare className="w-4 h-4 text-emerald-100" />
+                  <MessageSquare className="w-4 h-4 text-white" />
                   <span>Share Directly on WhatsApp</span>
                 </button>
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-3 border-t border-[#E5E5E5] flex items-center justify-between">
                 <button
                   onClick={() => setShareModalTemplate(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl"
+                  className="px-4 py-2 bg-[#F5F5F3] hover:bg-[#E5E5E5] text-[#555555] font-bold text-xs rounded-xl border border-[#E5E5E5]"
                 >
                   Close
                 </button>
@@ -446,7 +446,7 @@ export default function TemplateManagementPage() {
                     setShareModalTemplate(null);
                     addToast('Share link settings saved & synchronized successfully!');
                   }}
-                  className="px-5 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-1.5 hover:scale-[1.02] transition-all"
+                  className="px-5 py-2 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-all"
                 >
                   <Check className="w-4 h-4" />
                   <span>Save Link Settings</span>
@@ -458,30 +458,30 @@ export default function TemplateManagementPage() {
 
         {/* DELETE CONFIRMATION MODAL */}
         {deleteConfirmTemplate && (
-          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 relative">
+          <div className="fixed inset-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 relative text-[#111111]">
               <button
                 onClick={() => setDeleteConfirmTemplate(null)}
-                className="absolute top-4 right-4 p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+                className="absolute top-4 right-4 p-1.5 rounded-xl bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A] hover:bg-[#E5E5E5]"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-[#FFF1F2] border border-red-200 flex items-center justify-center text-[#C1121F] mx-auto">
                 <Trash2 className="w-6 h-6" />
               </div>
 
               <div className="text-center space-y-1">
-                <h3 className="font-heading font-bold text-lg text-white">Delete Poster Template?</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Are you sure you want to remove <strong className="text-slate-200 font-bold">"{deleteConfirmTemplate.title}"</strong>? This action will delete the template permanently.
+                <h3 className="font-heading font-bold text-lg text-[#0A0A0A]">Delete Poster Template?</h3>
+                <p className="text-xs text-[#555555] font-medium leading-relaxed">
+                  Are you sure you want to remove <strong className="text-[#0A0A0A] font-bold">"{deleteConfirmTemplate.title}"</strong>? This action will delete the template permanently.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <button
                   onClick={() => setDeleteConfirmTemplate(null)}
-                  className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs border border-slate-700 transition-colors"
+                  className="py-2.5 px-4 bg-[#F5F5F3] hover:bg-[#E5E5E5] text-[#555555] font-bold rounded-xl text-xs border border-[#E5E5E5] transition-colors"
                 >
                   Cancel
                 </button>
@@ -490,7 +490,7 @@ export default function TemplateManagementPage() {
                     deleteTemplate(deleteConfirmTemplate.id);
                     setDeleteConfirmTemplate(null);
                   }}
-                  className="py-2.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-rose-600/30 transition-colors flex items-center justify-center gap-1.5"
+                  className="py-2.5 px-4 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-bold rounded-xl text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
                 >
                   <Trash2 className="w-4 h-4" />
                   <span>Yes, Delete</span>

@@ -52,7 +52,7 @@ export default function ShopTemplateView() {
   useEffect(() => {
     let isMounted = true;
     const fetchLiveTemplate = async () => {
-      if (!cleanShareToken || cleanShareToken === 'preview') {
+      if (!cleanShareToken || cleanShareToken === 'preview' || cleanShareToken === 'sslc-topper-2026' || cleanShareToken === 'demo') {
         setLoadingCloud(false);
         return;
       }
@@ -134,37 +134,37 @@ export default function ShopTemplateView() {
 
   if (loadingCloud && !template) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl flex items-center justify-center text-cyan-400 mb-4 shadow-xl">
-          <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
+      <div className="min-h-screen bg-[#F8F8F6] flex flex-col items-center justify-center p-6 text-center font-sans">
+        <div className="w-16 h-16 bg-[#FFF1F2] border border-red-200 rounded-2xl flex items-center justify-center text-[#C1121F] mb-4 shadow-xs">
+          <RefreshCw className="w-8 h-8 text-[#C1121F] animate-spin" />
         </div>
-        <h3 className="text-lg font-bold font-heading text-white">Loading Poster Studio Template...</h3>
-        <p className="text-xs text-slate-400 mt-1">Fetching live layout from MongoDB Atlas Cloud</p>
+        <h3 className="text-lg font-black font-heading text-[#0A0A0A]">Loading Poster Studio Template...</h3>
+        <p className="text-xs text-[#555555] mt-1 font-medium">Fetching live layout from MongoDB Atlas Cloud</p>
       </div>
     );
   }
 
   if (!template || isPrivate || isExpired) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-400 mb-4 shadow-xl">
-          {isPrivate ? <Lock className="w-8 h-8 text-amber-400" /> : <Eye className="w-8 h-8 text-rose-400" />}
+      <div className="min-h-screen bg-[#F8F8F6] flex flex-col items-center justify-center p-6 text-center font-sans">
+        <div className="w-16 h-16 bg-[#FFF1F2] border border-red-200 rounded-2xl flex items-center justify-center text-[#C1121F] mb-4 shadow-xs">
+          {isPrivate ? <Lock className="w-8 h-8 text-[#C1121F]" /> : <Eye className="w-8 h-8 text-[#C1121F]" />}
         </div>
-        <h2 className="text-2xl font-bold font-heading text-white mb-2">
+        <h2 className="text-2xl font-black font-heading text-[#0A0A0A] mb-2">
           {isPrivate 
             ? 'Private Template Access Only'
             : isExpired 
               ? 'Template Share Link Expired' 
               : 'Template Link Not Found'}
         </h2>
-        <p className="text-slate-400 text-sm max-w-md mb-6 leading-relaxed">
+        <p className="text-[#555555] text-sm max-w-md mb-6 leading-relaxed font-medium">
           {isPrivate 
             ? 'Public access to this poster template has been disabled or set to Private by the administrator.'
             : isExpired 
               ? `This poster share link expired on ${template.expirationDate}. Please request an updated share link from your administrator.`
               : 'The requested poster template share link could not be loaded. Please ask your administrator for a fresh share link.'}
         </p>
-        <Link to="/" className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-sm transition-all border border-slate-700 shadow-lg">
+        <Link to="/" className="px-6 py-2.5 bg-[#0A0A0A] hover:bg-[#C1121F] text-white font-bold rounded-xl text-sm transition-all shadow-xs">
           Back to Home
         </Link>
       </div>
@@ -261,7 +261,6 @@ export default function ShopTemplateView() {
       addToast(`Poster generated successfully as ${format.toUpperCase()}!`);
     } catch (err) {
       console.error('Poster export error:', err);
-      // Guarantee modal popup even on edge cases
       setGeneratedSuccess(true);
       confetti({ particleCount: 90, spread: 80, origin: { y: 0.5 } });
     } finally {
@@ -304,58 +303,55 @@ export default function ShopTemplateView() {
   const targetWidth = template?.width || 800;
   const targetHeight = template?.height || 1000;
   
-  // Dynamically compute scale ratio to fit 100% inside container on mobile/desktop without any cut-off
   const maxAllowedWidth = Math.min(availableWidth > 0 ? availableWidth : 360, 540);
   const scaleRatio = Math.max(0.18, Math.min(0.68, maxAllowedWidth / targetWidth));
   const customerName = Object.values(formData).find(val => typeof val === 'string' && val.trim().length > 0) || 'Customer';
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8F8F6] text-[#111111] flex flex-col font-sans">
       {/* SUCCESS CELEBRATION MODAL SCREEN */}
       {generatedSuccess && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-2xl z-50 flex items-center justify-center p-4 transition-all duration-300">
-          <div className="bg-slate-900 border-2 border-blue-500/50 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center relative shadow-2xl overflow-hidden transform scale-100">
-            {/* Top Glow Orb */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-40 bg-gradient-to-r from-blue-600/40 via-cyan-500/40 to-purple-600/40 blur-3xl rounded-full pointer-events-none" />
+        <div className="fixed inset-0 bg-[#0A0A0A]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300">
+          <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center relative shadow-2xl overflow-hidden transform scale-100 text-[#111111]">
 
             {/* Close Button */}
             <button
               onClick={() => setGeneratedSuccess(false)}
-              className="absolute top-4 right-4 p-2.5 text-slate-400 hover:text-white bg-slate-800/90 rounded-2xl hover:bg-slate-700 transition-colors z-20 border border-slate-700"
+              className="absolute top-4 right-4 p-2.5 text-[#555555] hover:text-[#0A0A0A] bg-[#F5F5F3] hover:bg-[#E5E5E5] rounded-2xl transition-colors z-20 border border-[#E5E5E5]"
               title="Close Modal"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Celebration Icon Header */}
-            <div className="relative z-10 mx-auto w-20 h-20 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-0.5 shadow-2xl shadow-blue-600/40 mb-4 flex items-center justify-center">
-              <div className="w-full h-full bg-slate-950 rounded-[22px] flex items-center justify-center">
-                <PartyPopper className="w-10 h-10 text-cyan-300 animate-bounce" />
+            <div className="relative z-10 mx-auto w-20 h-20 rounded-3xl bg-[#C1121F] p-0.5 shadow-xl mb-4 flex items-center justify-center">
+              <div className="w-full h-full bg-[#FFFFFF] rounded-[22px] flex items-center justify-center">
+                <PartyPopper className="w-10 h-10 text-[#C1121F] animate-bounce" />
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[11px] font-extrabold mb-2 uppercase tracking-widest">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF1F2] border border-red-200 text-[#C1121F] text-[11px] font-extrabold mb-2 uppercase tracking-widest">
+              <Sparkles className="w-3.5 h-3.5 text-[#C1121F]" />
               Celebration Alert 🎉
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black font-heading text-[#0A0A0A] tracking-tight">
               Poster Generated Successfully!
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-sm mx-auto leading-relaxed">
-              Your ultra HD print-ready poster for <strong className="text-cyan-400 font-bold">{customerName}</strong> has been generated!
+            <p className="text-xs sm:text-sm text-[#555555] font-medium mt-2 max-w-sm mx-auto leading-relaxed">
+              Your ultra HD print-ready poster for <strong className="text-[#C1121F] font-bold">{customerName}</strong> has been generated!
             </p>
 
             {/* Generated Poster Thumbnail Preview */}
-            <div className="my-5 relative max-w-[220px] mx-auto rounded-2xl overflow-hidden border-2 border-cyan-400/60 shadow-2xl group bg-slate-950">
+            <div className="my-5 relative max-w-[220px] mx-auto rounded-2xl overflow-hidden border border-[#E5E5E5] shadow-xl group bg-[#0A0A0A]">
               <img
                 src={lastGeneratedUrl || template.bgImage}
                 alt="Generated Poster"
                 className="w-full h-auto object-cover rounded-xl"
               />
-              <div className="absolute bottom-2 left-2 right-2 px-2 py-1 bg-slate-950/90 backdrop-blur-md rounded-xl border border-slate-800 text-[9px] font-bold text-emerald-400 flex items-center justify-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="absolute bottom-2 left-2 right-2 px-2 py-1 bg-[#FFFFFF]/90 backdrop-blur-md rounded-xl border border-[#E5E5E5] text-[9px] font-bold text-emerald-700 flex items-center justify-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                 100% High-DPI Print Ready
               </div>
             </div>
@@ -365,33 +361,33 @@ export default function ShopTemplateView() {
               <div className="grid grid-cols-2 gap-2.5">
                 <button
                   onClick={() => triggerDownload('png')}
-                  className="py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-blue-600/30 transition-all hover:scale-105"
+                  className="py-3 px-4 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all hover:scale-102"
                 >
                   <Download className="w-4 h-4" />
                   Download PNG
                 </button>
                 <button
                   onClick={() => triggerDownload('jpg')}
-                  className="py-3 px-4 bg-slate-800 hover:bg-slate-700 text-slate-100 font-extrabold rounded-2xl text-xs flex items-center justify-center gap-1.5 border border-slate-700 transition-all"
+                  className="py-3 px-4 bg-[#FFFFFF] hover:bg-[#111111] text-[#111111] hover:text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-1.5 border border-[#111111] transition-all"
                 >
-                  <Download className="w-4 h-4 text-cyan-400" />
+                  <Download className="w-4 h-4" />
                   Download JPG
                 </button>
               </div>
 
               <button
                 onClick={handleWhatsAppShare}
-                className="w-full py-3 px-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 border border-emerald-500/30 transition-colors"
+                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
               >
-                <MessageSquare className="w-4 h-4" />
+                <MessageSquare className="w-4 h-4 text-white" />
                 Share Directly on WhatsApp
               </button>
 
               <button
                 onClick={resetFormForNextPoster}
-                className="w-full py-3 px-4 bg-slate-950 hover:bg-slate-800 text-slate-300 font-semibold rounded-2xl text-xs flex items-center justify-center gap-2 border border-slate-800 transition-colors"
+                className="w-full py-3 px-4 bg-[#F5F5F3] hover:bg-[#E5E5E5] text-[#111111] font-bold rounded-2xl text-xs flex items-center justify-center gap-2 border border-[#E5E5E5] transition-colors"
               >
-                <PlusCircle className="w-4 h-4 text-blue-400" />
+                <PlusCircle className="w-4 h-4 text-[#C1121F]" />
                 Create Next Customer Poster
               </button>
             </div>
@@ -400,68 +396,68 @@ export default function ShopTemplateView() {
       )}
 
       {/* Top Header Navigation */}
-      <header className="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+      <header className="bg-[#FFFFFF] border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 rounded-xl flex items-center justify-center font-extrabold text-white text-sm shadow-lg shadow-blue-600/30">
+          <div className="w-9 h-9 bg-[#C1121F] rounded-xl flex items-center justify-center font-black text-white text-sm shadow-md">
             ZX
           </div>
           <div>
-            <span className="text-xs text-cyan-400 font-semibold tracking-wide uppercase block">Zynexta Poster SaaS</span>
-            <h1 className="text-base font-heading font-bold text-white leading-none">{template.title}</h1>
+            <span className="text-xs text-[#C1121F] font-bold tracking-wide uppercase block">Zynexta Poster SaaS</span>
+            <h1 className="text-base font-heading font-black text-[#0A0A0A] leading-none">{template.title}</h1>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-400 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 hidden sm:inline-block">
-            Category: <strong className="text-slate-200">{template.category}</strong>
+          <span className="text-xs text-[#555555] bg-[#FFF1F2] border border-red-200 px-3 py-1.5 rounded-full hidden sm:inline-block font-bold">
+            Category: <strong className="text-[#C1121F]">{template.category}</strong>
           </span>
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-200 text-xs font-medium transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] hover:bg-[#F5F5F3] text-[#0A0A0A] text-xs font-bold transition-colors shadow-xs"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-[#C1121F]" />}
             <span>{copied ? 'Copied' : 'Share Link'}</span>
           </button>
         </div>
       </header>
 
       {/* Main Container: Left Form + Right Live Preview */}
-      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* LEFT COLUMN: Clean Dynamic Form (Input Form below Canvas on Mobile) */}
-        <div className="lg:col-span-5 order-2 lg:order-1 bg-slate-900 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-2xl">
-          <div>
-            <div className="mb-6 pb-4 border-b border-slate-800">
-              <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider block mb-1">Step 1 of 2</span>
-              <h2 className="text-xl font-heading font-bold text-white">Enter Poster Information</h2>
-              <p className="text-xs text-slate-400 mt-1">
+        {/* LEFT COLUMN: Clean Dynamic Form with Independent Vertical Scroll */}
+        <div className="lg:col-span-5 order-2 lg:order-1 bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-6 flex flex-col justify-between shadow-xs lg:max-h-[calc(100vh-120px)] overflow-hidden">
+          <div className="flex flex-col flex-1 overflow-hidden">
+            <div className="mb-4 pb-3 border-b border-[#E5E5E5] shrink-0">
+              <span className="text-xs font-black text-[#C1121F] uppercase tracking-wider block mb-1">Step 1 of 2</span>
+              <h2 className="text-xl font-heading font-black text-[#0A0A0A]">Enter Poster Information</h2>
+              <p className="text-xs text-[#555555] font-medium mt-1">
                 Fill in the details below. The poster preview on the right will update in real-time.
               </p>
             </div>
 
-            {/* Dynamic Form Inputs */}
-            <div className="space-y-5">
+            {/* Dynamic Form Inputs (Independently Scrollable Container) */}
+            <div className="flex-1 overflow-y-auto pr-2 space-y-4 max-h-[420px] lg:max-h-none no-scrollbar">
               {template.placeholders?.map((p) => {
                 const pId = p.id || p._id;
                 if (p.type === 'photo') {
                   return (
                     <div key={pId} className="space-y-2">
-                      <label className="text-xs font-semibold text-slate-200 flex items-center justify-between">
+                      <label className="text-xs font-bold text-[#0A0A0A] flex items-center justify-between">
                         <span className="flex items-center gap-1">
                           <span>{p.label || 'Upload Photo'}</span>
-                          {p.isMandatory && <span className="text-rose-400 font-bold" title="Required Field">*</span>}
+                          {p.isMandatory && <span className="text-[#C1121F] font-bold" title="Required Field">*</span>}
                         </span>
                         {p.helpTooltip ? (
-                          <span className="text-[10px] text-cyan-300 font-normal flex items-center gap-1 bg-cyan-950/70 px-2 py-0.5 rounded-full border border-cyan-500/40">
-                            <HelpCircle className="w-3 h-3 text-cyan-400 shrink-0" />
+                          <span className="text-[10px] text-[#C1121F] font-bold flex items-center gap-1 bg-[#FFF1F2] px-2 py-0.5 rounded-full border border-red-200">
+                            <HelpCircle className="w-3 h-3 text-[#C1121F] shrink-0" />
                             <span>{p.helpTooltip}</span>
                           </span>
                         ) : (
-                          <span className="text-[10px] text-cyan-400 font-medium">Recommended: High Resolution</span>
+                          <span className="text-[10px] text-[#C1121F] font-bold">Recommended: High Resolution</span>
                         )}
                       </label>
 
-                      <div className="relative border-2 border-dashed border-slate-700 hover:border-cyan-500/60 rounded-xl p-4 transition-colors bg-slate-950/60 text-center group cursor-pointer">
+                      <div className="relative border-2 border-dashed border-[#E5E5E5] hover:border-[#C1121F] rounded-2xl p-4 transition-colors bg-[#F8F8F6] text-center group cursor-pointer">
                         <input
                           type="file"
                           accept="image/*"
@@ -474,13 +470,13 @@ export default function ShopTemplateView() {
                               <img
                                 src={photoPreviews[pId]}
                                 alt="Uploaded"
-                                className="w-14 h-14 rounded-lg object-cover border border-slate-700 shadow-md"
+                                className="w-14 h-14 rounded-xl object-cover border border-[#E5E5E5] shadow-xs"
                               />
                               <div>
-                                <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
-                                  <CheckCircle2 className="w-3.5 h-3.5" /> Photo Loaded
+                                <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Photo Loaded
                                 </span>
-                                <span className="text-[10px] text-slate-400 block">Click or drop to replace photo</span>
+                                <span className="text-[10px] text-[#555555] font-medium block">Click or drop to replace photo</span>
                               </div>
                             </div>
                             <button
@@ -493,7 +489,7 @@ export default function ShopTemplateView() {
                                   imageSrc: photoPreviews[pId]
                                 });
                               }}
-                              className="px-3 py-1.5 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md cursor-pointer shrink-0 z-20"
+                              className="px-3 py-1.5 bg-[#FFF1F2] hover:bg-red-100 text-[#C1121F] border border-red-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer shrink-0 z-20"
                             >
                               <Crop className="w-3.5 h-3.5" />
                               <span>Crop & Adjust</span>
@@ -501,11 +497,11 @@ export default function ShopTemplateView() {
                           </div>
                         ) : (
                           <div className="py-2">
-                            <Upload className="w-6 h-6 text-slate-400 group-hover:text-cyan-400 mx-auto mb-1 transition-colors" />
-                            <span className="text-xs font-semibold text-slate-300 block">
+                            <Upload className="w-6 h-6 text-[#C1121F] group-hover:scale-110 mx-auto mb-1 transition-transform" />
+                            <span className="text-xs font-bold text-[#0A0A0A] block">
                               Drag & Drop {p.label || 'Student Photo'}
                             </span>
-                            <span className="text-[10px] text-slate-500 block">
+                            <span className="text-[10px] text-[#555555] font-medium block">
                               or click to browse files from device
                             </span>
                           </div>
@@ -519,11 +515,11 @@ export default function ShopTemplateView() {
                 return (
                   <div key={pId}>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-xs font-semibold text-slate-300">
+                      <label className="text-xs font-bold text-[#0A0A0A]">
                         {p.label || 'Text Field'}
                       </label>
                       {p.required && (
-                        <span className="text-[10px] text-cyan-300 font-normal flex items-center gap-1 bg-cyan-950/70 px-2.5 py-0.5 rounded-full border border-cyan-500/40">
+                        <span className="text-[10px] text-[#C1121F] font-bold bg-[#FFF1F2] px-2.5 py-0.5 rounded-full border border-red-200">
                           Required
                         </span>
                       )}
@@ -533,7 +529,7 @@ export default function ShopTemplateView() {
                       value={formData[pId] || ''}
                       onChange={(e) => handleInputChange(pId, e.target.value)}
                       placeholder={`Enter ${p.label || 'information'}...`}
-                      className="w-full glass-input px-3.5 py-2.5 rounded-xl text-sm transition-all focus:border-cyan-400"
+                      className="w-full bg-[#F8F8F6] border border-[#E5E5E5] focus:border-[#C1121F] text-[#0A0A0A] font-bold px-3.5 py-2.5 rounded-xl text-sm transition-all outline-none"
                     />
                   </div>
                 );
@@ -541,12 +537,12 @@ export default function ShopTemplateView() {
             </div>
           </div>
 
-          {/* Action Buttons: Generate & Download */}
-          <div className="mt-8 pt-6 border-t border-slate-800 space-y-3">
+          {/* Action Buttons: Sticky Bottom */}
+          <div className="mt-4 pt-4 border-t border-[#E5E5E5] space-y-3 shrink-0">
             <button
               onClick={() => triggerDownload('png')}
               disabled={isGenerating}
-              className="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold rounded-xl text-sm shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all transform active:scale-95 disabled:opacity-50"
+              className="w-full py-3.5 px-6 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-extrabold rounded-xl text-sm shadow-md flex items-center justify-center gap-2 transition-all transform active:scale-95 disabled:opacity-50"
             >
               {isGenerating ? (
                 <>
@@ -555,7 +551,7 @@ export default function ShopTemplateView() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-cyan-300" />
+                  <Sparkles className="w-4 h-4 text-white" />
                   Generate & Download Poster (PNG)
                 </>
               )}
@@ -565,18 +561,18 @@ export default function ShopTemplateView() {
               <button
                 onClick={() => triggerDownload('jpg')}
                 disabled={isGenerating}
-                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-700 disabled:opacity-50"
+                className="py-2.5 px-4 bg-[#FFFFFF] hover:bg-[#111111] text-[#111111] hover:text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-[#111111] disabled:opacity-50 transition-colors"
               >
-                <Download className="w-3.5 h-3.5 text-slate-400" />
+                <Download className="w-3.5 h-3.5" />
                 Download JPG
               </button>
 
               {!isPreviewMode && cleanShareToken !== 'preview' && (
                 <button
                   onClick={handleWhatsAppShare}
-                  className="py-2.5 px-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-emerald-500/30"
+                  className="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors"
                 >
-                  <MessageSquare className="w-3.5 h-3.5" />
+                  <MessageSquare className="w-3.5 h-3.5 text-white" />
                   Share on WhatsApp
                 </button>
               )}
@@ -584,14 +580,14 @@ export default function ShopTemplateView() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Real-Time Live Poster Preview (order-1 on mobile, order-2 on desktop) */}
-        <div ref={previewBoxRef} className="lg:col-span-7 order-1 lg:order-2 flex flex-col items-center justify-center bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 sm:p-6 min-h-[450px] shadow-2xl relative overflow-hidden">
+        {/* RIGHT COLUMN: Fixed / Sticky Large Live Poster Preview */}
+        <div ref={previewBoxRef} className="lg:col-span-7 order-1 lg:order-2 flex flex-col items-center justify-center bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-4 sm:p-6 min-h-[480px] lg:sticky lg:top-24 shadow-xs relative overflow-hidden">
           <div className="w-full flex items-center justify-between mb-4">
-            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-              <Eye className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-bold text-[#0A0A0A] flex items-center gap-1.5">
+              <Eye className="w-4 h-4 text-[#C1121F]" />
               Live Output Preview (High DPI)
             </span>
-            <span className="text-[11px] text-slate-500 font-mono">
+            <span className="text-[11px] text-[#555555] font-mono font-bold">
               {targetWidth} x {targetHeight} px ({template.aspectRatio || '4:5'})
             </span>
           </div>
@@ -608,7 +604,7 @@ export default function ShopTemplateView() {
               {/* Clean, 1:1 Target Element for html-to-image Export */}
               <div
                 ref={posterRef}
-                className="relative shadow-2xl overflow-hidden rounded-lg"
+                className="relative shadow-xl overflow-hidden rounded-xl"
                 style={{
                   width: `${targetWidth}px`,
                   height: `${targetHeight}px`,

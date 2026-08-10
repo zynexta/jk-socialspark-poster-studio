@@ -28,63 +28,60 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080C14] text-slate-100 flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Glow Orbs */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 blur-[140px] rounded-full pointer-events-none" />
-
+    <div className="min-h-screen bg-[#F8F8F6] text-[#111111] flex items-center justify-center p-6 relative overflow-hidden font-sans">
       <div className="max-w-md w-full relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 group mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center font-extrabold text-white text-xl shadow-xl shadow-blue-600/30">
+            <div className="w-12 h-12 rounded-2xl bg-[#C1121F] flex items-center justify-center font-black text-white text-xl shadow-md">
               ZX
             </div>
           </Link>
-          <h1 className="text-2xl font-extrabold font-heading text-white">Zynexta Smart Poster Studio</h1>
-          <p className="text-xs text-slate-400 mt-1">Super Admin Authentication Portal</p>
+          <h1 className="text-2xl font-black font-heading text-[#0A0A0A]">Zynexta Smart Poster Studio</h1>
+          <p className="text-xs text-[#555555] font-medium mt-1">Super Admin Authentication Portal</p>
         </div>
 
         {/* Card Box */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
-          <div className="flex items-center gap-2 mb-6 text-xs font-bold text-cyan-400 uppercase tracking-wider bg-cyan-950/40 p-2.5 rounded-xl border border-cyan-500/20">
-            <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+        <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-8 shadow-xl">
+          <div className="flex items-center gap-2 mb-6 text-xs font-black text-[#C1121F] uppercase tracking-wider bg-[#FFF1F2] p-2.5 rounded-xl border border-red-200">
+            <ShieldCheck className="w-4 h-4 text-[#C1121F] shrink-0" />
             <span>MongoDB Atlas Secured Login</span>
           </div>
 
           {errorMsg && (
-            <div className="p-3.5 mb-5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-semibold flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+            <div className="p-3.5 mb-5 rounded-xl bg-red-50 border border-red-200 text-[#C1121F] text-xs font-bold flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-[#C1121F]" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1.5">Admin Email Address</label>
+              <label className="text-xs font-bold text-[#0A0A0A] block mb-1.5">Admin Email Address</label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                <Mail className="w-4 h-4 text-[#777777] absolute left-3.5 top-3.5" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your admin email"
-                  className="w-full glass-input pl-10 pr-4 py-3 rounded-2xl text-xs font-medium text-white placeholder-slate-500 border border-slate-800 focus:border-blue-500 outline-none transition-colors"
+                  className="w-full bg-[#FFFFFF] border border-[#E5E5E5] focus:border-[#C1121F] pl-10 pr-4 py-3 rounded-2xl text-xs font-bold text-[#0A0A0A] placeholder-[#777777] outline-none transition-colors"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1.5">Admin Password</label>
+              <label className="text-xs font-bold text-[#0A0A0A] block mb-1.5">Admin Password</label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                <Lock className="w-4 h-4 text-[#777777] absolute left-3.5 top-3.5" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your admin password"
-                  className="w-full glass-input pl-10 pr-4 py-3 rounded-2xl text-xs font-medium text-white placeholder-slate-500 border border-slate-800 focus:border-blue-500 outline-none transition-colors"
+                  className="w-full bg-[#FFFFFF] border border-[#E5E5E5] focus:border-[#C1121F] pl-10 pr-4 py-3 rounded-2xl text-xs font-bold text-[#0A0A0A] placeholder-[#777777] outline-none transition-colors"
                 />
               </div>
             </div>
@@ -92,7 +89,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 mt-2"
+              className="w-full py-3.5 px-4 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 mt-2"
             >
               {loading ? (
                 <span>Verifying with MongoDB Atlas...</span>
@@ -108,7 +105,7 @@ export default function LoginPage() {
 
         {/* Back Link */}
         <div className="text-center mt-6">
-          <Link to="/" className="text-xs text-slate-400 hover:text-white transition-colors inline-flex items-center gap-1.5">
+          <Link to="/" className="text-xs text-[#555555] hover:text-[#C1121F] font-bold transition-colors inline-flex items-center gap-1.5">
             &larr; Back to Zynexta Home Page
           </Link>
         </div>

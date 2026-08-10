@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import AdminLayout from '../components/layout/AdminLayout';
-import { History, Search, Download, Eye, Calendar, User, Store, ExternalLink } from 'lucide-react';
+import { History, Search, Download, Eye, Calendar, User, Store, ExternalLink, X } from 'lucide-react';
 
 export default function PosterHistoryPage() {
   const { generatedPosters } = useApp();
@@ -19,36 +19,36 @@ export default function PosterHistoryPage() {
       <div className="space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold font-heading text-white">Poster Generation History Log</h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <h1 className="text-2xl font-black font-heading text-[#0A0A0A]">Poster Generation History Log</h1>
+            <p className="text-xs text-[#555555] font-medium mt-1">
               Audit all personalized posters created by shop owners through dynamic share links.
             </p>
           </div>
         </div>
 
         {/* Search Bar Header */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex items-center justify-between">
+        <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl p-6 flex items-center justify-between shadow-xs">
           <div className="relative max-w-md w-full">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+            <Search className="w-4 h-4 text-[#777777] absolute left-3.5 top-3" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by customer name, template title, or shop owner..."
-              className="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-xs"
+              className="w-full bg-[#F8F8F6] border border-[#E5E5E5] focus:border-[#C1121F] text-[#111111] placeholder-[#777777] pl-10 pr-4 py-2 rounded-xl text-xs outline-none"
             />
           </div>
-          <span className="text-xs text-slate-400">
-            Total Records: <strong className="text-white font-bold">{filtered.length}</strong>
+          <span className="text-xs text-[#555555] font-medium">
+            Total Records: <strong className="text-[#0A0A0A] font-bold">{filtered.length}</strong>
           </span>
         </div>
 
         {/* TABLE LOG */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+        <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-950/80 border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <tr className="bg-[#F5F5F3] border-b border-[#E5E5E5] text-[11px] font-bold text-[#111111] uppercase tracking-wider">
                   <th className="py-4 px-6">Poster Preview</th>
                   <th className="py-4 px-6">Customer / Student</th>
                   <th className="py-4 px-6">Template Used</th>
@@ -57,30 +57,30 @@ export default function PosterHistoryPage() {
                   <th className="py-4 px-6 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-xs">
+              <tbody className="divide-y divide-[#E5E5E5] text-xs">
                 {filtered.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={item.id} className="hover:bg-[#FFF1F2] transition-colors">
                     <td className="py-3 px-6">
-                      <div className="w-12 h-14 bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
+                      <div className="w-12 h-14 bg-[#0A0A0A] rounded-lg overflow-hidden border border-[#E5E5E5]">
                         <img src={item.previewUrl} alt="Poster" className="w-full h-full object-cover" />
                       </div>
                     </td>
-                    <td className="py-3 px-6 font-bold text-white">
+                    <td className="py-3 px-6 font-bold text-[#0A0A0A]">
                       {item.customerName}
                     </td>
-                    <td className="py-3 px-6 text-slate-300 font-medium">
+                    <td className="py-3 px-6 text-[#555555] font-medium">
                       {item.templateTitle}
                     </td>
-                    <td className="py-3 px-6 text-cyan-400 font-semibold">
+                    <td className="py-3 px-6 text-[#C1121F] font-bold">
                       {item.generatedBy}
                     </td>
-                    <td className="py-3 px-6 text-slate-400">
+                    <td className="py-3 px-6 text-[#777777]">
                       {item.date}
                     </td>
                     <td className="py-3 px-6 text-right">
                       <button
                         onClick={() => setPreviewPoster(item)}
-                        className="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-semibold rounded-xl text-xs inline-flex items-center gap-1 border border-blue-500/30 transition-colors"
+                        className="px-3 py-1.5 bg-[#FFF1F2] hover:bg-red-100 text-[#C1121F] font-bold rounded-xl text-xs inline-flex items-center gap-1 border border-red-200 transition-colors"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         Inspect
@@ -95,22 +95,28 @@ export default function PosterHistoryPage() {
 
         {/* PREVIEW MODAL */}
         {previewPoster && (
-          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-              <h3 className="font-heading font-bold text-lg text-white">Poster Generation Audit Details</h3>
-              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex justify-center">
-                <img src={previewPoster.previewUrl} alt="Poster" className="max-h-80 object-contain rounded-lg shadow-xl" />
+          <div className="fixed inset-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#FFFFFF] border border-[#E5E5E5] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-[#111111]">
+              <div className="flex items-center justify-between">
+                <h3 className="font-heading font-bold text-lg text-[#0A0A0A]">Poster Generation Audit Details</h3>
+                <button onClick={() => setPreviewPoster(null)} className="p-1 text-[#555555] hover:text-[#0A0A0A]">
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <div className="text-xs space-y-1.5 text-slate-300">
-                <p><strong>Customer:</strong> {previewPoster.customerName}</p>
-                <p><strong>Shop Owner:</strong> {previewPoster.generatedBy}</p>
-                <p><strong>Template:</strong> {previewPoster.templateTitle}</p>
-                <p><strong>Timestamp:</strong> {previewPoster.date}</p>
+
+              <div className="bg-[#F8F8F6] p-4 rounded-2xl border border-[#E5E5E5] flex justify-center">
+                <img src={previewPoster.previewUrl} alt="Poster" className="max-h-80 object-contain rounded-lg shadow-sm" />
+              </div>
+              <div className="text-xs space-y-1.5 text-[#555555] font-medium">
+                <p><strong className="text-[#0A0A0A]">Customer:</strong> {previewPoster.customerName}</p>
+                <p><strong className="text-[#0A0A0A]">Shop Owner:</strong> {previewPoster.generatedBy}</p>
+                <p><strong className="text-[#0A0A0A]">Template:</strong> {previewPoster.templateTitle}</p>
+                <p><strong className="text-[#0A0A0A]">Timestamp:</strong> {previewPoster.date}</p>
               </div>
               <div className="flex justify-end pt-2">
                 <button
                   onClick={() => setPreviewPoster(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl"
+                  className="px-4 py-2 bg-[#F5F5F3] hover:bg-[#E5E5E5] text-[#555555] font-bold text-xs rounded-xl border border-[#E5E5E5]"
                 >
                   Close
                 </button>

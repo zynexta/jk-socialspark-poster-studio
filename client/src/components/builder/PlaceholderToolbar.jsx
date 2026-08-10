@@ -7,7 +7,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Photo Placeholder',
     desc: 'Student or Customer Photo upload box',
     icon: Camera,
-    color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 hover:border-cyan-400',
     defaultProps: {
       width: 280,
       height: 340,
@@ -22,7 +21,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Student Name',
     desc: 'Dynamic name field',
     icon: User,
-    color: 'bg-blue-500/10 text-blue-400 border-blue-500/30 hover:border-blue-400',
     defaultProps: {
       text: 'STUDENT NAME HERE',
       width: 500,
@@ -39,7 +37,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Class / Stream',
     desc: 'Grade, SSLC, Plus Two, Science, Commerce',
     icon: GraduationCap,
-    color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30 hover:border-indigo-400',
     defaultProps: {
       text: 'SSLC / 10th Grade Stream',
       width: 450,
@@ -56,7 +53,6 @@ const PLACEHOLDER_TYPES = [
     label: 'School / Institution',
     desc: 'School or college name',
     icon: School,
-    color: 'bg-purple-500/10 text-purple-400 border-purple-500/30 hover:border-purple-400',
     defaultProps: {
       text: 'St. Joseph Higher Secondary School',
       width: 550,
@@ -73,7 +69,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Rank / GPA / Grade',
     desc: 'Full A+, State 1st Rank, Distinction',
     icon: Award,
-    color: 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:border-amber-400',
     defaultProps: {
       text: 'FULL A+ (10/10 GPA)',
       width: 400,
@@ -92,7 +87,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Date / Event Time',
     desc: 'Event date, ceremony date',
     icon: Calendar,
-    color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:border-emerald-400',
     defaultProps: {
       text: 'Date: 15th August 2026',
       width: 350,
@@ -109,7 +103,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Phone / Contact',
     desc: 'Contact phone & website link',
     icon: Phone,
-    color: 'bg-teal-500/10 text-teal-400 border-teal-500/30 hover:border-teal-400',
     defaultProps: {
       text: 'Ph: +91 98765 43210 | www.zynexta.com',
       width: 500,
@@ -126,7 +119,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Brand Logo',
     desc: 'Zynexta or partner brand logo',
     icon: ImageIcon,
-    color: 'bg-rose-500/10 text-rose-400 border-rose-500/30 hover:border-rose-400',
     defaultProps: {
       width: 140,
       height: 70,
@@ -139,7 +131,6 @@ const PLACEHOLDER_TYPES = [
     label: 'QR Code',
     desc: 'Location or website link QR code',
     icon: QrCode,
-    color: 'bg-sky-500/10 text-sky-400 border-sky-500/30 hover:border-sky-400',
     defaultProps: {
       width: 120,
       height: 120,
@@ -152,7 +143,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Signature',
     desc: 'Principal / Director signature box',
     icon: PenTool,
-    color: 'bg-violet-500/10 text-violet-400 border-violet-500/30 hover:border-violet-400',
     defaultProps: {
       text: '[Authorized Signature]',
       width: 220,
@@ -169,7 +159,6 @@ const PLACEHOLDER_TYPES = [
     label: 'Custom Headline / Subtitle',
     desc: 'Any custom text heading or banner',
     icon: Type,
-    color: 'bg-slate-500/10 text-slate-300 border-slate-500/30 hover:border-slate-300',
     defaultProps: {
       text: 'SPECIAL CELEBRATION',
       width: 600,
@@ -183,17 +172,15 @@ const PLACEHOLDER_TYPES = [
   }
 ];
 
-export default function PlaceholderToolbar({ onAddPlaceholder, isDarkMode = true }) {
+export default function PlaceholderToolbar({ onAddPlaceholder }) {
   return (
-    <div className={`w-72 border-r flex flex-col h-full overflow-hidden transition-colors duration-200 ${
-      isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-800'
-    }`}>
-      <div className={`p-4 border-b ${isDarkMode ? 'border-slate-800 bg-slate-950/40' : 'border-slate-100 bg-slate-50/50'}`}>
-        <h3 className={`font-heading font-bold text-base flex items-center gap-2 ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>
-          <Plus className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+    <div className="w-72 border-r border-[#E5E5E5] flex flex-col h-full overflow-hidden bg-[#FFFFFF] text-[#111111]">
+      <div className="p-4 border-b border-[#E5E5E5] bg-[#F8F8F6]">
+        <h3 className="font-heading font-black text-base flex items-center gap-2 text-[#0A0A0A]">
+          <Plus className="w-5 h-5 text-[#C1121F]" />
           Add Placeholders
         </h3>
-        <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+        <p className="text-xs mt-1 text-[#555555] font-medium leading-relaxed">
           Click any element to drop dynamic field onto your poster template.
         </p>
       </div>
@@ -205,24 +192,16 @@ export default function PlaceholderToolbar({ onAddPlaceholder, isDarkMode = true
             <button
               key={item.type}
               onClick={() => onAddPlaceholder(item.type, item.label, item.defaultProps)}
-              className={`w-full text-left p-3 rounded-xl border transition-all duration-200 flex items-center gap-3 group hover:shadow-md hover:translate-x-1 ${
-                isDarkMode
-                  ? `${item.color}`
-                  : 'border-slate-200/80 bg-slate-50/70 hover:bg-blue-50/40 hover:border-blue-300'
-              }`}
+              className="w-full text-left p-3 rounded-xl border border-[#E5E5E5] bg-[#FFFFFF] hover:bg-[#FFF1F2] hover:border-[#C1121F] transition-all duration-200 flex items-center gap-3 group hover:shadow-xs hover:translate-x-0.5"
             >
-              <div className={`p-2 rounded-lg transition-all group-hover:scale-110 ${
-                isDarkMode
-                  ? 'bg-slate-950/60 text-slate-200'
-                  : 'bg-white shadow-xs border border-slate-100 text-blue-600 group-hover:text-blue-700'
-              }`}>
+              <div className="p-2 rounded-lg bg-[#F8F8F6] border border-[#E5E5E5] text-[#C1121F] group-hover:bg-[#C1121F] group-hover:text-white transition-colors">
                 <Icon className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <span className={`font-semibold text-xs block truncate ${isDarkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                <span className="font-bold text-xs block truncate text-[#0A0A0A]">
                   {item.label}
                 </span>
-                <span className={`text-[10px] block truncate ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                <span className="text-[10px] block truncate text-[#555555] font-medium">
                   {item.desc}
                 </span>
               </div>
