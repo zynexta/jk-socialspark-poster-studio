@@ -205,10 +205,20 @@ export const AppProvider = ({ children }) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('jk_poster_token') || localStorage.getItem('jk_auth_token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  };
+
   // 1. Fetch Categories Live from MongoDB Atlas
   const fetchCategories = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/categories`);
+      const res = await fetch(`${API_BASE_URL}/categories`, {
+        headers: getAuthHeaders(),
+      });
       if (res.ok) {
         const data = await res.json();
         if (data.categories && data.categories.length > 0) {
@@ -226,7 +236,9 @@ export const AppProvider = ({ children }) => {
   // 2. Fetch Templates Live from MongoDB Atlas
   const fetchTemplates = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/templates`);
+      const res = await fetch(`${API_BASE_URL}/templates`, {
+        headers: getAuthHeaders(),
+      });
       if (res.ok) {
         const data = await res.json();
         const cloudList = data.templates || [];
@@ -243,7 +255,7 @@ export const AppProvider = ({ children }) => {
           for (const tmpl of INITIAL_TEMPLATES) {
             await fetch(`${API_BASE_URL}/templates`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: getAuthHeaders(),
               body: JSON.stringify(tmpl),
             }).catch(() => {});
           }
@@ -257,7 +269,9 @@ export const AppProvider = ({ children }) => {
   // 3. Fetch Generated Posters History Live from MongoDB Atlas
   const fetchGeneratedPosters = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/posters/history`);
+      const res = await fetch(`${API_BASE_URL}/posters/history`, {
+        headers: getAuthHeaders(),
+      });
       if (res.ok) {
         const data = await res.json();
         if (data.posters) {
@@ -272,7 +286,9 @@ export const AppProvider = ({ children }) => {
   // 4. Fetch Share Links Live from MongoDB Atlas
   const fetchShareLinks = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/sharelinks`);
+      const res = await fetch(`${API_BASE_URL}/sharelinks`, {
+        headers: getAuthHeaders(),
+      });
       if (res.ok) {
         const data = await res.json();
         if (data.shareLinks) {
@@ -298,7 +314,7 @@ export const AppProvider = ({ children }) => {
     try {
       const res = await fetch(`${API_BASE_URL}/categories`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ name: name.trim() }),
       });
       const data = await res.json();
@@ -318,6 +334,7 @@ export const AppProvider = ({ children }) => {
     try {
       const res = await fetch(`${API_BASE_URL}/categories/${id}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
       if (res.ok) {
         addToast('Category deleted from database!', 'warning');
@@ -357,7 +374,7 @@ export const AppProvider = ({ children }) => {
     try {
       const res = await fetch(`${API_BASE_URL}/templates`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(finalTmpl),
       });
 
@@ -381,6 +398,7 @@ export const AppProvider = ({ children }) => {
     try {
       const res = await fetch(`${API_BASE_URL}/templates/${id}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
       if (res.ok) {
         addToast('Template deleted successfully!', 'warning');
@@ -415,7 +433,7 @@ export const AppProvider = ({ children }) => {
     try {
       const res = await fetch(`${API_BASE_URL}/sharelinks`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(linkData),
       });
       const data = await res.json();

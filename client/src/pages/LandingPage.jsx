@@ -88,7 +88,7 @@ export default function LandingPage() {
               className="h-10 w-auto object-contain transition-transform group-hover:scale-105" 
             />
             <div>
-              <span className="text-[10px] font-black tracking-wider text-[#C1121F] uppercase block">Official SaaS Platform</span>
+              <span className="text-[10px] font-black tracking-wider text-[#C1121F] uppercase block">Smart poster studio</span>
               <span className="font-heading font-extrabold text-base text-[#0A0A0A] tracking-tight">JK SocialSpark</span>
             </div>
           </Link>
