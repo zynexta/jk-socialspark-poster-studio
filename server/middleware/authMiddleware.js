@@ -7,11 +7,16 @@ export const authenticateJWT = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
-  const secret = process.env.JWT_SECRET || 'jk_security_smart_poster_super_secret_key_2026';
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error('🚨 CRITICAL SECURITY ALERT: JWT_SECRET environment variable is missing!');
+  }
 
-  jwt.verify(token, secret, (err, user) => {
+  const effectiveSecret = secret || 'jk_socialspark_super_secret_key_2026';
+
+  jwt.verify(token, effectiveSecret, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: 'Invalid or expired authentication token' });
+      return res.status(401).json({ message: 'Invalid or expired authentication token' });
     }
     req.user = user;
     next();

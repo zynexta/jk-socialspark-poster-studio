@@ -82,45 +82,36 @@ export const getMe = async (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, email, shopName, avatar, userId } = req.body;
+    const { name, email, shopName, avatar } = req.body;
+    const userId = req.user?.id;
 
-    let user = null;
-    if (mongoose.connection.readyState === 1) {
-      if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-        user = await User.findById(userId);
-      }
-
-      if (!user) {
-        user = await User.findOne({ role: 'admin' });
-      }
-
-      if (!user) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash('admin123', salt);
-        user = await User.create({
-          name: name || 'JK SocialSpark Admin',
-          email: email ? email.toLowerCase().trim() : 'admin@jksocialspark.com',
-          password: hashedPassword,
-          role: 'admin',
-          shopName: shopName || 'JK SocialSpark',
-          avatar: avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
-        });
-      } else {
-        if (name) user.name = name;
-        if (email) user.email = email.toLowerCase().trim();
-        if (shopName) user.shopName = shopName;
-        if (avatar) user.avatar = avatar;
-        await user.save();
-      }
+    if (!userId) {
+      return res.status(401).json({ message: 'Authentication required' });
     }
 
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ message: 'MongoDB Atlas connection offline.' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User account not found.' });
+    }
+
+    if (name && typeof name === 'string') user.name = name.trim();
+    if (email && typeof email === 'string') user.email = email.toLowerCase().trim();
+    if (shopName && typeof shopName === 'string') user.shopName = shopName.trim();
+    if (avatar && typeof avatar === 'string') user.avatar = avatar.trim();
+
+    await user.save();
+
     const userObj = {
-      id: user?._id || userId || 'usr_admin_01',
-      name: name || user?.name || 'JK SocialSpark Admin',
-      email: email ? email.toLowerCase().trim() : (user?.email || 'admin@jksocialspark.com'),
-      role: 'admin',
-      shopName: shopName || user?.shopName || 'JK SocialSpark',
-      avatar: avatar || user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      shopName: user.shopName || 'JK SocialSpark',
+      avatar: user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     };
 
     console.log(`✅ Admin Profile updated: ${userObj.email}`);
@@ -133,30 +124,31 @@ export const updateProfile = async (req, res, next) => {
 
 export const updatePassword = async (req, res, next) => {
   try {
-    const { newPassword, userId } = req.body;
+    const { newPassword } = req.body;
+    const userId = req.user?.id;
 
-    if (!newPassword || newPassword.length < 4) {
-      return res.status(400).json({ message: 'Password must be at least 4 characters long.' });
+    if (!userId) {
+      return res.status(401).json({ message: 'Authentication required' });
     }
 
-    if (mongoose.connection.readyState === 1) {
-      let user = null;
-      if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-        user = await User.findById(userId);
-      }
-
-      if (!user) {
-        user = await User.findOne({ role: 'admin' });
-      }
-
-      if (user) {
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(newPassword, salt);
-        await user.save();
-      }
+    if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
     }
 
-    console.log(`✅ Admin password updated successfully.`);
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ message: 'MongoDB Atlas connection offline.' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User account not found.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    console.log(`✅ Admin password updated successfully for user ID: ${userId}`);
     res.json({ message: 'Admin password updated successfully!' });
   } catch (error) {
     console.error('Error updating password:', error);
