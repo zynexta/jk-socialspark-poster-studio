@@ -34,9 +34,9 @@ export default function LandingPage() {
     security: {
       title: 'CCTV Camera Mega Offer',
       category: 'Security Solutions',
-      studentName: 'ZYNEXTA SECURITY HQ',
+      studentName: 'JK SOCIALSPARK HQ',
       rank: 'SPECIAL FESTIVAL DISCOUNT 40% OFF',
-      school: 'Ph: +91 98765 43210 | www.zynexta.com',
+      school: 'Ph: +91 98765 43210 | www.jksocialspark.com',
       photo: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80',
       bgColor: '#111111',
       badgeBg: 'bg-[#C1121F]',
@@ -82,14 +82,14 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#E5E5E5] shadow-xs">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-[#0A0A0A] p-0.5 shadow-sm group-hover:bg-[#C1121F] transition-colors flex items-center justify-center">
-              <div className="w-full h-full bg-[#0A0A0A] rounded-[10px] flex items-center justify-center font-black text-white text-base group-hover:scale-105 transition-transform">
-                ZX
-              </div>
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="JK SocialSpark Logo" 
+              className="h-10 w-auto object-contain transition-transform group-hover:scale-105" 
+            />
             <div>
-              <span className="text-[10px] font-black tracking-wider text-[#C1121F] uppercase block">Zynexta Software Solutions</span>
-              <span className="font-heading font-extrabold text-base text-[#0A0A0A] tracking-tight">Smart Poster Studio</span>
+              <span className="text-[10px] font-black tracking-wider text-[#C1121F] uppercase block">Official SaaS Platform</span>
+              <span className="font-heading font-extrabold text-base text-[#0A0A0A] tracking-tight">JK SocialSpark</span>
             </div>
           </Link>
 
@@ -149,7 +149,7 @@ export default function LandingPage() {
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#C1121F]"></span>
                 </span>
                 <Sparkles className="w-4 h-4 text-[#C1121F]" />
-                <span>Next-Gen Cloud Poster Generation SaaS by Zynexta</span>
+                <span>Next-Gen Cloud Poster Generation SaaS by JK SocialSpark</span>
               </div>
             </motion.div>
 
@@ -238,7 +238,7 @@ export default function LandingPage() {
                 <span className="w-3 h-3 rounded-full bg-[#C1121F] inline-block" />
                 <span className="w-3 h-3 rounded-full bg-[#555555] inline-block" />
                 <span className="w-3 h-3 rounded-full bg-[#FFFFFF] inline-block" />
-                <span className="text-xs text-slate-300 font-mono ml-2">app.zynexta.com/template/demo</span>
+                <span className="text-xs text-slate-300 font-mono ml-2">app.jksocialspark.com/template/demo</span>
               </div>
 
               {/* Template Switcher Tabs */}
@@ -350,7 +350,7 @@ export default function LandingPage() {
 
                     {/* Footer QR */}
                     <div className="relative z-10 pt-2 border-t border-slate-800 flex items-center justify-between text-[9px] text-slate-400">
-                      <span>Powered by Zynexta SaaS Platform</span>
+                      <span>Powered by JK SocialSpark</span>
                       <QrCode className="w-5 h-5 text-[#C1121F]" />
                     </div>
                   </motion.div>
@@ -757,11 +757,13 @@ export default function LandingPage() {
       <footer className="bg-[#0A0A0A] border-t border-[#111111] py-12 relative z-10 text-[#A3A3A3]">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#C1121F] flex items-center justify-center font-black text-white text-xs shadow-sm">
-              ZX
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="JK SocialSpark Logo" 
+              className="h-8 w-auto object-contain" 
+            />
             <span className="text-xs text-[#A3A3A3]">
-              © 2026 <strong className="text-white font-bold">Zynexta Software Solutions</strong>. All Rights Reserved. Zynexta Smart Poster Studio SaaS Platform.
+              © 2026 <strong className="text-white font-bold">JK SocialSpark</strong>. All Rights Reserved. Powerful Smart Poster Studio SaaS Platform.
             </span>
           </div>
 

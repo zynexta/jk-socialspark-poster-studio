@@ -12,9 +12,9 @@ export default function SettingsPage() {
   const { user, updateUser, updatePassword } = useAuth();
   const { addToast } = useApp();
 
-  const [name, setName] = useState(user?.name || 'Zynexta Admin Team');
-  const [email, setEmail] = useState(user?.email || 'admin@zynexta.com');
-  const [companyName, setCompanyName] = useState('Zynexta Software Solutions');
+  const [name, setName] = useState(user?.name || 'JK SocialSpark Admin Team');
+  const [email, setEmail] = useState(user?.email || 'admin@jksocialspark.com');
+  const [companyName, setCompanyName] = useState('JK SocialSpark');
 
   // Password fields
   const [currentPassword, setCurrentPassword] = useState('');
@@ -102,7 +102,7 @@ export default function SettingsPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-[#FFFFFF] border border-[#E5E5E5] focus:border-[#C1121F] pl-10 pr-4 py-2.5 rounded-xl text-xs font-bold text-[#C1121F] outline-none"
-                    placeholder="admin@zynexta.com"
+                    placeholder="admin@jksocialspark.com"
                   />
                 </div>
               </div>

@@ -4,6 +4,8 @@ import { generatePoster, getPosterHistory } from '../controllers/posterControlle
 const router = express.Router();
 
 router.post('/generate', generatePoster);
+router.post('/', generatePoster);
 router.get('/history', getPosterHistory);
+router.get('/', getPosterHistory);
 
 export default router;

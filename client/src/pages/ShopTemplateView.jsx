@@ -289,7 +289,7 @@ export default function ShopTemplateView() {
   };
 
   const handleWhatsAppShare = () => {
-    const text = encodeURIComponent(`Check out this customized poster generated via Zynexta Smart Poster SaaS for ${template.title}!`);
+    const text = encodeURIComponent(`Check out this customized poster generated via JK SocialSpark for ${template.title}!`);
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
   };
 
@@ -398,11 +398,13 @@ export default function ShopTemplateView() {
       {/* Top Header Navigation */}
       <header className="bg-[#FFFFFF] border-b border-[#E5E5E5] px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#C1121F] rounded-xl flex items-center justify-center font-black text-white text-sm shadow-md">
-            ZX
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="JK SocialSpark Logo" 
+            className="h-9 w-auto object-contain" 
+          />
           <div>
-            <span className="text-xs text-[#C1121F] font-bold tracking-wide uppercase block">Zynexta Poster SaaS</span>
+            <span className="text-xs text-[#C1121F] font-bold tracking-wide uppercase block">JK SocialSpark</span>
             <h1 className="text-base font-heading font-black text-[#0A0A0A] leading-none">{template.title}</h1>
           </div>
         </div>

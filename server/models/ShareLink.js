@@ -1,9 +1,12 @@
 import mongoose from 'mongoose';
 
 const shareLinkSchema = new mongoose.Schema({
-  templateId: { type: mongoose.Schema.Types.ObjectId, ref: 'Template' },
+  templateId: { type: String, required: true },
+  templateTitle: { type: String },
   token: { type: String, required: true, unique: true },
-  expirationDate: Date,
+  shopOwnerId: { type: String },
+  shopOwnerName: { type: String },
+  expirationDate: { type: String },
   isPublic: { type: Boolean, default: true },
   clickCount: { type: Number, default: 0 }
 }, { timestamps: true });

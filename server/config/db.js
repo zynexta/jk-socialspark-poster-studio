@@ -17,14 +17,14 @@ export const connectDB = async () => {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash('admin123', salt);
       await User.create({
-        name: 'Zynexta Super Admin',
-        email: 'admin@zynexta.com',
+        name: 'JK SocialSpark Admin',
+        email: 'admin@jksocialspark.com',
         password: hashedPassword,
         role: 'admin',
-        shopName: 'Zynexta Software Solutions',
+        shopName: 'JK SocialSpark',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
       });
-      console.log('🎉 Default Super Admin created in MongoDB Atlas: admin@zynexta.com (pass: admin123)');
+      console.log('🎉 Default Admin created in MongoDB Atlas: admin@jksocialspark.com (pass: admin123)');
     }
 
     return conn;

@@ -1,5 +1,5 @@
 /**
- * Centralized Style Normalizer for Zynexta Smart Poster Generator.
+ * Centralized Style Normalizer for JK SocialSpark.
  * Converts placeholder JSON (whether nested in .style or top-level properties)
  * into a complete, pixel-perfect CSS style object.
  */

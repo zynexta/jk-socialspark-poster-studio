@@ -104,7 +104,7 @@ const PLACEHOLDER_TYPES = [
     desc: 'Contact phone & website link',
     icon: Phone,
     defaultProps: {
-      text: 'Ph: +91 98765 43210 | www.zynexta.com',
+      text: 'Ph: +91 98765 43210 | www.jksocialspark.com',
       width: 500,
       height: 35,
       fontSize: 16,
@@ -117,7 +117,7 @@ const PLACEHOLDER_TYPES = [
   {
     type: 'logo',
     label: 'Brand Logo',
-    desc: 'Zynexta or partner brand logo',
+    desc: 'JK SocialSpark or partner brand logo',
     icon: ImageIcon,
     defaultProps: {
       width: 140,
@@ -134,7 +134,7 @@ const PLACEHOLDER_TYPES = [
     defaultProps: {
       width: 120,
       height: 120,
-      placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://zynexta.com',
+      placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://jksocialspark.com',
       borderRadius: 8,
     }
   },

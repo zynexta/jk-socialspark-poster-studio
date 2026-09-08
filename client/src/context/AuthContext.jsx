@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const cleanInputEmail = email.toLowerCase().trim();
-    const savedEmail = (localStorage.getItem('jk_poster_admin_email') || user?.email || 'admin@zynexta.com').toLowerCase().trim();
+    const savedEmail = (localStorage.getItem('jk_poster_admin_email') || user?.email || 'admin@jksocialspark.com').toLowerCase().trim();
     const savedPassword = localStorage.getItem('jk_poster_admin_password') || 'admin123';
 
     try {
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       }
       
       // If network/DB timeout occurs, perform strict local verification on email & password
-      if (cleanInputEmail !== savedEmail && cleanInputEmail !== 'admin@zynexta.com') {
+      if (cleanInputEmail !== savedEmail && cleanInputEmail !== 'admin@jksocialspark.com') {
         throw new Error(`Invalid Email address! '${cleanInputEmail}' is not registered as Admin.`);
       }
       if (password !== savedPassword && password !== 'admin123') {
@@ -88,10 +88,10 @@ export const AuthProvider = ({ children }) => {
 
     const fallbackUser = {
       id: user?.id || user?._id || 'usr_admin_01',
-      name: user?.name || 'Zynexta Super Admin',
+      name: user?.name || 'JK SocialSpark Admin',
       email: cleanInputEmail,
       role: 'admin',
-      shopName: user?.shopName || 'Zynexta Software Solutions',
+      shopName: user?.shopName || 'JK SocialSpark',
       avatar: user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     };
     setUser(fallbackUser);

@@ -1,4 +1,4 @@
-# JK Smart Poster Generator
+# JK SocialSpark
 
 A full-stack web application for creating, customizing, and downloading smart promotional posters.
 

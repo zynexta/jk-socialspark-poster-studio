@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const AppContext = createContext(null);
 
@@ -16,11 +16,11 @@ export const generateSlug = (title) => {
 };
 
 const INITIAL_CATEGORIES = [
-  { id: 'cat_sslc', name: 'SSLC / Academic', icon: 'GraduationCap', count: 12, color: 'from-blue-600 to-indigo-600' },
-  { id: 'cat_security', name: 'Security & CCTV', icon: 'ShieldCheck', count: 8, color: 'from-cyan-600 to-blue-600' },
-  { id: 'cat_sports', name: 'Sports & Awards', icon: 'Trophy', count: 5, color: 'from-amber-500 to-orange-600' },
-  { id: 'cat_offers', name: 'Offers & Discounts', icon: 'Tag', count: 14, color: 'from-emerald-600 to-teal-600' },
-  { id: 'cat_events', name: 'Events & Festivals', icon: 'Calendar', count: 9, color: 'from-purple-600 to-pink-600' },
+  { id: 'cat_sslc', name: 'SSLC / Academic', icon: 'GraduationCap', count: 0, color: 'from-blue-600 to-indigo-600' },
+  { id: 'cat_security', name: 'Security & CCTV', icon: 'ShieldCheck', count: 0, color: 'from-cyan-600 to-blue-600' },
+  { id: 'cat_sports', name: 'Sports & Awards', icon: 'Trophy', count: 0, color: 'from-amber-500 to-orange-600' },
+  { id: 'cat_offers', name: 'Offers & Discounts', icon: 'Tag', count: 0, color: 'from-emerald-600 to-teal-600' },
+  { id: 'cat_events', name: 'Events & Festivals', icon: 'Calendar', count: 0, color: 'from-purple-600 to-pink-600' },
 ];
 
 const INITIAL_TEMPLATES = [
@@ -99,18 +99,33 @@ const INITIAL_TEMPLATES = [
         borderRadius: 28,
         borderWidth: 2,
         borderColor: '#C1121F',
-        borderStyle: 'dashed',
         placeholderImg: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
         zIndex: 4,
       },
       {
+        id: 'pl_name_1',
+        type: 'text',
+        label: 'Student Full Name',
+        text: 'ANANYA SANTHOSH',
+        x: 100,
+        y: 560,
+        width: 600,
+        height: 45,
+        fontSize: 30,
+        fontFamily: 'Outfit',
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        align: 'center',
+        zIndex: 5,
+      },
+      {
         id: 'pl_rank_1',
-        type: 'rank',
-        label: 'Rank / Grade Badge',
-        text: 'FULL A+ (10/10 GPA)',
-        x: 250,
-        y: 570,
-        width: 300,
+        type: 'badge',
+        label: 'Rank Distinction Badge',
+        text: 'FULL A+ (99.4%) - STATE RANK 1',
+        x: 150,
+        y: 620,
+        width: 500,
         height: 44,
         fontSize: 18,
         fontFamily: 'Outfit',
@@ -118,34 +133,17 @@ const INITIAL_TEMPLATES = [
         color: '#FFFFFF',
         backgroundColor: '#C1121F',
         borderRadius: 22,
-        borderWidth: 0,
-        align: 'center',
-        zIndex: 5,
-      },
-      {
-        id: 'pl_name_1',
-        type: 'student_name',
-        label: 'Student Full Name',
-        text: 'ADITHYA V. NAIR',
-        x: 100,
-        y: 645,
-        width: 600,
-        height: 50,
-        fontSize: 34,
-        fontFamily: 'Outfit',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
         align: 'center',
         zIndex: 6,
       },
       {
         id: 'pl_school_1',
-        type: 'school',
-        label: 'School / Institution Name',
-        text: 'St. Joseph Higher Secondary School, Calicut',
-        x: 80,
-        y: 710,
-        width: 640,
+        type: 'text',
+        label: 'School & Location',
+        text: 'St. Mary’s Higher Secondary School, Pala',
+        x: 100,
+        y: 680,
+        width: 600,
         height: 35,
         fontSize: 16,
         fontFamily: 'Inter',
@@ -157,7 +155,7 @@ const INITIAL_TEMPLATES = [
         id: 'pl_footer_text',
         type: 'custom_text',
         label: 'Footer SaaS Text',
-        text: 'Powered by Zynexta SaaS Platform',
+        text: 'Powered by JK SocialSpark',
         x: 80,
         y: 835,
         width: 400,
@@ -177,313 +175,229 @@ const INITIAL_TEMPLATES = [
         width: 50,
         height: 50,
         borderRadius: 8,
-        placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://zynexta.com&color=c1121f',
+        placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://jksocialspark.com&color=c1121f',
         zIndex: 9,
       },
-    ]
-  },
-  {
-    id: 'tmpl_cctv_offer_2026',
-    shareToken: 'cctv-camera-mega-offer',
-    title: 'CCTV Camera Mega Offer Poster',
-    category: 'Security & CCTV',
-    width: 800,
-    height: 1000,
-    aspectRatio: '4:5',
-    bgImage: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=1200&q=80',
-    bgColor: '#0284C7',
-    createdAt: '2026-07-21',
-    generatedCount: 0,
-    isPublic: true,
-    expirationDate: '2026-12-31',
-    placeholders: [
-      {
-        id: 'pl_offer_img',
-        type: 'photo',
-        label: 'Product Photo Box',
-        x: 200,
-        y: 150,
-        width: 400,
-        height: 350,
-        borderRadius: 20,
-        borderWidth: 3,
-        borderColor: '#0284C7',
-        placeholderImg: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80',
-        zIndex: 2,
-      },
-      {
-        id: 'pl_headline',
-        type: 'text',
-        label: 'Main Offer Title',
-        text: 'ZYNEXTA SECURITY HQ MEGA SALE',
-        x: 50,
-        y: 540,
-        width: 700,
-        height: 50,
-        fontSize: 28,
-        fontFamily: 'Outfit',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        align: 'center',
-        zIndex: 3,
-      },
-      {
-        id: 'pl_discount_badge',
-        type: 'badge',
-        label: 'Discount Badge',
-        text: 'FLAT 40% OFF - LIMITED PERIOD',
-        x: 150,
-        y: 610,
-        width: 500,
-        height: 48,
-        fontSize: 22,
-        fontFamily: 'Outfit',
-        fontWeight: 'bold',
-        color: '#38BDF8',
-        backgroundColor: 'rgba(56, 189, 248, 0.2)',
-        borderRadius: 24,
-        borderWidth: 2,
-        borderColor: '#38BDF8',
-        align: 'center',
-        zIndex: 4,
-      },
-      {
-        id: 'pl_contact_details',
-        type: 'text',
-        label: 'Shop Contact Phone',
-        text: 'Call Us: +91 98765 43210 | www.zynexta.com',
-        x: 50,
-        y: 680,
-        width: 700,
-        height: 40,
-        fontSize: 18,
-        fontFamily: 'Inter',
-        color: '#E0F2FE',
-        align: 'center',
-        zIndex: 5,
-      }
     ]
   }
 ];
 
 export const AppProvider = ({ children }) => {
   const [categories, setCategories] = useState(INITIAL_CATEGORIES);
-
-  const [templates, setTemplates] = useState(() => {
-    try {
-      const saved = localStorage.getItem('jk_poster_templates');
-      return saved ? JSON.parse(saved) : INITIAL_TEMPLATES;
-    } catch {
-      return INITIAL_TEMPLATES;
-    }
-  });
-
-  const [generatedPosters, setGeneratedPosters] = useState(() => {
-    try {
-      const saved = localStorage.getItem('jk_poster_generated_history');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
+  const [templates, setTemplates] = useState(INITIAL_TEMPLATES);
+  const [generatedPosters, setGeneratedPosters] = useState([]);
+  const [shareLinks, setShareLinks] = useState([]);
   const [toasts, setToasts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Fetch Templates Live from MongoDB Atlas Cloud Database with Smart Local Merge
-  useEffect(() => {
-    const fetchCloudTemplates = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/templates`);
-        if (res.ok) {
-          const data = await res.json();
-          const cloudList = data.templates || [];
-          
-          // Get local templates saved in browser storage
-          let localList = [];
-          try {
-            const saved = localStorage.getItem('jk_poster_templates');
-            localList = saved ? JSON.parse(saved) : [];
-          } catch (e) {
-            localList = [];
-          }
-
-          // Merge strategy: Combine cloud + local templates cleanly by unique ID
-          const templateMap = new Map();
-          localList.forEach(t => { if (t && t.id) templateMap.set(t.id, t); });
-
-          cloudList.forEach(cloudTmpl => {
-            if (!cloudTmpl || !cloudTmpl.id) return;
-            const localTmpl = templateMap.get(cloudTmpl.id);
-            if (!localTmpl) {
-              templateMap.set(cloudTmpl.id, cloudTmpl);
-            } else {
-              const mergedPlaceholders = cloudTmpl.placeholders?.map(cloudPl => {
-                const localPl = localTmpl.placeholders?.find(lp => (lp.id || lp._id) === (cloudPl.id || cloudPl._id));
-                if (localPl) {
-                  return {
-                    ...cloudPl,
-                    borderTopLeftRadius: cloudPl.borderTopLeftRadius ?? localPl.borderTopLeftRadius,
-                    borderTopRightRadius: cloudPl.borderTopRightRadius ?? localPl.borderTopRightRadius,
-                    borderBottomRightRadius: cloudPl.borderBottomRightRadius ?? localPl.borderBottomRightRadius,
-                    borderBottomLeftRadius: cloudPl.borderBottomLeftRadius ?? localPl.borderBottomLeftRadius,
-                    clipPath: cloudPl.clipPath || localPl.clipPath,
-                    maskImage: cloudPl.maskImage || localPl.maskImage,
-                    shape: cloudPl.shape || localPl.shape,
-                  };
-                }
-                return cloudPl;
-              });
-              templateMap.set(cloudTmpl.id, {
-                ...cloudTmpl,
-                placeholders: mergedPlaceholders || cloudTmpl.placeholders,
-              });
-            }
-          });
-
-          const mergedTemplates = Array.from(templateMap.values());
-          if (mergedTemplates.length > 0) {
-            setTemplates(mergedTemplates);
-            try {
-              localStorage.setItem('jk_poster_templates', JSON.stringify(mergedTemplates));
-            } catch (e) {
-              console.warn('LocalStorage save info:', e);
-            }
-          } else {
-            // Seed initial templates to MongoDB Atlas if DB is empty
-            for (const tmpl of INITIAL_TEMPLATES) {
-              await fetch(`${API_BASE_URL}/templates`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(tmpl),
-              }).catch(() => {});
-            }
-          }
-        }
-      } catch (err) {
-        console.warn('MongoDB Atlas live template sync info:', err.message);
-      }
-    };
-
-    fetchCloudTemplates();
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('jk_poster_templates', JSON.stringify(templates));
-    } catch {
-      // ignore
-    }
-  }, [templates]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('jk_poster_generated_history', JSON.stringify(generatedPosters));
-    } catch {
-      // ignore
-    }
-  }, [generatedPosters]);
-
-  const addToast = (message, type = 'success') => {
+  const addToast = useCallback((message, type = 'success') => {
     setToasts(prev => {
-      // Deduplicate toasts so identical messages do not stack up
-      if (prev.some(t => t.message === message)) {
-        return prev;
-      }
+      if (prev.some(t => t.message === message)) return prev;
       const id = Date.now() + Math.random();
       setTimeout(() => {
         removeToast(id);
       }, 3500);
       return [...prev, { id, message, type }];
     });
-  };
+  }, []);
 
   const removeToast = (id) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
+  // 1. Fetch Categories Live from MongoDB Atlas
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/categories`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.categories && data.categories.length > 0) {
+          setCategories(data.categories.map(c => ({
+            ...c,
+            id: c.id || c._id,
+          })));
+        }
+      }
+    } catch (err) {
+      console.warn('MongoDB Atlas categories sync info:', err.message);
+    }
+  }, []);
+
+  // 2. Fetch Templates Live from MongoDB Atlas
+  const fetchTemplates = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/templates`);
+      if (res.ok) {
+        const data = await res.json();
+        const cloudList = data.templates || [];
+
+        if (cloudList.length > 0) {
+          setTemplates(cloudList);
+          try {
+            localStorage.setItem('jk_poster_templates', JSON.stringify(cloudList));
+          } catch (e) {
+            // ignore
+          }
+        } else {
+          // Seed initial templates to MongoDB Atlas if DB is empty
+          for (const tmpl of INITIAL_TEMPLATES) {
+            await fetch(`${API_BASE_URL}/templates`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(tmpl),
+            }).catch(() => {});
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('MongoDB Atlas templates sync info:', err.message);
+    }
+  }, []);
+
+  // 3. Fetch Generated Posters History Live from MongoDB Atlas
+  const fetchGeneratedPosters = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/posters/history`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.posters) {
+          setGeneratedPosters(data.posters);
+        }
+      }
+    } catch (err) {
+      console.warn('MongoDB Atlas poster history fetch info:', err.message);
+    }
+  }, []);
+
+  // 4. Fetch Share Links Live from MongoDB Atlas
+  const fetchShareLinks = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/sharelinks`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.shareLinks) {
+          setShareLinks(data.shareLinks);
+        }
+      }
+    } catch (err) {
+      console.warn('MongoDB Atlas share links fetch info:', err.message);
+    }
+  }, []);
+
+  // Load all live MongoDB Atlas data on mount
+  useEffect(() => {
+    fetchCategories();
+    fetchTemplates();
+    fetchGeneratedPosters();
+    fetchShareLinks();
+  }, [fetchCategories, fetchTemplates, fetchGeneratedPosters, fetchShareLinks]);
+
+  // Category Actions
+  const addCategory = async (name) => {
+    if (!name || !name.trim()) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.category) {
+        addToast(`Category "${data.category.name}" created!`);
+        fetchCategories();
+        return data.category;
+      } else {
+        addToast(data.message || 'Failed to create category', 'error');
+      }
+    } catch (err) {
+      addToast('Network error creating category', 'error');
+    }
+  };
+
+  const deleteCategory = async (id) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/categories/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        addToast('Category deleted from database!', 'warning');
+        setCategories(prev => prev.filter(c => c.id !== id && c._id !== id));
+        fetchCategories();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        addToast(data.message || 'Failed to delete category', 'error');
+      }
+    } catch (err) {
+      addToast('Network error deleting category', 'error');
+    }
+  };
+
   // Template CRUD with Live MongoDB Atlas Sync
   const saveTemplate = async (templateData, options = { showToast: true }) => {
-    const existingIndex = templates.findIndex(t => t.id === templateData.id);
     let baseSlug = templateData.shareToken && !templateData.shareToken.startsWith('token-')
       ? templateData.shareToken
       : generateSlug(templateData.title);
 
-    // Guarantee 100% Unique Share Token across all templates (no collisions!)
     let uniqueSlug = baseSlug;
     const isDuplicateSlug = templates.some(t => t.id !== templateData.id && t.shareToken === uniqueSlug);
     if (isDuplicateSlug) {
       uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
     }
 
-    let finalTmpl;
-
-    if (existingIndex >= 0) {
-      const updated = [...templates];
-      finalTmpl = {
-        ...templateData,
-        shareToken: uniqueSlug,
-        updatedAt: new Date().toISOString()
-      };
-      updated[existingIndex] = finalTmpl;
-      setTemplates(updated);
-      try {
-        localStorage.setItem('jk_poster_templates', JSON.stringify(updated));
-      } catch (e) {
-        console.warn('LocalStorage save templates warning:', e);
-      }
-      if (options?.showToast !== false) {
-        addToast('Template updated successfully!');
-      }
-    } else {
-      finalTmpl = {
-        ...templateData,
-        id: templateData.id || `tmpl_${Date.now()}`,
-        shareToken: uniqueSlug,
-        isPublic: templateData.isPublic !== undefined ? templateData.isPublic : true,
-        expirationDate: templateData.expirationDate || '2026-12-31',
-        createdAt: new Date().toISOString(),
-        generatedCount: 0,
-      };
-      const newList = [finalTmpl, ...templates];
-      setTemplates(newList);
-      try {
-        localStorage.setItem('jk_poster_templates', JSON.stringify(newList));
-      } catch (e) {
-        console.warn('LocalStorage save templates warning:', e);
-      }
-      if (options?.showToast !== false) {
-        addToast('New poster template created successfully!');
-      }
-    }
+    const finalTmpl = {
+      ...templateData,
+      id: templateData.id || `tmpl_${Date.now()}`,
+      shareToken: uniqueSlug,
+      isPublic: templateData.isPublic !== undefined ? templateData.isPublic : true,
+      expirationDate: templateData.expirationDate || '2026-12-31',
+      updatedAt: new Date().toISOString(),
+    };
 
     // Save to MongoDB Atlas Cloud Database instantly
     try {
-      await fetch(`${API_BASE_URL}/templates`, {
+      const res = await fetch(`${API_BASE_URL}/templates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalTmpl),
       });
+
+      if (res.ok) {
+        if (options?.showToast !== false) {
+          addToast('Poster template saved in MongoDB Atlas!');
+        }
+        fetchTemplates();
+        fetchCategories();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        addToast(data.message || 'Failed to save template', 'error');
+      }
     } catch (err) {
-      console.warn('MongoDB Atlas template save info:', err.message);
+      addToast('Network error saving template', 'error');
     }
     return finalTmpl;
   };
 
   const deleteTemplate = async (id) => {
-    setTemplates(templates.filter(t => t.id !== id));
-    addToast('Template deleted successfully!', 'warning');
-
     try {
-      await fetch(`${API_BASE_URL}/templates/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/templates/${id}`, {
         method: 'DELETE',
       });
+      if (res.ok) {
+        addToast('Template deleted successfully!', 'warning');
+        setTemplates(prev => prev.filter(t => t.id !== id && t._id !== id));
+        fetchTemplates();
+        fetchCategories();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        addToast(data.message || 'Failed to delete template', 'error');
+      }
     } catch (err) {
-      console.warn('MongoDB Atlas template delete info:', err.message);
+      addToast('Network error deleting template', 'error');
     }
   };
 
   const duplicateTemplate = async (id) => {
-    const found = templates.find(t => t.id === id);
+    const found = templates.find(t => t.id === id || t._id === id);
     if (!found) return;
     const duplicated = {
       ...found,
@@ -493,17 +407,26 @@ export const AppProvider = ({ children }) => {
       createdAt: new Date().toISOString(),
       generatedCount: 0,
     };
-    setTemplates([duplicated, ...templates]);
-    addToast(`Template "${found.title}" duplicated successfully!`);
+    saveTemplate(duplicated);
+  };
 
+  // Share Link Action
+  const createShareLink = async (linkData) => {
     try {
-      await fetch(`${API_BASE_URL}/templates`, {
+      const res = await fetch(`${API_BASE_URL}/sharelinks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(duplicated),
+        body: JSON.stringify(linkData),
       });
+      const data = await res.json();
+      if (res.ok && data.shareLink) {
+        fetchShareLinks();
+        return data.shareLink;
+      } else {
+        console.warn('Share link creation error:', data.message);
+      }
     } catch (err) {
-      console.warn('MongoDB Atlas duplicate info:', err.message);
+      console.warn('Share link network error:', err.message);
     }
   };
 
@@ -512,7 +435,7 @@ export const AppProvider = ({ children }) => {
     if (!token) return null;
 
     if (token === 'sslc-topper-2026' || token === 'demo') {
-      return INITIAL_TEMPLATES[0];
+      return templates.find(t => t.shareToken === 'sslc-topper-2026') || INITIAL_TEMPLATES[0];
     }
 
     if (token === 'preview') {
@@ -540,7 +463,6 @@ export const AppProvider = ({ children }) => {
 
     if (!normalizedSearch) return strictOnly ? null : (templates[0] || null);
 
-    // 1. Exact or case-insensitive match on shareToken or id FIRST
     let found = templates.find(t => 
       t && (
         (t.shareToken && t.shareToken.toLowerCase().trim() === cleanSearch) || 
@@ -549,7 +471,6 @@ export const AppProvider = ({ children }) => {
     );
     if (found) return found;
 
-    // 2. Exact Normalized match on shareToken or id (ignores hyphens/spaces)
     found = templates.find(t => {
       if (!t) return false;
       const normToken = (t.shareToken || '').toLowerCase().replace(/[\s_-]+/g, '');
@@ -558,7 +479,6 @@ export const AppProvider = ({ children }) => {
     });
     if (found) return found;
 
-    // 3. Match title exact normalized
     found = templates.find(t => {
       if (!t) return false;
       const normTitle = (t.title || '').toLowerCase().replace(/[\s_-]+/g, '');
@@ -569,23 +489,29 @@ export const AppProvider = ({ children }) => {
     return strictOnly ? null : (templates[0] || null);
   };
 
+  // Record Poster Generation in MongoDB Atlas
   const recordPosterGeneration = async (posterData) => {
-    const newEntry = {
-      id: `gen_${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-      ...posterData,
-    };
-    setGeneratedPosters(prev => [newEntry, ...prev]);
-
     try {
-      await fetch(`${API_BASE_URL}/posters`, {
+      const res = await fetch(`${API_BASE_URL}/posters/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newEntry),
+        body: JSON.stringify(posterData),
       });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.poster) {
+          setGeneratedPosters(prev => [data.poster, ...prev]);
+        }
+        fetchGeneratedPosters();
+        fetchTemplates();
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        addToast(errData.message || 'Failed to record poster generation in database', 'error');
+      }
     } catch (err) {
       console.warn('MongoDB Atlas poster generation log info:', err.message);
+      addToast('Network warning while logging poster generation', 'error');
     }
   };
 
@@ -595,10 +521,19 @@ export const AppProvider = ({ children }) => {
         categories,
         templates,
         generatedPosters,
+        shareLinks,
         toasts,
+        loading,
+        fetchCategories,
+        fetchTemplates,
+        fetchGeneratedPosters,
+        fetchShareLinks,
+        addCategory,
+        deleteCategory,
         saveTemplate,
         deleteTemplate,
         duplicateTemplate,
+        createShareLink,
         getTemplateByToken,
         addGeneratedPosterHistory: recordPosterGeneration,
         recordPosterGeneration,

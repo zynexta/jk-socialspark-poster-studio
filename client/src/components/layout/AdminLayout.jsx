@@ -79,12 +79,14 @@ export default function AdminLayout({ children }) {
         <div className="flex flex-col h-full min-h-0">
           {/* Brand Logo Header */}
           <Link to="/admin" className="flex items-center gap-3 px-3 py-3 mb-4 shrink-0 hover:opacity-90 transition-opacity">
-            <div className="w-10 h-10 rounded-xl bg-[#C1121F] flex items-center justify-center font-black text-white text-base shadow-md">
-              ZX
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="JK SocialSpark Logo" 
+              className="h-10 w-auto object-contain drop-shadow-md" 
+            />
             <div>
-              <span className="text-[10px] font-black text-[#C1121F] tracking-wider uppercase block">Zynexta SaaS</span>
-              <span className="font-heading font-extrabold text-base text-white block leading-tight">Poster Studio</span>
+              <span className="text-[10px] font-black text-[#C1121F] tracking-wider uppercase block">Smart Poster Studio</span>
+              <span className="font-heading font-extrabold text-base text-white block leading-tight">JK SocialSpark</span>
             </div>
           </Link>
 
@@ -163,10 +165,12 @@ export default function AdminLayout({ children }) {
         <div>
           <div className="flex items-center justify-between mb-6">
             <Link to="/admin" className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#C1121F] flex items-center justify-center font-bold text-white shadow-md">
-                ZX
-              </div>
-              <span className="font-heading font-bold text-sm text-white">Zynexta Poster SaaS</span>
+              <img 
+                src="/logo.png" 
+                alt="JK SocialSpark Logo" 
+                className="h-9 w-auto object-contain drop-shadow-md" 
+              />
+              <span className="font-heading font-bold text-sm text-white">JK SocialSpark</span>
             </Link>
             <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-slate-400 hover:text-white">
               <X className="w-5 h-5" />

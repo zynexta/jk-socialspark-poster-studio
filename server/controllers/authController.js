@@ -7,7 +7,7 @@ import { connectDB } from '../config/db.js';
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const secret = process.env.JWT_SECRET || 'zynexta_smart_poster_super_secret_key_2026';
+    const secret = process.env.JWT_SECRET || 'jk_socialspark_super_secret_key_2026';
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required.' });
@@ -52,7 +52,7 @@ export const login = async (req, res, next) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      shopName: user.shopName || 'Zynexta Software Solutions',
+      shopName: user.shopName || 'JK SocialSpark',
       avatar: user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     };
 
@@ -98,11 +98,11 @@ export const updateProfile = async (req, res, next) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash('admin123', salt);
         user = await User.create({
-          name: name || 'Zynexta Super Admin',
-          email: email ? email.toLowerCase().trim() : 'admin@zynexta.com',
+          name: name || 'JK SocialSpark Admin',
+          email: email ? email.toLowerCase().trim() : 'admin@jksocialspark.com',
           password: hashedPassword,
           role: 'admin',
-          shopName: shopName || 'Zynexta Software Solutions',
+          shopName: shopName || 'JK SocialSpark',
           avatar: avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
         });
       } else {
@@ -116,10 +116,10 @@ export const updateProfile = async (req, res, next) => {
 
     const userObj = {
       id: user?._id || userId || 'usr_admin_01',
-      name: name || user?.name || 'Zynexta Super Admin',
-      email: email ? email.toLowerCase().trim() : (user?.email || 'admin@zynexta.com'),
+      name: name || user?.name || 'JK SocialSpark Admin',
+      email: email ? email.toLowerCase().trim() : (user?.email || 'admin@jksocialspark.com'),
       role: 'admin',
-      shopName: shopName || user?.shopName || 'Zynexta Software Solutions',
+      shopName: shopName || user?.shopName || 'JK SocialSpark',
       avatar: avatar || user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     };
 

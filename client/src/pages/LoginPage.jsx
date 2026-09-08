@@ -33,11 +33,13 @@ export default function LoginPage() {
         {/* Header Branding */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 group mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#C1121F] flex items-center justify-center font-black text-white text-xl shadow-md">
-              ZX
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="JK SocialSpark Logo" 
+              className="h-14 w-auto object-contain drop-shadow-md transition-transform group-hover:scale-105" 
+            />
           </Link>
-          <h1 className="text-2xl font-black font-heading text-[#0A0A0A]">Zynexta Smart Poster Studio</h1>
+          <h1 className="text-2xl font-black font-heading text-[#0A0A0A]">JK SocialSpark</h1>
           <p className="text-xs text-[#555555] font-medium mt-1">Super Admin Authentication Portal</p>
         </div>
 
@@ -106,7 +108,7 @@ export default function LoginPage() {
         {/* Back Link */}
         <div className="text-center mt-6">
           <Link to="/" className="text-xs text-[#555555] hover:text-[#C1121F] font-bold transition-colors inline-flex items-center gap-1.5">
-            &larr; Back to Zynexta Home Page
+            &larr; Back to JK SocialSpark Home Page
           </Link>
         </div>
       </div>
