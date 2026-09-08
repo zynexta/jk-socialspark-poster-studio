@@ -104,7 +104,7 @@ const PLACEHOLDER_TYPES = [
     desc: 'Contact phone & website link',
     icon: Phone,
     defaultProps: {
-      text: 'Ph: +91 98765 43210 | www.jksocialspark.com',
+      text: 'Ph: +91 98765 43210 | www.jksocialspark.in',
       width: 500,
       height: 35,
       fontSize: 16,
@@ -134,7 +134,7 @@ const PLACEHOLDER_TYPES = [
     defaultProps: {
       width: 120,
       height: 120,
-      placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://jksocialspark.com',
+      placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.jksocialspark.in',
       borderRadius: 8,
     }
   },

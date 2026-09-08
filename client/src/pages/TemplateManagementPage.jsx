@@ -7,6 +7,7 @@ import {
   Filter, QrCode, Calendar, Lock, Globe, Check, X, Sparkles, 
   MessageSquare
 } from 'lucide-react';
+import { getTemplateShareUrl } from '../utils/url';
 
 export default function TemplateManagementPage() {
   const { templates, categories, deleteTemplate, duplicateTemplate, saveTemplate, addToast } = useApp();
@@ -48,7 +49,7 @@ export default function TemplateManagementPage() {
   };
 
   const handleCopyShareUrl = (token) => {
-    const fullUrl = `${window.location.origin}/template/${token}`;
+    const fullUrl = getTemplateShareUrl(token);
     try {
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(fullUrl).catch(() => {
@@ -260,7 +261,7 @@ export default function TemplateManagementPage() {
               {/* QR Code & Link Box */}
               {(() => {
                 const activeToken = shareModalTemplate.shareToken || shareModalTemplate.id;
-                const fullShareUrl = `${window.location.origin}/template/${activeToken}`;
+                const fullShareUrl = getTemplateShareUrl(activeToken);
                 return (
                   <div className="bg-[#F8F8F6] p-4 rounded-2xl border border-[#E5E5E5] flex items-center gap-4">
                     <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center border border-[#E5E5E5]">
@@ -415,7 +416,7 @@ export default function TemplateManagementPage() {
                     const saved = await saveTemplate(updated, { showToast: false });
                     const targetToken = saved?.shareToken || shareModalTemplate.shareToken;
                     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(
-                      `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${window.location.origin}/template/${targetToken}`
+                      `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${getTemplateShareUrl(targetToken)}`
                     )}`;
                     addToast('Opening WhatsApp to share link...', 'info');
                     window.open(url, '_blank');

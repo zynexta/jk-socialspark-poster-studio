@@ -7,6 +7,7 @@ import {
   ArrowUpRight, Clock, ShieldCheck, ChevronRight, Share2, 
   Copy, Check, X, Globe, MessageSquare, ExternalLink, Link as LinkIcon
 } from 'lucide-react';
+import { getTemplateShareUrl } from '../utils/url';
 
 export default function AdminDashboard() {
   const { templates, generatedPosters, shareLinks, createShareLink, fetchShareLinks, addToast } = useApp();
@@ -39,7 +40,7 @@ export default function AdminDashboard() {
 
   const handleCopyShareUrl = async (template) => {
     const activeToken = template.shareToken || template.id;
-    const fullUrl = `${window.location.origin}/template/${activeToken}`;
+    const fullUrl = getTemplateShareUrl(activeToken);
     
     // Save/Persist Share Link to MongoDB Atlas database
     await createShareLink({
@@ -305,7 +306,7 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody className="divide-y divide-[#E5E5E5]">
                   {shareLinks.map((link) => {
-                    const fullUrl = `${window.location.origin}/template/${link.token}`;
+                    const fullUrl = getTemplateShareUrl(link.token);
                     return (
                       <tr key={link._id || link.token} className="hover:bg-[#FFF1F2] transition-colors">
                         <td className="py-3 px-4 font-mono font-bold text-[#C1121F]">
@@ -372,7 +373,7 @@ export default function AdminDashboard() {
               {/* QR Code & Link Box */}
               {(() => {
                 const activeToken = shareModalTemplate.shareToken || shareModalTemplate.id;
-                const fullShareUrl = `${window.location.origin}/template/${activeToken}`;
+                const fullShareUrl = getTemplateShareUrl(activeToken);
                 return (
                   <div className="bg-[#F8F8F6] p-4 rounded-2xl border border-[#E5E5E5] flex items-center gap-4">
                     <div className="w-24 h-24 bg-white rounded-xl p-2 shrink-0 flex items-center justify-center border border-[#E5E5E5]">
@@ -418,7 +419,7 @@ export default function AdminDashboard() {
                 return (
                   <a
                     href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                      `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${window.location.origin}/template/${activeToken}`
+                      `Check out and generate custom posters for ${shareModalTemplate.title} using this link: ${getTemplateShareUrl(activeToken)}`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"

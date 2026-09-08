@@ -14,7 +14,7 @@ cloudinary.config({
  * @param {string} fileStr - Base64 string or file path
  * @param {string} folder - Destination folder in Cloudinary
  */
-export const uploadToCloudinary = async (fileStr, folder = 'jk-posters') => {
+export const uploadToCloudinary = async (fileStr, folder = 'jk-socialspark/templates') => {
   try {
     const uploadResponse = await cloudinary.uploader.upload(fileStr, {
       folder,

@@ -175,7 +175,7 @@ const INITIAL_TEMPLATES = [
         width: 50,
         height: 50,
         borderRadius: 8,
-        placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://jksocialspark.com&color=c1121f',
+        placeholderImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.jksocialspark.in&color=c1121f',
         zIndex: 9,
       },
     ]

@@ -11,6 +11,7 @@ import {
   Send, Copy, ArrowLeft, RefreshCw, Eye, ShieldCheck, Printer, Check, MessageSquare,
   X, PartyPopper, Award, PlusCircle, HelpCircle, Lock, Crop
 } from 'lucide-react';
+import { getTemplateShareUrl } from '../utils/url';
 
 export default function ShopTemplateView() {
   const { shareToken } = useParams();
@@ -239,15 +240,26 @@ export default function ShopTemplateView() {
 
       const customerName = Object.values(formData).find(val => typeof val === 'string' && val.trim().length > 0) || 'Customer';
 
-      // Record in history
+      // Sanitize fieldsData so temporary customer photo data URLs are not persisted in MongoDB
+      const sanitizedFields = {};
+      Object.keys(formData || {}).forEach(key => {
+        const val = formData[key];
+        if (typeof val === 'string' && val.startsWith('data:image')) {
+          sanitizedFields[key] = '[Temporary Customer Photo]';
+        } else {
+          sanitizedFields[key] = val;
+        }
+      });
+
+      // Record in history with clean template background reference URL (zero customer photo storage)
       recordPosterGeneration({
         templateId: template.id,
         templateTitle: template.title,
         generatedBy: user?.shopName || 'Shop Owner',
         shopOwnerId: user?.id || 'usr_shop_guest',
         customerName: customerName,
-        previewUrl: dataUrl || template.bgImage,
-        fieldsData: formData,
+        previewUrl: template.bgImage || '',
+        fieldsData: sanitizedFields,
       });
 
       // Fire celebratory fireworks confetti
@@ -289,12 +301,16 @@ export default function ShopTemplateView() {
   };
 
   const handleWhatsAppShare = () => {
-    const text = encodeURIComponent(`Check out this customized poster generated via JK SocialSpark for ${template.title}!`);
+    const activeToken = template?.shareToken || template?.id;
+    const shareUrl = getTemplateShareUrl(activeToken);
+    const text = encodeURIComponent(`Check out this customized poster generated via JK SocialSpark for ${template.title}! ${shareUrl}`);
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+    const activeToken = template?.shareToken || template?.id;
+    const shareUrl = getTemplateShareUrl(activeToken);
+    navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     addToast('Poster share link copied to clipboard!');
     setTimeout(() => setCopied(false), 3000);

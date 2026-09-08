@@ -63,8 +63,8 @@ export const apiService = {
   getAnalytics: () => request('/analytics'),
 
   // Upload (Cloudinary / Storage)
-  uploadImage: (imageData, folder = 'jk-posters') =>
-    request('/upload', { method: 'POST', body: JSON.stringify({ image: imageData, folder }) }),
+  uploadImage: (imageData, folder = 'jk-socialspark/templates') =>
+    request('/uploads', { method: 'POST', body: JSON.stringify({ image: imageData, folder }) }),
 };
 
 export default apiService;

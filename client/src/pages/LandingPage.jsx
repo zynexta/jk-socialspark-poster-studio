@@ -36,7 +36,7 @@ export default function LandingPage() {
       category: 'Security Solutions',
       studentName: 'JK SOCIALSPARK HQ',
       rank: 'SPECIAL FESTIVAL DISCOUNT 40% OFF',
-      school: 'Ph: +91 98765 43210 | www.jksocialspark.com',
+      school: 'Ph: +91 98765 43210 | www.jksocialspark.in',
       photo: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80',
       bgColor: '#111111',
       badgeBg: 'bg-[#C1121F]',
@@ -238,7 +238,7 @@ export default function LandingPage() {
                 <span className="w-3 h-3 rounded-full bg-[#C1121F] inline-block" />
                 <span className="w-3 h-3 rounded-full bg-[#555555] inline-block" />
                 <span className="w-3 h-3 rounded-full bg-[#FFFFFF] inline-block" />
-                <span className="text-xs text-slate-300 font-mono ml-2">app.jksocialspark.com/template/demo</span>
+                <span className="text-xs text-slate-300 font-mono ml-2">www.jksocialspark.in/template/demo</span>
               </div>
 
               {/* Template Switcher Tabs */}

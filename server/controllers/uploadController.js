@@ -8,19 +8,17 @@ export const uploadImage = async (req, res, next) => {
     }
 
     try {
-      const result = await uploadToCloudinary(image, folder || 'jk-smart-posters');
+      const result = await uploadToCloudinary(image, folder || 'jk-socialspark/templates');
       return res.json({
         success: true,
         url: result.url,
         publicId: result.publicId,
       });
     } catch (cloudErr) {
-      // Fallback response if Cloudinary credentials are not yet configured
-      return res.json({
-        success: true,
-        url: image, // Return given image/base64 string in fallback mode
-        isFallback: true,
-        message: 'Operating in standalone mode or Cloudinary credentials pending.',
+      console.error('Cloudinary Controller Error:', cloudErr.message);
+      return res.status(500).json({
+        success: false,
+        message: cloudErr.message || 'Failed to upload image asset to Cloudinary',
       });
     }
   } catch (error) {

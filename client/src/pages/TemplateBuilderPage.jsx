@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import apiService from '../services/api';
 import CanvasBoard from '../components/builder/CanvasBoard';
 import PlaceholderToolbar from '../components/builder/PlaceholderToolbar';
 import PropertyInspector from '../components/builder/PropertyInspector';
@@ -245,12 +246,17 @@ export default function TemplateBuilderPage() {
     pushState({ ...template, placeholders: reordered });
   };
 
+  const [isUploadingBg, setIsUploadingBg] = useState(false);
+
   const handleBgUpload = (file) => {
     if (!file) return;
+    setIsUploadingBg(true);
+    addToast('Uploading background artwork to Cloudinary...');
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
-      img.onload = () => {
+      img.onload = async () => {
         const canvas = document.createElement('canvas');
         const MAX_WIDTH = 1200;
         const scale = Math.min(1, MAX_WIDTH / img.width);
@@ -258,9 +264,22 @@ export default function TemplateBuilderPage() {
         canvas.height = Math.round(img.height * scale);
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
-        pushState({ ...template, bgImage: compressedDataUrl });
-        addToast('Background image optimized & uploaded!');
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+        try {
+          const res = await apiService.uploadImage(compressedDataUrl, 'jk-socialspark/templates');
+          if (res && res.url) {
+            pushState({ ...template, bgImage: res.url });
+            addToast('Background image stored in Cloudinary!');
+          } else {
+            addToast('Cloudinary upload returned invalid response');
+          }
+        } catch (uploadErr) {
+          console.error('Cloudinary background upload failed:', uploadErr);
+          addToast(uploadErr.message || 'Failed to upload background image to Cloudinary');
+        } finally {
+          setIsUploadingBg(false);
+        }
       };
       img.src = e.target.result;
     };
@@ -404,13 +423,14 @@ export default function TemplateBuilderPage() {
 
           <div className="h-4 w-px mx-0.5 bg-[#E5E5E5]" />
 
-          <label className="px-3 py-1.5 text-xs font-bold rounded-xl border shadow-xs cursor-pointer flex items-center gap-1.5 transition-all bg-[#FFFFFF] hover:bg-[#F5F5F3] text-[#0A0A0A] border-[#E5E5E5]">
+          <label className={`px-3 py-1.5 text-xs font-bold rounded-xl border shadow-xs cursor-pointer flex items-center gap-1.5 transition-all bg-[#FFFFFF] hover:bg-[#F5F5F3] text-[#0A0A0A] border-[#E5E5E5] ${isUploadingBg ? 'opacity-50 pointer-events-none' : ''}`}>
             <ImageIcon className="w-3.5 h-3.5 text-[#C1121F]" />
-            <span className="hidden lg:inline">Upload Background</span>
+            <span className="hidden lg:inline">{isUploadingBg ? 'Uploading to Cloudinary...' : 'Upload Background'}</span>
             <input
               type="file"
               accept="image/*"
               className="hidden"
+              disabled={isUploadingBg}
               onChange={(e) => handleBgUpload(e.target.files[0])}
             />
           </label>

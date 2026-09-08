@@ -2,6 +2,14 @@ import ShareLink from '../models/ShareLink.js';
 import Template from '../models/Template.js';
 import mongoose from 'mongoose';
 
+const getPublicAppUrl = () => {
+  const envUrl = process.env.PUBLIC_APP_URL;
+  if (envUrl && envUrl.trim()) {
+    return envUrl.trim().replace(/\/+$/, '');
+  }
+  return 'https://www.jksocialspark.in';
+};
+
 export const createShareLink = async (req, res, next) => {
   try {
     const { templateId, templateTitle, token, shopOwnerId, shopOwnerName, expirationDate, isPublic } = req.body;
@@ -11,6 +19,7 @@ export const createShareLink = async (req, res, next) => {
     }
 
     const cleanToken = token.toLowerCase().trim().replace(/\/+$/, '');
+    const publicBaseUrl = getPublicAppUrl();
 
     let shareLinkDoc = null;
     if (mongoose.connection.readyState === 1) {
@@ -41,7 +50,10 @@ export const createShareLink = async (req, res, next) => {
       };
     }
 
-    res.status(201).json({ message: 'Share link created successfully in MongoDB Atlas', shareLink: shareLinkDoc });
+    const responseObj = shareLinkDoc.toObject ? shareLinkDoc.toObject() : shareLinkDoc;
+    responseObj.shareUrl = `${publicBaseUrl}/template/${cleanToken}`;
+
+    res.status(201).json({ message: 'Share link created successfully in MongoDB Atlas', shareLink: responseObj });
   } catch (error) {
     next(error);
   }
@@ -53,7 +65,17 @@ export const getShareLinks = async (req, res, next) => {
     if (mongoose.connection.readyState === 1) {
       shareLinks = await ShareLink.find().sort({ createdAt: -1 });
     }
-    res.json({ count: shareLinks.length, shareLinks });
+
+    const publicBaseUrl = getPublicAppUrl();
+    const formatted = shareLinks.map((link) => {
+      const obj = link.toObject ? link.toObject() : link;
+      return {
+        ...obj,
+        shareUrl: `${publicBaseUrl}/template/${obj.token}`
+      };
+    });
+
+    res.json({ count: formatted.length, shareLinks: formatted });
   } catch (error) {
     next(error);
   }
@@ -81,7 +103,11 @@ export const getShareLinkByToken = async (req, res, next) => {
       return res.status(404).json({ message: 'Share link not found.' });
     }
 
-    res.json({ shareLink });
+    const publicBaseUrl = getPublicAppUrl();
+    const responseObj = shareLink.toObject ? shareLink.toObject() : shareLink;
+    responseObj.shareUrl = `${publicBaseUrl}/template/${cleanToken}`;
+
+    res.json({ shareLink: responseObj });
   } catch (error) {
     next(error);
   }
