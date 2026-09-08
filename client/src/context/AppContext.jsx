@@ -266,8 +266,11 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  // 3. Fetch Generated Posters History Live from MongoDB Atlas
+  // 3. Fetch Generated Posters History Live from MongoDB Atlas (Admin Protected)
   const fetchGeneratedPosters = useCallback(async () => {
+    const token = localStorage.getItem('jk_poster_token') || localStorage.getItem('jk_auth_token');
+    if (!token) return;
+
     try {
       const res = await fetch(`${API_BASE_URL}/posters/history`, {
         headers: getAuthHeaders(),
@@ -283,8 +286,11 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  // 4. Fetch Share Links Live from MongoDB Atlas
+  // 4. Fetch Share Links Live from MongoDB Atlas (Admin Protected)
   const fetchShareLinks = useCallback(async () => {
+    const token = localStorage.getItem('jk_poster_token') || localStorage.getItem('jk_auth_token');
+    if (!token) return;
+
     try {
       const res = await fetch(`${API_BASE_URL}/sharelinks`, {
         headers: getAuthHeaders(),

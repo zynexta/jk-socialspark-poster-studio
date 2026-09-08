@@ -116,7 +116,7 @@ export default function LandingPage() {
               <>
                 <Link
                   to="/login"
-                  className="px-2.5 sm:px-4 py-2 text-[#222222] hover:text-[#C1121F] font-bold text-xs transition-colors whitespace-nowrap"
+                  className="hidden sm:inline-block px-2.5 sm:px-4 py-2 text-[#222222] hover:text-[#C1121F] font-bold text-xs transition-colors whitespace-nowrap"
                 >
                   Admin Login
                 </Link>
@@ -192,6 +192,13 @@ export default function LandingPage() {
               >
                 FAQ
               </a>
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-extrabold text-[#C1121F] py-2 transition-colors"
+              >
+                Admin Login Portal →
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>
