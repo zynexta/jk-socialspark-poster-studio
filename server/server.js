@@ -35,7 +35,7 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     service: 'JK SocialSpark Express REST API',
     timestamp: new Date(),
-    environment: process.env.NODE_ENV || 'development',
+    environment: process.env.VERCEL_ENV || process.env.NODE_ENV || 'development',
   });
 });
 
