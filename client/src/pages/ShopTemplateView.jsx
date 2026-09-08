@@ -108,8 +108,30 @@ export default function ShopTemplateView() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedSuccess, setGeneratedSuccess] = useState(false);
   const [lastGeneratedUrl, setLastGeneratedUrl] = useState(null);
+  const [lastGeneratedFile, setLastGeneratedFile] = useState(null);
   const [copied, setCopied] = useState(false);
   const [cropperModal, setCropperModal] = useState({ open: false, placeholderId: null, imageSrc: null });
+
+  // Helper to convert base64 Data URL to a native File object for Web Share API
+  const dataURLtoFile = (dataurl, filename) => {
+    if (!dataurl) return null;
+    try {
+      const arr = dataurl.split(',');
+      if (arr.length < 2) return null;
+      const mimeMatch = arr[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/png';
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    } catch (err) {
+      console.error('Error converting dataURL to File:', err);
+      return null;
+    }
+  };
 
   useEffect(() => {
     if (template?.placeholders) {
@@ -229,12 +251,17 @@ export default function ShopTemplateView() {
         }
 
         if (dataUrl) {
-          const link = document.createElement('a');
           const filename = `${template.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}_poster.${format}`;
+          const link = document.createElement('a');
           link.download = filename;
           link.href = dataUrl;
           link.click();
           setLastGeneratedUrl(dataUrl);
+
+          const posterFileObj = dataURLtoFile(dataUrl, filename);
+          if (posterFileObj) {
+            setLastGeneratedFile(posterFileObj);
+          }
         }
       }
 
@@ -283,6 +310,7 @@ export default function ShopTemplateView() {
   const resetFormForNextPoster = () => {
     setGeneratedSuccess(false);
     setLastGeneratedUrl(null);
+    setLastGeneratedFile(null);
     if (template?.placeholders) {
       const initial = {};
       const initialPhotos = {};
@@ -300,11 +328,50 @@ export default function ShopTemplateView() {
     addToast('Form reset for next poster!');
   };
 
-  const handleWhatsAppShare = () => {
-    const activeToken = template?.shareToken || template?.id;
-    const shareUrl = getTemplateShareUrl(activeToken);
-    const text = encodeURIComponent(`Check out this customized poster generated via JK SocialSpark for ${template.title}! ${shareUrl}`);
-    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  const handleWhatsAppShare = async () => {
+    let posterFile = lastGeneratedFile;
+
+    if (!posterFile && lastGeneratedUrl) {
+      const filename = `${template.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}_poster.png`;
+      posterFile = dataURLtoFile(lastGeneratedUrl, filename);
+    }
+
+    // Use native Web Share API with actual generated poster image file
+    if (posterFile && typeof navigator !== 'undefined' && navigator.share) {
+      let canShareFiles = false;
+      try {
+        if (typeof navigator.canShare === 'function') {
+          canShareFiles = navigator.canShare({ files: [posterFile] });
+        } else {
+          canShareFiles = true;
+        }
+      } catch (e) {
+        canShareFiles = false;
+      }
+
+      if (canShareFiles) {
+        try {
+          await navigator.share({
+            files: [posterFile],
+            title: template.title || 'Customized Poster',
+            text: `Check out this customized poster generated via JK SocialSpark for ${template.title}!`,
+          });
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            return;
+          }
+          console.warn('Native poster image share failed:', err);
+        }
+      }
+    }
+
+    // Fallback when Web Share API image file sharing is not supported by device/browser
+    addToast("Direct image sharing isn't supported on this browser. Please download the poster image to share on WhatsApp.", 'info');
+
+    if (!lastGeneratedUrl) {
+      await triggerDownload('png');
+    }
   };
 
   const handleCopyLink = () => {
