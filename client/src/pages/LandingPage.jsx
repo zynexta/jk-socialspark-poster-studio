@@ -73,27 +73,29 @@ export default function LandingPage() {
     }
   };
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#F8F8F6] text-[#111111] selection:bg-[#C1121F] selection:text-white font-sans overflow-x-hidden">
       {/* Subtle Light Gray Grid Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 hero-bg-light-grid opacity-80" />
 
       {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#E5E5E5] shadow-xs">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#E5E5E5] shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
             <img 
               src="/logo.png" 
               alt="JK SocialSpark Logo" 
-              className="h-10 w-auto object-contain transition-transform group-hover:scale-105" 
+              className="h-8 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105" 
             />
             <div>
-              <span className="text-[10px] font-black tracking-wider text-[#C1121F] uppercase block">Smart poster studio</span>
-              <span className="font-heading font-extrabold text-base text-[#0A0A0A] tracking-tight">JK SocialSpark</span>
+              <span className="text-[9px] sm:text-[10px] font-black tracking-wider text-[#C1121F] uppercase block leading-none mb-0.5">Smart poster studio</span>
+              <span className="font-heading font-extrabold text-sm sm:text-base text-[#0A0A0A] tracking-tight block leading-tight">JK SocialSpark</span>
             </div>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8 text-xs font-bold text-[#222222]">
+          <div className="hidden lg:flex items-center gap-8 text-xs font-bold text-[#222222]">
             <a href="#features" className="hover:text-[#C1121F] transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-[#C1121F] transition-colors">How It Works</a>
             <a href="#demo" className="hover:text-[#C1121F] transition-colors">Live Demo</a>
@@ -101,35 +103,98 @@ export default function LandingPage() {
             <a href="#faq" className="hover:text-[#C1121F] transition-colors">FAQ</a>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {user ? (
               <Link
                 to={user.role === 'admin' ? '/admin' : '/template/sslc-topper-2026'}
-                className="px-5 py-2.5 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center gap-1.5 hover:scale-102"
+                className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-bold rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 whitespace-nowrap"
               >
-                <span>Go to {user.role === 'admin' ? 'Admin Dashboard' : 'Shop Workspace'}</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>{user.role === 'admin' ? 'Admin Dashboard' : 'Shop Workspace'}</span>
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </Link>
             ) : (
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-[#222222] hover:text-[#C1121F] font-bold text-xs transition-colors"
+                  className="px-2.5 sm:px-4 py-2 text-[#222222] hover:text-[#C1121F] font-bold text-xs transition-colors whitespace-nowrap"
                 >
                   Admin Login
                 </Link>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Link
-                    to="/template/sslc-topper-2026"
-                    className="px-5 py-2.5 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-bold rounded-xl text-xs transition-all shadow-md block"
-                  >
-                    Try Live Demo
-                  </Link>
-                </motion.div>
+                <Link
+                  to="/template/sslc-topper-2026"
+                  className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-bold rounded-xl text-xs transition-all shadow-xs block whitespace-nowrap"
+                >
+                  Try Live Demo
+                </Link>
               </>
             )}
+
+            {/* Mobile Hamburger Toggle Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-xl text-[#0A0A0A] hover:bg-[#F3F3F1] transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Menu Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden bg-[#FFFFFF] border-b border-[#E5E5E5] px-6 py-4 space-y-3"
+            >
+              <a
+                href="#features"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold text-[#222222] hover:text-[#C1121F] py-2 transition-colors border-b border-gray-100"
+              >
+                Features
+              </a>
+              <a
+                href="#how-it-works"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold text-[#222222] hover:text-[#C1121F] py-2 transition-colors border-b border-gray-100"
+              >
+                How It Works
+              </a>
+              <a
+                href="#demo"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold text-[#222222] hover:text-[#C1121F] py-2 transition-colors border-b border-gray-100"
+              >
+                Live Demo
+              </a>
+              <a
+                href="#pricing"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold text-[#222222] hover:text-[#C1121F] py-2 transition-colors border-b border-gray-100"
+              >
+                Pricing
+              </a>
+              <a
+                href="#faq"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold text-[#222222] hover:text-[#C1121F] py-2 transition-colors border-b border-gray-100"
+              >
+                FAQ
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* HERO SECTION */}
