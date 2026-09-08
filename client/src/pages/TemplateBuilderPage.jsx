@@ -311,147 +311,163 @@ export default function TemplateBuilderPage() {
   return (
     <div className="h-screen flex flex-col overflow-hidden font-sans bg-[#F8F8F6] text-[#111111]">
       {/* Top Header Toolbar */}
-      <header className="px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2.5 z-30 shrink-0 border-b border-[#E5E5E5] bg-[#FFFFFF] shadow-xs">
-        {/* Left Section: Navigation & Template Config */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <Link
-            to="/admin/templates"
-            className="p-2 rounded-xl transition-colors shrink-0 hover:bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A]"
-            title="Back to Templates"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div className="h-5 w-px shrink-0 bg-[#E5E5E5]" />
+      <header className="min-h-[56px] px-3 sm:px-6 py-2 flex items-center justify-between gap-2.5 z-30 shrink-0 border-b border-[#E5E5E5] bg-[#FFFFFF] shadow-xs select-none">
+        
+        {/* DESKTOP & TABLET FLEX WRAPPER */}
+        <div className="w-full flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-3">
+          
+          {/* LEFT SECTION: Group 1 (Nav & Title) + Group 2 (Canvas Settings) */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            
+            {/* GROUP 1: Navigation & Template Title */}
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to="/admin/templates"
+                className="p-2 rounded-xl transition-colors shrink-0 hover:bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A] border border-[#E5E5E5] bg-[#FFFFFF]"
+                title="Back to Templates List"
+              >
+                <ArrowLeft className="w-4 h-4 text-[#0A0A0A]" />
+              </Link>
 
-          {/* Template Title Input */}
-          <input
-            type="text"
-            value={template.title}
-            onChange={(e) => setTemplate({ ...template, title: e.target.value })}
-            className="font-heading font-bold text-xs sm:text-sm rounded-xl px-3 py-1.5 outline-none w-36 sm:w-56 xl:w-64 transition-all border shrink-0 bg-[#F8F8F6] text-[#0A0A0A] border-[#E5E5E5] hover:border-[#111111] focus:border-[#C1121F] focus:bg-[#FFFFFF]"
-            placeholder="Template Title..."
-          />
-
-          {/* Category Dropdown */}
-          <select
-            value={template.category}
-            onChange={(e) => setTemplate({ ...template, category: e.target.value })}
-            className="text-xs font-bold rounded-xl px-3 py-1.5 outline-none shadow-xs border cursor-pointer shrink-0 bg-[#FFFFFF] text-[#C1121F] border-[#E5E5E5]"
-          >
-            {categories.map((c) => (
-              <option key={c.id} value={c.name} className="bg-[#FFFFFF] text-[#0A0A0A] font-medium">{c.name}</option>
-            ))}
-          </select>
-
-          {/* Aspect Ratio Selector & Custom Dimension Inputs */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            <select
-              value={`${template.width}x${template.height}`}
-              onChange={(e) => {
-                const val = e.target.value;
-                const [w, h] = val.split('x').map(Number);
-                const ratioLabel = w === 800 && h === 1000 ? '4:5' : w === 800 && h === 800 ? '1:1' : w === 720 && h === 1280 ? '9:16' : w === 1280 && h === 720 ? '16:9' : 'A4';
-                pushState({ ...template, width: w, height: h, aspectRatio: ratioLabel });
-                addToast(`Canvas ratio updated to ${w}x${h} (${ratioLabel})`);
-              }}
-              className="text-xs font-bold rounded-xl px-3 py-1.5 outline-none shadow-xs border cursor-pointer bg-[#FFFFFF] text-[#0A0A0A] border-[#E5E5E5]"
-            >
-              <option value="800x1000">4:5 Poster (800x1000 px)</option>
-              <option value="800x800">1:1 Square (800x800 px)</option>
-              <option value="720x1280">9:16 Story (720x1280 px)</option>
-              <option value="1280x720">16:9 Banner (1280x720 px)</option>
-              <option value="842x1191">A4 Document (842x1191 px)</option>
-            </select>
-
-            {/* Custom Width & Height Inputs */}
-            <div className="hidden xl:flex items-center gap-1 text-[11px] font-semibold text-[#555555]">
               <input
-                type="number"
-                value={template.width || 800}
-                onChange={(e) => {
-                  const w = parseInt(e.target.value) || 800;
-                  pushState({ ...template, width: w });
-                }}
-                className="w-14 rounded-lg px-1.5 py-1 text-center text-xs border outline-none bg-[#F8F8F6] text-[#0A0A0A] border-[#E5E5E5]"
-                title="Canvas Width (px)"
+                type="text"
+                value={template.title}
+                onChange={(e) => setTemplate({ ...template, title: e.target.value })}
+                className="font-heading font-bold text-xs sm:text-sm rounded-xl px-3 py-1.5 outline-none w-36 sm:w-52 lg:w-60 transition-all border shrink-0 bg-[#F8F8F6] text-[#0A0A0A] border-[#E5E5E5] hover:border-[#111111] focus:border-[#C1121F] focus:bg-[#FFFFFF]"
+                placeholder="Template Title..."
               />
-              <span>x</span>
-              <input
-                type="number"
-                value={template.height || 1000}
+            </div>
+
+            <div className="h-5 w-px shrink-0 bg-[#E5E5E5] hidden sm:block" />
+
+            {/* GROUP 2: Template Settings (Category, Size Preset, Grouped WxH) */}
+            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              {/* Category Dropdown */}
+              <select
+                value={template.category}
+                onChange={(e) => setTemplate({ ...template, category: e.target.value })}
+                className="text-xs font-bold rounded-xl px-3 py-1.5 outline-none shadow-xs border cursor-pointer shrink-0 bg-[#FFFFFF] text-[#C1121F] border-[#E5E5E5] hover:border-[#C1121F]"
+              >
+                {categories.map((c) => (
+                  <option key={c.id} value={c.name} className="bg-[#FFFFFF] text-[#0A0A0A] font-medium">{c.name}</option>
+                ))}
+              </select>
+
+              {/* Canvas Preset Selector */}
+              <select
+                value={`${template.width}x${template.height}`}
                 onChange={(e) => {
-                  const h = parseInt(e.target.value) || 1000;
-                  pushState({ ...template, height: h });
+                  const val = e.target.value;
+                  const [w, h] = val.split('x').map(Number);
+                  const ratioLabel = w === 800 && h === 1000 ? '4:5' : w === 800 && h === 800 ? '1:1' : w === 720 && h === 1280 ? '9:16' : w === 1280 && h === 720 ? '16:9' : 'A4';
+                  pushState({ ...template, width: w, height: h, aspectRatio: ratioLabel });
+                  addToast(`Canvas ratio updated to ${w}x${h} (${ratioLabel})`);
                 }}
-                className="w-14 rounded-lg px-1.5 py-1 text-center text-xs border outline-none bg-[#F8F8F6] text-[#0A0A0A] border-[#E5E5E5]"
-                title="Canvas Height (px)"
-              />
-              <span className="text-[10px] text-[#777777] font-mono">px</span>
+                className="text-xs font-bold rounded-xl px-3 py-1.5 outline-none shadow-xs border cursor-pointer bg-[#FFFFFF] text-[#0A0A0A] border-[#E5E5E5] hover:border-[#111111]"
+              >
+                <option value="800x1000">4:5 Poster (800x1000)</option>
+                <option value="800x800">1:1 Square (800x800)</option>
+                <option value="720x1280">9:16 Story (720x1280)</option>
+                <option value="1280x720">16:9 Banner (1280x720)</option>
+                <option value="842x1191">A4 Document (842x1191)</option>
+              </select>
+
+              {/* Grouped W × H Dimension Inputs */}
+              <div className="hidden lg:flex items-center px-2 py-1 rounded-xl border border-[#E5E5E5] bg-[#F8F8F6] text-xs font-bold text-[#555555]">
+                <input
+                  type="number"
+                  value={template.width || 800}
+                  onChange={(e) => {
+                    const w = parseInt(e.target.value) || 800;
+                    pushState({ ...template, width: w });
+                  }}
+                  className="w-11 text-center bg-transparent border-none outline-none font-bold text-xs text-[#0A0A0A]"
+                  title="Canvas Width (px)"
+                />
+                <span className="text-[#999999] px-0.5">×</span>
+                <input
+                  type="number"
+                  value={template.height || 1000}
+                  onChange={(e) => {
+                    const h = parseInt(e.target.value) || 1000;
+                    pushState({ ...template, height: h });
+                  }}
+                  className="w-11 text-center bg-transparent border-none outline-none font-bold text-xs text-[#0A0A0A]"
+                  title="Canvas Height (px)"
+                />
+                <span className="text-[10px] text-[#777777] font-mono pl-0.5">px</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Section: Actions & Utilities */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
-          {/* Pro Keyboard Shortcuts Modal Button */}
-          <button
-            onClick={() => setShowShortcutsModal(true)}
-            className="p-2 rounded-xl border font-bold text-xs flex items-center gap-1.5 transition-all bg-[#FFFFFF] text-[#0A0A0A] border-[#E5E5E5] hover:bg-[#F5F5F3]"
-            title="Keyboard Shortcuts Guide"
-          >
-            <Keyboard className="w-4 h-4 text-[#C1121F]" />
-            <span className="hidden md:inline">Shortcuts</span>
-          </button>
+          {/* RIGHT SECTION: Group 3 (Editing Tools) + Group 4 (Asset/Preview) + Group 5 (Primary Save) */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 flex-wrap justify-end">
+            
+            {/* GROUP 3: Editing Utilities (Undo, Redo, Shortcuts) */}
+            <div className="flex items-center gap-0.5 p-0.5 rounded-xl border border-[#E5E5E5] bg-[#F8F8F6]">
+              <button
+                onClick={() => { handleUndo(); addToast('Undo action'); }}
+                disabled={historyIndex <= 0}
+                className="p-1.5 rounded-lg disabled:opacity-30 transition-colors text-[#555555] hover:text-[#0A0A0A] hover:bg-[#FFFFFF]"
+                title="Undo (Ctrl+Z)"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => { handleRedo(); addToast('Redo action'); }}
+                disabled={historyIndex >= history.length - 1}
+                className="p-1.5 rounded-lg disabled:opacity-30 transition-colors text-[#555555] hover:text-[#0A0A0A] hover:bg-[#FFFFFF]"
+                title="Redo (Ctrl+Y)"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+              </button>
+              <div className="h-3.5 w-px bg-[#E5E5E5] mx-0.5" />
+              <button
+                onClick={() => setShowShortcutsModal(true)}
+                className="p-1.5 rounded-lg font-bold text-xs flex items-center gap-1 transition-all text-[#555555] hover:text-[#0A0A0A] hover:bg-[#FFFFFF]"
+                title="Keyboard Shortcuts Guide"
+              >
+                <Keyboard className="w-3.5 h-3.5 text-[#C1121F]" />
+                <span className="hidden xl:inline text-[11px]">Shortcuts</span>
+              </button>
+            </div>
 
-          <div className="h-4 w-px mx-0.5 bg-[#E5E5E5] hidden sm:block" />
+            <div className="h-5 w-px shrink-0 bg-[#E5E5E5] hidden sm:block" />
 
-          <button
-            onClick={() => { handleUndo(); addToast('Undo action'); }}
-            disabled={historyIndex <= 0}
-            className="p-2 rounded-xl disabled:opacity-30 transition-colors text-[#555555] hover:text-[#0A0A0A] hover:bg-[#F5F5F3]"
-            title="Undo"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => { handleRedo(); addToast('Redo action'); }}
-            disabled={historyIndex >= history.length - 1}
-            className="p-2 rounded-xl disabled:opacity-30 transition-colors text-[#555555] hover:text-[#0A0A0A] hover:bg-[#F5F5F3]"
-            title="Redo"
-          >
-            <RotateCw className="w-4 h-4" />
-          </button>
+            {/* GROUP 4: Asset & Live Shop Preview */}
+            <div className="flex items-center gap-1.5">
+              <label className={`px-2.5 py-1.5 text-xs font-bold rounded-xl border shadow-xs cursor-pointer flex items-center gap-1.5 transition-all bg-[#FFFFFF] hover:bg-[#F5F5F3] text-[#0A0A0A] border-[#E5E5E5] ${isUploadingBg ? 'opacity-50 pointer-events-none' : ''}`}>
+                <ImageIcon className="w-3.5 h-3.5 text-[#C1121F]" />
+                <span className="hidden sm:inline">{isUploadingBg ? 'Uploading...' : 'Upload Background'}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={isUploadingBg}
+                  onChange={(e) => handleBgUpload(e.target.files[0])}
+                />
+              </label>
 
-          <div className="h-4 w-px mx-0.5 bg-[#E5E5E5] hidden sm:block" />
+              <button
+                onClick={handlePreviewShopForm}
+                className="px-2.5 py-1.5 text-xs font-bold rounded-xl border flex items-center gap-1.5 transition-all bg-[#FFFFFF] hover:bg-[#F5F5F3] text-[#0A0A0A] border-[#E5E5E5]"
+                title="Preview Live Customer Shop Form"
+              >
+                <Eye className="w-3.5 h-3.5 text-[#C1121F]" />
+                <span className="hidden sm:inline">Preview Shop Form</span>
+              </button>
+            </div>
 
-          <label className={`px-3 py-1.5 text-xs font-bold rounded-xl border shadow-xs cursor-pointer flex items-center gap-1.5 transition-all bg-[#FFFFFF] hover:bg-[#F5F5F3] text-[#0A0A0A] border-[#E5E5E5] ${isUploadingBg ? 'opacity-50 pointer-events-none' : ''}`}>
-            <ImageIcon className="w-3.5 h-3.5 text-[#C1121F]" />
-            <span className="hidden lg:inline">{isUploadingBg ? 'Uploading to Cloudinary...' : 'Upload Background'}</span>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              disabled={isUploadingBg}
-              onChange={(e) => handleBgUpload(e.target.files[0])}
-            />
-          </label>
+            {/* GROUP 5: Primary Action (Save & Share) */}
+            <button
+              onClick={() => { handleSave(); addToast('Template saved successfully!'); }}
+              className="px-4 py-1.5 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-extrabold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] shrink-0 border border-[#C1121F]"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>Save & Share</span>
+            </button>
+          </div>
 
-          <button
-            onClick={handlePreviewShopForm}
-            className="px-3 py-1.5 text-xs font-bold rounded-xl border flex items-center gap-1.5 transition-all bg-[#FFFFFF] hover:bg-[#F5F5F3] text-[#0A0A0A] border-[#E5E5E5]"
-            title="Preview Live Shop Form"
-          >
-            <Eye className="w-3.5 h-3.5 text-[#C1121F]" />
-            <span className="hidden sm:inline">Preview Shop Form</span>
-          </button>
-
-          <button
-            onClick={() => { handleSave(); addToast('Template saved successfully!'); }}
-            className="px-4 sm:px-5 py-2 bg-[#C1121F] hover:bg-[#8B0E16] text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-all hover:scale-[1.01] shrink-0"
-          >
-            <Save className="w-4 h-4" />
-            <span>Save & Share</span>
-          </button>
         </div>
       </header>
 
