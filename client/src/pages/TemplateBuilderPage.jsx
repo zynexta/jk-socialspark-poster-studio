@@ -311,8 +311,9 @@ export default function TemplateBuilderPage() {
   return (
     <div className="h-screen flex flex-col overflow-hidden font-sans bg-[#F8F8F6] text-[#111111]">
       {/* Top Header Toolbar */}
-      <header className="h-16 px-4 sm:px-6 flex items-center justify-between z-30 shrink-0 border-b border-[#E5E5E5] bg-[#FFFFFF] shadow-xs">
-        <div className="flex items-center gap-2.5 sm:gap-3.5 overflow-x-auto no-scrollbar py-1">
+      <header className="px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2.5 z-30 shrink-0 border-b border-[#E5E5E5] bg-[#FFFFFF] shadow-xs">
+        {/* Left Section: Navigation & Template Config */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <Link
             to="/admin/templates"
             className="p-2 rounded-xl transition-colors shrink-0 hover:bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A]"
@@ -327,7 +328,7 @@ export default function TemplateBuilderPage() {
             type="text"
             value={template.title}
             onChange={(e) => setTemplate({ ...template, title: e.target.value })}
-            className="font-heading font-bold text-xs sm:text-sm rounded-xl px-3 py-1.5 outline-none w-44 sm:w-64 transition-all border shrink-0 bg-[#F8F8F6] text-[#0A0A0A] border-[#E5E5E5] hover:border-[#111111] focus:border-[#C1121F] focus:bg-[#FFFFFF]"
+            className="font-heading font-bold text-xs sm:text-sm rounded-xl px-3 py-1.5 outline-none w-36 sm:w-56 xl:w-64 transition-all border shrink-0 bg-[#F8F8F6] text-[#0A0A0A] border-[#E5E5E5] hover:border-[#111111] focus:border-[#C1121F] focus:bg-[#FFFFFF]"
             placeholder="Template Title..."
           />
 
@@ -390,8 +391,8 @@ export default function TemplateBuilderPage() {
           </div>
         </div>
 
-        {/* Center & Right Controls: Background Upload, Undo/Redo, Shortcuts & Preview */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* Right Section: Actions & Utilities */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
           {/* Pro Keyboard Shortcuts Modal Button */}
           <button
             onClick={() => setShowShortcutsModal(true)}
@@ -402,7 +403,7 @@ export default function TemplateBuilderPage() {
             <span className="hidden md:inline">Shortcuts</span>
           </button>
 
-          <div className="h-4 w-px mx-0.5 bg-[#E5E5E5]" />
+          <div className="h-4 w-px mx-0.5 bg-[#E5E5E5] hidden sm:block" />
 
           <button
             onClick={() => { handleUndo(); addToast('Undo action'); }}
@@ -421,7 +422,7 @@ export default function TemplateBuilderPage() {
             <RotateCw className="w-4 h-4" />
           </button>
 
-          <div className="h-4 w-px mx-0.5 bg-[#E5E5E5]" />
+          <div className="h-4 w-px mx-0.5 bg-[#E5E5E5] hidden sm:block" />
 
           <label className={`px-3 py-1.5 text-xs font-bold rounded-xl border shadow-xs cursor-pointer flex items-center gap-1.5 transition-all bg-[#FFFFFF] hover:bg-[#F5F5F3] text-[#0A0A0A] border-[#E5E5E5] ${isUploadingBg ? 'opacity-50 pointer-events-none' : ''}`}>
             <ImageIcon className="w-3.5 h-3.5 text-[#C1121F]" />
@@ -494,12 +495,12 @@ export default function TemplateBuilderPage() {
       {/* Main 3-Column Studio Interface */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* Left Toolbar */}
-        <div className={`${mobileTab === 'toolbar' ? 'flex w-full absolute inset-0 z-30 bg-[#FFFFFF] overflow-y-auto' : 'hidden lg:flex'}`}>
+        <div className={`${mobileTab === 'toolbar' ? 'flex w-full absolute inset-0 z-30 bg-[#FFFFFF] overflow-y-auto' : 'hidden lg:flex shrink-0'}`}>
           <PlaceholderToolbar onAddPlaceholder={handleAddPlaceholderWithTab} />
         </div>
 
         {/* Center Interactive Canvas */}
-        <div className={`${mobileTab === 'canvas' ? 'flex w-full flex-1 z-20 overflow-auto justify-center' : 'hidden lg:flex flex-1'}`}>
+        <div className={`${mobileTab === 'canvas' ? 'flex w-full flex-1 z-20 overflow-hidden justify-center' : 'hidden lg:flex flex-1 overflow-hidden'}`}>
           <CanvasBoard
             template={template}
             selectedPlaceholderId={selectedPlaceholderId}
@@ -515,7 +516,7 @@ export default function TemplateBuilderPage() {
         </div>
 
         {/* Right Inspector */}
-        <div className={`${mobileTab === 'inspector' ? 'flex w-full absolute inset-0 z-30 bg-[#FFFFFF] overflow-y-auto' : 'hidden lg:flex'}`}>
+        <div className={`${mobileTab === 'inspector' ? 'flex w-full absolute inset-0 z-30 bg-[#FFFFFF] overflow-y-auto' : 'hidden lg:flex shrink-0'}`}>
           <PropertyInspector
             selectedPlaceholder={selectedPlaceholder}
             onUpdatePlaceholder={handleUpdatePlaceholder}

@@ -185,7 +185,7 @@ export default function PlaceholderToolbar({ onAddPlaceholder }) {
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
         {PLACEHOLDER_TYPES.map((item) => {
           const Icon = item.icon;
           return (

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Lock, Unlock, Trash2, Copy, Layers, Eye, Grid, Move, Maximize2 } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Lock, Unlock, Trash2, Copy, Layers, Eye, Grid, Move, Maximize2, Sliders, ChevronUp, ChevronDown } from 'lucide-react';
 import PlaceholderRenderer from '../renderers/PlaceholderRenderer';
 
 export default function CanvasBoard({
@@ -15,6 +15,7 @@ export default function CanvasBoard({
   setShowGrid,
 }) {
   const containerRef = useRef(null);
+  const [controlsCollapsed, setControlsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isResizing, setIsResizing] = useState(false);
@@ -181,71 +182,99 @@ export default function CanvasBoard({
   );
 
   return (
-    <div className="relative flex-1 overflow-auto flex flex-col items-center justify-center p-8 select-none bg-[#F5F5F3] text-[#111111]">
-      {/* Top Floating Canvas Toolbar */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-2 rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] shadow-md text-[#111111]">
-        <button
-          onClick={() => setZoom(z => Math.max(0.4, z - 0.1))}
-          className="p-1.5 rounded-lg transition-colors hover:bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A]"
-          title="Zoom Out"
-        >
-          <ZoomOut className="w-4 h-4" />
-        </button>
-        <span className="text-xs font-bold w-12 text-center text-[#0A0A0A]">
-          {Math.round(zoom * 100)}%
-        </span>
-        <button
-          onClick={() => setZoom(z => Math.min(1.8, z + 0.1))}
-          className="p-1.5 rounded-lg transition-colors hover:bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A]"
-          title="Zoom In"
-        >
-          <ZoomIn className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => setZoom(0.85)}
-          className="p-1.5 rounded-lg transition-colors text-xs hover:bg-[#F5F5F3] text-[#777777]"
-          title="Reset Zoom"
-        >
-          <RotateCcw className="w-4 h-4" />
-        </button>
-        <div className="h-4 w-px mx-1 bg-[#E5E5E5]" />
-        <button
-          onClick={() => setShowGrid(!showGrid)}
-          className={`p-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-all ${
-            showGrid
-              ? 'bg-[#FFF1F2] text-[#C1121F] border border-red-200 font-bold'
-              : 'hover:bg-[#F5F5F3] text-[#555555]'
-          }`}
-          title="Toggle Grid Lines"
-        >
-          <Grid className="w-4 h-4" />
-          <span className="text-xs font-bold">Grid</span>
-        </button>
+    <div className="relative flex-1 overflow-auto w-full h-full flex flex-col items-center select-none bg-[#F5F5F3] text-[#111111] p-4 sm:p-8 custom-scrollbar">
+      {/* Floating Canvas Controls Overlay */}
+      <div className="sticky top-2 sm:top-4 z-40 mb-2 shrink-0 transition-all">
+        {controlsCollapsed ? (
+          <button
+            onClick={() => setControlsCollapsed(false)}
+            className="px-3.5 py-2 rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] shadow-lg text-[#0A0A0A] font-bold text-xs flex items-center gap-2 hover:bg-[#F5F5F3] transition-all transform hover:scale-105"
+            title="Expand Canvas Controls"
+          >
+            <Sliders className="w-4 h-4 text-[#C1121F]" />
+            <span>Canvas Controls ({Math.round(zoom * 100)}%)</span>
+            {showGrid && <span className="w-2 h-2 rounded-full bg-[#C1121F]" title="Grid Active" />}
+            <ChevronDown className="w-3.5 h-3.5 text-[#555555]" />
+          </button>
+        ) : (
+          <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-2xl border border-[#E5E5E5] bg-[#FFFFFF] shadow-xl text-[#111111] transition-all">
+            <button
+              onClick={() => setZoom(z => Math.max(0.3, Number((z - 0.05).toFixed(2))))}
+              className="p-1.5 rounded-lg transition-colors hover:bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A]"
+              title="Zoom Out"
+            >
+              <ZoomOut className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setZoom(0.85)}
+              className="text-xs font-bold px-2 py-0.5 rounded-md hover:bg-[#F5F5F3] text-[#0A0A0A]"
+              title="Click to reset zoom to 85%"
+            >
+              {Math.round(zoom * 100)}%
+            </button>
+            <button
+              onClick={() => setZoom(z => Math.min(1.8, Number((z + 0.05).toFixed(2))))}
+              className="p-1.5 rounded-lg transition-colors hover:bg-[#F5F5F3] text-[#555555] hover:text-[#0A0A0A]"
+              title="Zoom In"
+            >
+              <ZoomIn className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setZoom(0.85)}
+              className="p-1.5 rounded-lg transition-colors text-xs hover:bg-[#F5F5F3] text-[#777777]"
+              title="Reset Zoom to 85%"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+            <div className="h-4 w-px mx-0.5 bg-[#E5E5E5]" />
+            <button
+              onClick={() => setShowGrid(!showGrid)}
+              className={`p-1.5 rounded-xl text-xs flex items-center gap-1.5 transition-all ${
+                showGrid
+                  ? 'bg-[#C1121F] text-white font-bold shadow-xs'
+                  : 'bg-[#F8F8F6] border border-[#E5E5E5] text-[#555555] hover:text-[#0A0A0A] hover:bg-[#E5E5E5]'
+              }`}
+              title={showGrid ? "Hide Canvas Alignment Grid" : "Show Canvas Alignment Grid"}
+            >
+              <Grid className="w-4 h-4" />
+              <span className="text-xs font-bold hidden sm:inline">Grid</span>
+            </button>
+            <div className="h-4 w-px mx-0.5 bg-[#E5E5E5]" />
+            <button
+              onClick={() => setControlsCollapsed(true)}
+              className="p-1.5 rounded-lg transition-colors text-[#555555] hover:text-[#0A0A0A] hover:bg-[#F5F5F3]"
+              title="Minimize Canvas Controls"
+            >
+              <ChevronUp className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Canvas Workspace */}
-      <div
-        className="relative shadow-xl transition-transform duration-75 origin-center"
-        style={{
-          width: `${canvasWidth * zoom}px`,
-          height: `${canvasHeight * zoom}px`,
-        }}
-      >
+      {/* Canvas Centered Workspace Wrapper */}
+      <div className="my-auto py-4 flex flex-col items-center justify-center shrink-0">
         <div
-          ref={containerRef}
-          onClick={() => onSelectPlaceholder(null)}
-          className="relative w-full h-full rounded-xl overflow-hidden border border-[#E5E5E5]"
+          className="relative shadow-2xl transition-transform duration-75 origin-center rounded-xl overflow-hidden border border-[#E5E5E5]"
           style={{
-            backgroundColor: template?.bgColor || '#0F172A',
-            backgroundImage: template?.bgImage ? `url(${template.bgImage})` : undefined,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            transform: `scale(${zoom})`,
-            transformOrigin: 'top left',
-            width: `${canvasWidth}px`,
-            height: `${canvasHeight}px`,
+            width: `${canvasWidth * zoom}px`,
+            height: `${canvasHeight * zoom}px`,
           }}
         >
+          <div
+            ref={containerRef}
+            onClick={() => onSelectPlaceholder(null)}
+            className="relative w-full h-full"
+            style={{
+              backgroundColor: template?.bgColor || '#0F172A',
+              backgroundImage: template?.bgImage ? `url(${template.bgImage})` : undefined,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              transform: `scale(${zoom})`,
+              transformOrigin: 'top left',
+              width: `${canvasWidth}px`,
+              height: `${canvasHeight}px`,
+            }}
+          >
           {/* Visible Canvas Alignment Grid Overlay */}
           {showGrid && (
             <div
@@ -354,5 +383,6 @@ export default function CanvasBoard({
         </div>
       </div>
     </div>
+  </div>
   );
 }

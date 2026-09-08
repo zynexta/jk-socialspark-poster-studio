@@ -80,7 +80,7 @@ export default function PropertyInspector({
       </div>
 
       {/* Inspector Body Controls */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-5">
+      <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar">
         {/* Label Config */}
         <div>
           <label className="text-[11px] font-bold block mb-1 text-[#0A0A0A]">

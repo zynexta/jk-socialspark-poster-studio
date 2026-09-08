@@ -234,6 +234,8 @@ export default function ShopTemplateView() {
             transformOrigin: 'top left',
             margin: '0',
             padding: '0',
+            borderRadius: '0px',
+            boxShadow: 'none',
           },
           skipFonts: true,
           fontEmbedCSS: '',
@@ -244,10 +246,10 @@ export default function ShopTemplateView() {
             ? await toJpeg(posterRef.current, exportOptions)
             : await toPng(posterRef.current, exportOptions);
         } catch (retryErr) {
-          console.warn('First export failed, retrying without options:', retryErr);
+          console.warn('First export failed, retrying with reset styles:', retryErr);
           dataUrl = format === 'jpg'
-            ? await toJpeg(posterRef.current, { quality: 0.95 })
-            : await toPng(posterRef.current);
+            ? await toJpeg(posterRef.current, { quality: 0.95, style: { borderRadius: '0px', boxShadow: 'none', transform: 'none' } })
+            : await toPng(posterRef.current, { style: { borderRadius: '0px', boxShadow: 'none', transform: 'none' } });
         }
 
         if (dataUrl) {
